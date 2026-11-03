@@ -30,6 +30,19 @@ jobs:
           channel: stable
           cache: true
 
+      # Caches ~/.gradle (dependencies, wrapper, build cache). Only the
+      # default branch writes the cache; branches read it.
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+
+      # Flutter pins an NDK version that isn't preinstalled on the runner.
+      - name: Cache Android NDK
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/lib/android/sdk/ndk
+          key: ndk-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}
+
       - name: Install dependencies
         run: flutter pub get
 
