@@ -12,6 +12,7 @@ import '../../../core/widgets/l10n_ext.dart';
 import '../domain/ingredient.dart';
 import '../domain/ingredient_factory.dart';
 import 'merge.dart';
+import 'preferred_name_sheet.dart';
 
 final duplicatesProvider = Provider<List<(Ingredient, Ingredient)>>((ref) {
   final list = ref.watch(ingredientsProvider).value ?? const <Ingredient>[];
@@ -111,8 +112,18 @@ class _IngredientsScreenState extends ConsumerState<IngredientsScreen> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: i.synonyms.isEmpty
+                      ? const Icon(Icons.chevron_right)
+                      : IconButton(
+                          tooltip: l10n.choosePreferredName,
+                          onPressed: () =>
+                              showPreferredNameSheet(context, ref, i),
+                          icon: const Icon(Icons.swap_horiz),
+                        ),
                   onTap: () => context.push(Routes.ingredient(i.id)),
+                  onLongPress: i.synonyms.isEmpty
+                      ? null
+                      : () => showPreferredNameSheet(context, ref, i),
                 ),
             ],
           );

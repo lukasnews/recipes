@@ -345,5 +345,14 @@
         "type": "String"
       }
     }
+  },
+  "choosePreferredName": "Angezeigten Namen wählen",
+  "preferredNameSaved": "Wird jetzt als „{name}“ angezeigt",
+  "@preferredNameSaved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }
