@@ -42,6 +42,7 @@ class RecipeImportService {
 
 /// Short, readable reason for the review banner.
 String describeAiError(Object e) {
+  if (e is AiUnavailableException) return e.toString();
   final text = e.toString().replaceFirst(RegExp(r'^\w*Exception:?\s*'), '');
   return text.length > 200 ? '${text.substring(0, 200)}…' : text;
 }

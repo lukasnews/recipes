@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import '../domain/recipe_draft.dart';
 
@@ -92,9 +93,9 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
   /// Backends in order: Gemini Developer API first, then the Agent Platform
   /// (Vertex) Gemini API. If the first one isn't set up in the Firebase
   /// project ("genai config not found", missing API key) the second is used.
-  static List<FirebaseAI Function()> backends = [
-    FirebaseAI.googleAI,
-    FirebaseAI.agentPlatform,
+  static List<(String, FirebaseAI Function())> backends = [
+    ('Developer API', FirebaseAI.googleAI),
+    ('Agent Platform', FirebaseAI.agentPlatform),
   ];
 
   static bool isBackendSetupError(Object e) {
@@ -109,20 +110,37 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
 
   Future<List<RecipeDraft>> _run(List<Part> parts) async {
     final candidates = {modelName, ...fallbackModels}.toList();
-    Object? lastError;
-    for (final backend in backends) {
+    final attempts = <String>[];
+    for (final (label, backend) in backends) {
       for (final name in candidates) {
         try {
           return await _extractWith(backend(), name, parts);
         } catch (e) {
-          lastError = e;
-          if (isUnknownModel(e)) continue;
-          if (isBackendSetupError(e)) break;
+          if (isUnknownModel(e)) {
+            attempts.add('$label/$name: ${_short(e)}');
+            continue;
+          }
+          if (isBackendSetupError(e)) {
+            attempts.add('$label: ${_short(e)}');
+            break;
+          }
           rethrow;
         }
       }
     }
-    throw lastError ?? StateError('no model');
+    String? project;
+    try {
+      project = Firebase.app().options.projectId;
+    } catch (_) {}
+    throw AiUnavailableException(attempts, project: project);
+  }
+
+  static String _short(Object e) {
+    final t = e
+        .toString()
+        .replaceFirst(RegExp(r'^\w*Exception:?\s*'), '')
+        .replaceFirst(RegExp(r'\s*Learn more:.*$', dotAll: true), '');
+    return t.length > 120 ? '${t.substring(0, 120)}…' : t;
   }
 
   Future<List<RecipeDraft>> _extractWith(
@@ -158,4 +176,18 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
     final fallback = draftFromOcrText(lastText ?? '');
     return [fallback.copyWith(notes: lastText ?? '')];
   }
+}
+
+/// No AI backend worked; lists every attempt for the review banner.
+class AiUnavailableException implements Exception {
+  AiUnavailableException(this.attempts, {this.project});
+
+  final List<String> attempts;
+  final String? project;
+
+  @override
+  String toString() => [
+    ...attempts,
+    if (project != null) 'Firebase-Projekt: $project',
+  ].join('\n');
 }

@@ -123,6 +123,19 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => context.push(Routes.ingredients),
             ),
           ],
+          const SizedBox(height: 24),
+          Center(
+            child: Text(
+              l10n.buildInfo(
+                const String.fromEnvironment(
+                  'BUILD_NUMBER',
+                  defaultValue: 'dev',
+                ),
+              ),
+              style: theme.textTheme.bodySmall,
+            ),
+          ),
+          const SizedBox(height: 24),
         ],
       ),
     );

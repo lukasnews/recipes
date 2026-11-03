@@ -99,10 +99,13 @@ jobs:
         run: >
           flutter build apk --release --target-platform android-arm64
           --build-number=${{ github.run_number }}
+          --dart-define=BUILD_NUMBER=${{ github.run_number }}
 
       - name: Build App Bundle
         if: env.BUILD_AAB == 'true'
-        run: flutter build appbundle --release --build-number=${{ github.run_number }}
+        run: >
+          flutter build appbundle --release --build-number=${{ github.run_number }}
+          --dart-define=BUILD_NUMBER=${{ github.run_number }}
 
       - name: Collect files
         run: |
