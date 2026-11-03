@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/auth/presentation/login_screen.dart';
 import '../features/household/presentation/household_setup_screen.dart';
+import '../features/import/domain/recipe_draft.dart';
 import '../features/ingredients/presentation/ingredient_edit_screen.dart';
 import '../features/ingredients/presentation/ingredients_screen.dart';
 import '../features/mealplan/presentation/meal_plan_screen.dart';
@@ -82,7 +83,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'new',
                     parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => const RecipeEditScreen(),
+                    builder: (context, state) => RecipeEditScreen(
+                      draft: state.extra is RecipeDraft
+                          ? state.extra! as RecipeDraft
+                          : null,
+                    ),
                   ),
                   GoRoute(
                     path: ':id',

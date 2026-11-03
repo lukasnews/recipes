@@ -10,6 +10,8 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/profile_button.dart';
 import '../../../core/widgets/rating_stars.dart';
+import '../../../core/widgets/storage_image.dart';
+import '../../import/presentation/import_actions.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_stock.dart';
 
@@ -55,7 +57,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'recipes-fab',
         tooltip: l10n.newRecipe,
-        onPressed: () => context.push(Routes.newRecipe),
+        onPressed: () => showAddRecipeSheet(context, ref),
         child: const Icon(Icons.add),
       ),
       body: AsyncView(
@@ -163,6 +165,16 @@ class _RecipeTile extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: ListTile(
         minVerticalPadding: 12,
+        leading: r.photoPaths.isEmpty
+            ? null
+            : ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  width: 56,
+                  height: 56,
+                  child: StorageImage(path: r.photoPaths.first),
+                ),
+              ),
         title: Text(r.title),
         subtitle: Text(subtitle),
         trailing: r.rating > 0 ? RatingStars(rating: r.rating, size: 16) : null,

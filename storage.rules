@@ -1,12 +1,21 @@
 rules_version = '2';
 
 // Recipe photos live under households/{hid}/... and are member-only.
+// Paste into Firebase console -> Storage -> Rules.
 service firebase.storage {
   match /b/{bucket}/o {
-    match /households/{hid}/{allPaths=**} {
-      allow read, write: if request.auth != null
+    function isMember(hid) {
+      return request.auth != null
         && request.auth.uid in firestore.get(
           /databases/(default)/documents/households/$(hid)).data.memberIds;
+    }
+
+    match /households/{hid}/{allPaths=**} {
+      allow read, delete: if isMember(hid);
+      // Only images, max 5 MB (the app uploads ~1600 px JPEGs).
+      allow create, update: if isMember(hid)
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
     }
   }
 }

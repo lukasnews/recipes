@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/widgets/empty_state.dart';
 import '../core/widgets/l10n_ext.dart';
 import '../l10n/app_localizations.dart';
+import 'messenger.dart';
 import 'router.dart';
 import 'theme.dart';
 
@@ -33,6 +34,7 @@ class RecipesApp extends ConsumerWidget {
       );
     }
     return MaterialApp.router(
+      scaffoldMessengerKey: rootMessengerKey,
       onGenerateTitle: (context) => context.l10n.appTitle,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),

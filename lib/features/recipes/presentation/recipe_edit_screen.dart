@@ -1,7 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/messenger.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../core/firebase/fire.dart';
@@ -10,6 +14,9 @@ import '../../../core/units/ingredient_line_parser.dart';
 import '../../../core/units/units.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/rating_stars.dart';
+import '../../../core/widgets/storage_image.dart';
+import '../../import/data/photo_picker.dart';
+import '../../import/domain/recipe_draft.dart';
 import '../../ingredients/domain/ingredient.dart';
 import '../../ingredients/domain/ingredient_factory.dart';
 import '../../ingredients/presentation/ingredient_picker.dart';
@@ -29,9 +36,12 @@ class _LinePreview {
 }
 
 class RecipeEditScreen extends ConsumerStatefulWidget {
-  const RecipeEditScreen({super.key, this.recipeId});
+  const RecipeEditScreen({super.key, this.recipeId, this.draft});
 
   final String? recipeId;
+
+  /// Imported draft to review (photo / screenshot import).
+  final RecipeDraft? draft;
 
   @override
   ConsumerState<RecipeEditScreen> createState() => _RecipeEditScreenState();
@@ -51,6 +61,14 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
   int _rating = 0;
   Recipe? _original;
   bool _loaded = false;
+
+  /// Photos already stored for this recipe, minus those removed here.
+  final _keptPhotos = <String>[];
+  final _removedPhotos = <String>[];
+
+  /// New local photos to upload on save.
+  final _newPhotos = <String>[];
+  bool _keepSourcePhotos = false;
 
   /// Manual choices per raw line.
   final _overrides = <String, IngredientChoice>{};
@@ -72,9 +90,24 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
     super.dispose();
   }
 
+  void _loadDraft(RecipeDraft d) {
+    _title.text = d.title;
+    if (d.servings != null) _servings.text = '${d.servings}';
+    _prep.text = d.prepMinutes?.toString() ?? '';
+    _cook.text = d.cookMinutes?.toString() ?? '';
+    _ingredients.text = d.ingredientLines.join('\n');
+    _steps.text = d.steps.join('\n');
+    _notes.text = d.notes;
+  }
+
   void _load(Recipe? r, Map<String, Ingredient> byId) {
     _loaded = true;
-    if (r == null) return;
+    if (r == null) {
+      final d = widget.draft;
+      if (d != null) _loadDraft(d);
+      return;
+    }
+    _keptPhotos.addAll(r.photoPaths);
     _original = r;
     _title.text = r.title;
     _servings.text = '${r.servings}';
@@ -203,10 +236,12 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
       servings: int.tryParse(_servings.text.trim()) ?? 4,
       prepMinutes: int.tryParse(_prep.text.trim()),
       cookMinutes: int.tryParse(_cook.text.trim()),
-      photoPaths: _original?.photoPaths ?? const [],
+      // Uploads append their paths themselves once they are done.
+      photoPaths: List.of(_keptPhotos),
       rating: _rating,
       notes: _notes.text.trim(),
-      sourceType: _original?.sourceType ?? 'manual',
+      sourceType:
+          _original?.sourceType ?? (widget.draft == null ? 'manual' : 'ocr'),
       sourceUrl: _original?.sourceUrl,
       ingredients: lines,
       steps: _steps.text
@@ -218,11 +253,111 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
       createdBy: _original?.createdBy ?? uid,
     );
     fire(recipeRepo.save(recipe, isNew: isNew));
+    _syncPhotos(recipe.id);
     if (isNew) {
       context.pushReplacement(Routes.recipe(recipe.id));
     } else {
       context.pop();
     }
+  }
+
+  /// Uploads need a connection; they run in the background and report
+  /// failures with a global snack bar.
+  void _syncPhotos(String recipeId) {
+    final repo = ref.read(photoRepositoryProvider);
+    final l10n = context.l10n;
+    for (final path in _removedPhotos) {
+      fire(repo.remove(recipeId, path));
+    }
+    final uploads = [
+      ..._newPhotos,
+      if (_keepSourcePhotos) ...?widget.draft?.imagePaths,
+    ];
+    if (uploads.isEmpty) return;
+    showGlobalSnack(l10n.photosUploading);
+    for (final file in uploads) {
+      unawaited(
+        repo.upload(recipeId, file).then<void>((_) {}).catchError((
+          Object e,
+          StackTrace s,
+        ) {
+          reportError(e, s);
+          showGlobalSnack(l10n.photoUploadFailed);
+        }),
+      );
+    }
+  }
+
+  Future<void> _addPhotos(PhotoSource source) async {
+    final paths = await ref.read(photoPickerProvider).pick(source);
+    if (paths.isNotEmpty) setState(() => _newPhotos.addAll(paths));
+  }
+
+  Widget _photoSection() {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    Widget thumb(Widget image, VoidCallback onRemove) => Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: SizedBox(width: 96, height: 96, child: image),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: IconButton.filledTonal(
+            tooltip: l10n.removePhoto,
+            iconSize: 18,
+            onPressed: onRemove,
+            icon: const Icon(Icons.close),
+          ),
+        ),
+      ],
+    );
+    final draftImages = widget.draft?.imagePaths ?? const <String>[];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.photosTitle, style: theme.textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final p in _keptPhotos)
+              thumb(
+                StorageImage(path: p),
+                () => setState(() {
+                  _keptPhotos.remove(p);
+                  _removedPhotos.add(p);
+                }),
+              ),
+            for (final f in _newPhotos)
+              thumb(
+                Image.file(File(f), fit: BoxFit.cover),
+                () => setState(() => _newPhotos.remove(f)),
+              ),
+            OutlinedButton.icon(
+              onPressed: () => _addPhotos(PhotoSource.camera),
+              icon: const Icon(Icons.photo_camera_outlined),
+              label: Text(l10n.addPhotoCamera),
+            ),
+            OutlinedButton.icon(
+              onPressed: () => _addPhotos(PhotoSource.gallery),
+              icon: const Icon(Icons.photo_library_outlined),
+              label: Text(l10n.addPhotoGallery),
+            ),
+          ],
+        ),
+        if (draftImages.isNotEmpty)
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.keepSourcePhoto),
+            value: _keepSourcePhotos,
+            onChanged: (v) => setState(() => _keepSourcePhotos = v),
+          ),
+      ],
+    );
   }
 
   @override
@@ -255,6 +390,24 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (widget.draft != null && _original == null)
+              Card(
+                color: widget.draft!.recognizedOffline
+                    ? theme.colorScheme.errorContainer
+                    : theme.colorScheme.secondaryContainer,
+                child: ListTile(
+                  leading: Icon(
+                    widget.draft!.recognizedOffline
+                        ? Icons.wifi_off
+                        : Icons.auto_awesome,
+                  ),
+                  title: Text(
+                    widget.draft!.recognizedOffline
+                        ? l10n.importOfflineHint
+                        : l10n.importReviewHint,
+                  ),
+                ),
+              ),
             TextFormField(
               controller: _title,
               decoration: InputDecoration(labelText: l10n.titleLabel),
@@ -369,6 +522,8 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
                 alignLabelWithHint: true,
               ),
             ),
+            const SizedBox(height: 16),
+            _photoSection(),
             const SizedBox(height: 32),
             FilledButton(onPressed: _save, child: Text(l10n.save)),
           ],

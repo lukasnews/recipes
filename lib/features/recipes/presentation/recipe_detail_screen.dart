@@ -11,6 +11,7 @@ import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/rating_stars.dart';
+import '../../../core/widgets/storage_image.dart';
 import '../../mealplan/domain/meal_plan_day.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_stock.dart';
@@ -38,6 +39,9 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     );
     if (!ok || !mounted) return;
     fire(ref.read(recipeRepositoryProvider).delete(recipe.id));
+    if (recipe.photoPaths.isNotEmpty) {
+      fire(ref.read(photoRepositoryProvider).deleteFiles(recipe.photoPaths));
+    }
     context.pop();
     showSnack(context, l10n.recipeDeleted);
   }
@@ -135,6 +139,20 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
+          if (recipe.photoPaths.isNotEmpty) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: SizedBox(
+                height: 220,
+                child: PageView(
+                  children: [
+                    for (final p in recipe.photoPaths) StorageImage(path: p),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
           Wrap(
             spacing: 8,
             runSpacing: 8,

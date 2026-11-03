@@ -2,6 +2,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:recipes/features/auth/data/auth_repository.dart';
+import 'package:recipes/features/import/domain/recipe_draft.dart';
 
 import '../helpers/fakes.dart';
 
@@ -83,6 +84,8 @@ void main() {
 
     await tester.tap(find.byTooltip('Neues Rezept'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Leer anlegen'));
+    await tester.pumpAndSettle();
     await tester.enterText(
       find.widgetWithText(TextFormField, 'Titel'),
       'Kaiserschmarrn',
@@ -105,5 +108,43 @@ void main() {
     final ings = await db.collection('households/$hid/ingredients').get();
     expect(ings.docs.map((d) => d.data()['name']), contains('Safran'));
     expect(find.text('Kaiserschmarrn'), findsWidgets);
+  });
+
+  testWidgets('import from photo opens the review screen', (tester) async {
+    tester.view
+      ..physicalSize = const Size(800, 2400)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final db = FakeFirebaseFirestore();
+    await seedHousehold(db);
+    final auth = FakeAuthRepository(const AuthUser(uid: 'u1'));
+    await tester.pumpWidget(
+      testApp(
+        db: db,
+        auth: auth,
+        importService: fakeImportService(
+          aiResult: const RecipeDraft(
+            title: 'Marillenknödel',
+            servings: 4,
+            ingredientLines: ['250 g Topfen', '100 ml Sahne'],
+            steps: ['Teig machen.'],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Neues Rezept'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Aus Foto oder Screenshot'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Aus Foto erkannt'), findsOneWidget);
+    expect(find.text('Marillenknödel'), findsOneWidget);
+    expect(find.textContaining('→ 100 ml Schlagobers'), findsOneWidget);
+    expect(
+      find.text('Ausgangsbild auch als Rezeptfoto speichern'),
+      findsOneWidget,
+    );
   });
 }

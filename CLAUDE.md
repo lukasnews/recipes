@@ -123,7 +123,7 @@ households/{hid}/cookLog/{logId}
 
 - Firestore-Offline-Persistenz ist an. Jede Schreiboperation muss offline funktionieren und darf nicht auf ein Server-Ergebnis warten (kein `await` auf Writes, das die UI blockiert).
 - Online-pflichtig sind nur: KI-Erkennung, Link-Import, Barcode-Produktsuche, Foto-Upload. Ohne Netz: Auftrag in eine lokale Warteschlange, beim nächsten Online-Sein verarbeiten, Status in der UI zeigen.
-- Fotos vor dem Upload auf max. 1600 px Kante und JPEG ~80 % verkleinern.
+- Fotos vor dem Upload auf max. 1600 px Kante und JPEG ~80 % verkleinern (macht `image_picker`). Pfad: `households/{hid}/recipes/{rid}/{ms}.jpg`; der Upload hängt den Pfad per `arrayUnion` an `photoPaths`.
 
 ## Sicherheit
 
@@ -134,6 +134,9 @@ households/{hid}/cookLog/{logId}
 - KI-Modellname nicht hart codieren: Remote-Config-Schlüssel `ai_model`.
 
 ## KI-Import
+
+- Ablauf: „+“ im Rezepte-Reiter → Foto aufnehmen oder Bilder/Screenshots wählen (max. 6, schon auf 1600 px/JPEG 80 verkleinert) → `RecipeImportService`: Gemini, bei Fehler/offline ML Kit + `draftFromOcrText` → `RecipeDraft` → Rezept-Editor als Prüf-Bildschirm (Hinweis-Banner, Zutaten-Zuordnung, optional Ausgangsbild als Foto speichern).
+- Kamera, ML Kit, KI und Storage liegen hinter Interfaces (`PhotoPicker`, `TextRecognizerService`, `RecipeExtractor`, `PhotoRepository`); Tests nutzen Fakes aus `test/helpers/fakes.dart`.
 
 - Prompt verlangt strukturiertes JSON nach festem Schema: `{title, servings, prepMinutes?, cookMinutes?, ingredients: [{amount?, unit?, name, note?}], steps: [string]}`. Antwort mit dem Schema validieren; bei Fehler einmal neu fragen, sonst Rohtext im Prüf-Bildschirm zeigen.
 - Jeder Import endet im **Prüf-Bildschirm**. Nichts wird ungeprüft gespeichert.
@@ -189,8 +192,10 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Zutaten-Stammdaten: Seed-Liste `ingredients_de.json` (ca. 300 Zutaten inkl. Synonyme), beim Anlegen eines Haushalts kopieren
 - [x] `core/units` und `core/matching` mit Tests
 - [x] Rezepte: Liste, Detail, Anlegen/Bearbeiten, Kategorien-Chips, Tags, Bewertung
-- [ ] Rezept-Fotos (braucht Cloud Storage → Blaze-Tarif)
-- [ ] Storage-Regeln mit Tests (sobald Storage aktiv ist)
+- [x] Rezept-Fotos (Cloud Storage, Blaze aktiv)
+- [x] Storage-Regeln mit Tests (nur Bilder, max. 5 MB)
+- [ ] Foto-Uploads in eine dauerhafte Offline-Warteschlange (jetzt: Upload im Hintergrund, Hinweis bei Fehler)
+- [ ] App Check (Play Integrity) für AI Logic – erst wenn die App über Play installiert wird, sonst schlagen Sideload-Builds fehl
 - [ ] Regeln automatisch deployen (CI mit Service-Account)
 - [ ] Zutaten-Zusammenführen: Duplikat-Hinweis beim Anlegen einer neuen Zutat
 - [x] Suche und Filter
@@ -208,10 +213,11 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Abgehakte Einkäufe in den Vorrat übernehmen
 - [ ] Kochmodus (Schritt für Schritt, Wakelock, Timer)
 - [ ] Link-Import (JSON-LD, Teilen-Menü) mit Prüf-Bildschirm
-- [ ] Texterkennung gedruckt (ML Kit) mit Prüf-Bildschirm
+- [x] Texterkennung gedruckt (ML Kit) mit Prüf-Bildschirm (Rückfall ohne Internet)
 
 ### Phase 3 – Komfort (Ziel: Produktionszugang im Play Store)
-- [ ] Handschrift-Import per Firebase AI Logic, Offline-Warteschlange
+- [x] Foto-/Screenshot-/Handschrift-Import per Firebase AI Logic (Gemini, Modell aus Remote Config `ai_model`, Standard `gemini-flash-latest`)
+- [ ] Import-Offline-Warteschlange (jetzt: ML-Kit-Rückfall)
 - [ ] Ablaufdatum im Vorrat, Hinweis „bald ablaufend“
 - [ ] Barcode-Scan + Open Food Facts
 - [ ] Wochenplaner → Einkaufsliste

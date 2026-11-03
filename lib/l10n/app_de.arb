@@ -323,5 +323,27 @@
   "deleteIngredientBlocked": "Wird noch in Rezepten verwendet. Zum Entfernen mit einer anderen Zutat zusammenführen.",
   "emptyState": "Noch nichts da",
   "displayNameLabel": "Angezeigter Name",
-  "displayNameHint": "Welchen Begriff soll die App überall anzeigen? Die anderen bleiben Synonyme und werden weiter erkannt."
+  "displayNameHint": "Welchen Begriff soll die App überall anzeigen? Die anderen bleiben Synonyme und werden weiter erkannt.",
+  "addRecipeManual": "Leer anlegen",
+  "importCamera": "Rezept fotografieren",
+  "importGallery": "Aus Foto oder Screenshot",
+  "importSubtitle": "Text wird erkannt, du prüfst danach alles",
+  "importReading": "Rezept wird gelesen …",
+  "importReviewHint": "Aus Foto erkannt – bitte prüfen und ergänzen.",
+  "importOfflineHint": "Ohne KI erkannt (kein Internet oder Fehler). Nur gedruckter Text, bitte genau prüfen.",
+  "importFailed": "Konnte nichts erkennen: {error}",
+  "photosTitle": "Fotos",
+  "addPhotoCamera": "Kamera",
+  "addPhotoGallery": "Galerie",
+  "keepSourcePhoto": "Ausgangsbild auch als Rezeptfoto speichern",
+  "photoUploadFailed": "Foto konnte nicht hochgeladen werden. Bitte mit Internet erneut hinzufügen.",
+  "photosUploading": "Fotos werden hochgeladen …",
+  "removePhoto": "Foto entfernen",
+  "@importFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

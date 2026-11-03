@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,11 +11,16 @@ import '../core/matching/ingredient_matcher.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/household/data/household_repository.dart';
 import '../features/household/domain/household.dart';
+import '../features/import/data/photo_picker.dart';
+import '../features/import/data/recipe_extractor.dart';
+import '../features/import/data/recipe_import_service.dart';
+import '../features/import/data/text_recognizer.dart';
 import '../features/ingredients/data/ingredient_repository.dart';
 import '../features/ingredients/domain/ingredient.dart';
 import '../features/mealplan/data/meal_plan_repository.dart';
 import '../features/pantry/data/pantry_repository.dart';
 import '../features/pantry/domain/pantry_item.dart';
+import '../features/recipes/data/photo_repository.dart';
 import '../features/recipes/data/recipe_repository.dart';
 import '../features/recipes/domain/recipe.dart';
 import '../features/shopping/data/shopping_repository.dart';
@@ -142,4 +149,45 @@ final shoppingProvider = StreamProvider<List<ShoppingItem>>(
 
 final mealPlanProvider = StreamProvider<Map<String, List<String>>>(
   (ref) => ref.watch(mealPlanRepositoryProvider).watchAll(),
+);
+
+// --- Import & photos ------------------------------------------------------
+
+/// Gemini model name from Remote Config key `ai_model` (never hard coded
+/// in a release; the value here is only the fallback default).
+final aiModelProvider = FutureProvider<String>((ref) async {
+  const fallback = 'gemini-flash-latest';
+  try {
+    final rc = FirebaseRemoteConfig.instance;
+    await rc.setDefaults(const {'ai_model': fallback});
+    await rc.fetchAndActivate().timeout(const Duration(seconds: 5));
+    final v = rc.getString('ai_model').trim();
+    return v.isEmpty ? fallback : v;
+  } catch (_) {
+    return fallback;
+  }
+});
+
+final photoPickerProvider = Provider<PhotoPicker>(
+  (ref) => ImagePickerPhotoPicker(),
+);
+
+final recipeImportServiceProvider = FutureProvider<RecipeImportService>(
+  (ref) async => RecipeImportService(
+    extractor: GeminiRecipeExtractor(await ref.watch(aiModelProvider.future)),
+    ocr: MlKitTextRecognizer(),
+  ),
+);
+
+final photoRepositoryProvider = Provider<PhotoRepository>(
+  (ref) => FirebasePhotoRepository(
+    FirebaseStorage.instance,
+    ref.watch(firestoreProvider),
+    _requireHousehold(ref),
+  ),
+);
+
+/// Download URL per storage path, cached for the session.
+final photoUrlProvider = FutureProvider.family<String, String>(
+  (ref, path) => ref.watch(photoRepositoryProvider).downloadUrl(path),
 );

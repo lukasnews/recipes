@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,13 @@ import 'package:recipes/app/app.dart';
 import 'package:recipes/app/providers.dart';
 import 'package:recipes/features/auth/data/auth_repository.dart';
 import 'package:recipes/features/household/data/household_repository.dart';
+import 'package:recipes/features/import/data/photo_picker.dart';
+import 'package:recipes/features/import/data/recipe_extractor.dart';
+import 'package:recipes/features/import/data/recipe_import_service.dart';
+import 'package:recipes/features/import/data/text_recognizer.dart';
+import 'package:recipes/features/import/domain/recipe_draft.dart';
 import 'package:recipes/features/ingredients/domain/ingredient.dart';
+import 'package:recipes/features/recipes/data/photo_repository.dart';
 
 class FakeAuthRepository implements AuthRepository {
   FakeAuthRepository([this._user]);
@@ -71,11 +78,72 @@ Future<String> seedHousehold(FakeFirebaseFirestore db, {String uid = 'u1'}) {
 Widget testApp({
   required FakeFirebaseFirestore db,
   required FakeAuthRepository auth,
+  RecipeImportService? importService,
+  FakePhotoRepository? photos,
 }) => ProviderScope(
   overrides: [
+    photoPickerProvider.overrideWithValue(FakePhotoPicker()),
+    photoRepositoryProvider.overrideWithValue(photos ?? FakePhotoRepository()),
+    recipeImportServiceProvider.overrideWith(
+      (ref) async => importService ?? fakeImportService(),
+    ),
     firestoreProvider.overrideWithValue(db),
     authRepositoryProvider.overrideWithValue(auth),
     seedIngredientsProvider.overrideWith((ref) async => testSeed),
   ],
   child: const RecipesApp(),
+);
+
+class FakePhotoPicker implements PhotoPicker {
+  FakePhotoPicker([this.paths = const ['/tmp/rezept.jpg']]);
+  final List<String> paths;
+  @override
+  Future<List<String>> pick(PhotoSource source, {bool multiple = true}) async =>
+      paths;
+}
+
+class FakeExtractor implements RecipeExtractor {
+  FakeExtractor(this.result, {this.fail = false});
+  final RecipeDraft result;
+  final bool fail;
+  @override
+  Future<RecipeDraft> extract(List<Uint8List> jpegImages) async {
+    if (fail) throw Exception('offline');
+    return result;
+  }
+}
+
+class FakeOcr implements TextRecognizerService {
+  FakeOcr(this.text);
+  final String text;
+  @override
+  Future<String> recognize(String imagePath) async => text;
+}
+
+class FakePhotoRepository implements PhotoRepository {
+  final uploaded = <String>[];
+  @override
+  Future<String> upload(String recipeId, String file) async {
+    uploaded.add(file);
+    return 'households/h/recipes/$recipeId/x.jpg';
+  }
+
+  @override
+  Future<void> remove(String recipeId, String path) async {}
+  @override
+  Future<void> deleteFiles(Iterable<String> paths) async {}
+  @override
+  Future<String> downloadUrl(String path) async => 'https://example.invalid/x';
+}
+
+RecipeImportService fakeImportService({
+  RecipeDraft? aiResult,
+  String ocrText = '',
+}) => RecipeImportService(
+  extractor: FakeExtractor(
+    aiResult ?? const RecipeDraft(),
+    fail: aiResult == null,
+  ),
+  ocr: FakeOcr(ocrText),
+  readBytes: (_) async => Uint8List(0),
 );

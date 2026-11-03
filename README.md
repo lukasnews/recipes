@@ -22,3 +22,8 @@ flutter run -d web-server --web-port 8080
 5. `google-services.json` nach `android/app/` legen und committen.
 
 Regel-Tests: `cd test_rules && npm ci && npm test` (startet den Firestore-Emulator, braucht Java).
+
+### Fotos und KI-Import
+6. Storage aktivieren (Build → Storage), Inhalt von `storage.rules` unter „Regeln“ einfügen. Beim Veröffentlichen fragt Firebase, ob Storage Firestore lesen darf: bestätigen.
+7. Build → AI Logic → „Get started“ → Gemini Developer API.
+8. Optional: Remote Config `ai_model` setzen, um das Gemini-Modell zu wechseln.
