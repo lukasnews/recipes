@@ -354,5 +354,13 @@
         "type": "String"
       }
     }
+  },
+  "importAiReason": "Grund: {reason}",
+  "@importAiReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import '../../../core/firebase/fire.dart';
 import '../domain/recipe_draft.dart';
 import 'recipe_extractor.dart';
 import 'text_recognizer.dart';
@@ -25,10 +26,20 @@ class RecipeImportService {
       final images = [for (final p in imagePaths) await readBytes(p)];
       final draft = await extractor.extract(images);
       return draft.copyWith(imagePaths: imagePaths);
-    } catch (_) {
+    } catch (e, s) {
+      reportError(e, s);
       final texts = [for (final p in imagePaths) await ocr.recognize(p)];
-      return draftFromOcrText(texts.join('\n'))
-          .copyWith(imagePaths: imagePaths, recognizedOffline: true);
+      return draftFromOcrText(texts.join('\n')).copyWith(
+        imagePaths: imagePaths,
+        recognizedOffline: true,
+        aiError: describeAiError(e),
+      );
     }
   }
+}
+
+/// Short, readable reason for the review banner.
+String describeAiError(Object e) {
+  final text = e.toString().replaceFirst(RegExp(r'^\w*Exception:?\s*'), '');
+  return text.length > 200 ? '${text.substring(0, 200)}…' : text;
 }

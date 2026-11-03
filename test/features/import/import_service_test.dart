@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:recipes/features/import/data/recipe_extractor.dart';
 import 'package:recipes/features/import/domain/recipe_draft.dart';
 
 import '../../helpers/fakes.dart';
@@ -18,5 +19,24 @@ void main() {
     expect(d.title, 'Gulasch');
     expect(d.ingredientLines, ['500 g Rindfleisch']);
     expect(d.recognizedOffline, isTrue);
+  });
+
+  test('the AI error reason is kept for the banner', () async {
+    final s = fakeImportService(ocrText: 'X');
+    final d = await s.import(['/a.jpg']);
+    expect(d.aiError, contains('offline'));
+  });
+
+  test('unknown model errors are recognized for the fallback chain', () {
+    expect(
+      GeminiRecipeExtractor.isUnknownModel(
+        Exception('models/gemini-x is not found for API version v1beta'),
+      ),
+      isTrue,
+    );
+    expect(
+      GeminiRecipeExtractor.isUnknownModel(Exception('API key not valid')),
+      isFalse,
+    );
   });
 }

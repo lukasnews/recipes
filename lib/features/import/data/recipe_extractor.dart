@@ -13,7 +13,25 @@ abstract class RecipeExtractor {
 class GeminiRecipeExtractor implements RecipeExtractor {
   GeminiRecipeExtractor(this.modelName);
 
+  /// From Remote Config `ai_model`.
   final String modelName;
+
+  /// Tried in order when a model name is unknown or retired, so an old
+  /// default never breaks the import. Remote Config stays the first choice.
+  static const fallbackModels = [
+    'gemini-flash-latest',
+    'gemini-2.5-flash',
+    'gemini-2.0-flash',
+  ];
+
+  static bool isUnknownModel(Object e) {
+    final m = e.toString().toLowerCase();
+    return m.contains('not found') ||
+        m.contains('is not supported') ||
+        m.contains('404') ||
+        m.contains('unknown model') ||
+        m.contains('deprecated');
+  }
 
   static const _prompt = '''
 Du liest ein Rezept aus den Bildern (Foto, Screenshot oder Handschrift, eventuell über mehrere Seiten).
@@ -49,8 +67,25 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
 
   @override
   Future<RecipeDraft> extract(List<Uint8List> jpegImages) async {
+    final candidates = {modelName, ...fallbackModels}.toList();
+    Object? lastError;
+    for (final name in candidates) {
+      try {
+        return await _extractWith(name, jpegImages);
+      } catch (e) {
+        if (!isUnknownModel(e)) rethrow;
+        lastError = e;
+      }
+    }
+    throw lastError ?? StateError('no model');
+  }
+
+  Future<RecipeDraft> _extractWith(
+    String name,
+    List<Uint8List> jpegImages,
+  ) async {
     final model = FirebaseAI.googleAI().generativeModel(
-      model: modelName,
+      model: name,
       generationConfig: GenerationConfig(
         responseMimeType: 'application/json',
         responseSchema: _schema,

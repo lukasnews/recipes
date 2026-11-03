@@ -16,6 +16,7 @@ class RecipeDraft {
     this.notes = '',
     this.imagePaths = const [],
     this.recognizedOffline = false,
+    this.aiError,
   });
 
   final String title;
@@ -34,10 +35,14 @@ class RecipeDraft {
   /// True when the AI was not reachable and on-device OCR was used.
   final bool recognizedOffline;
 
+  /// Why the AI could not be used (shown in the review banner).
+  final String? aiError;
+
   RecipeDraft copyWith({
     List<String>? imagePaths,
     bool? recognizedOffline,
     String? notes,
+    String? aiError,
   }) => RecipeDraft(
     title: title,
     servings: servings,
@@ -48,6 +53,7 @@ class RecipeDraft {
     notes: notes ?? this.notes,
     imagePaths: imagePaths ?? this.imagePaths,
     recognizedOffline: recognizedOffline ?? this.recognizedOffline,
+    aiError: aiError ?? this.aiError,
   );
 }
 

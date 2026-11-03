@@ -408,6 +408,9 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
                         ? l10n.importOfflineHint
                         : l10n.importReviewHint,
                   ),
+                  subtitle: widget.draft!.aiError == null
+                      ? null
+                      : Text(l10n.importAiReason(widget.draft!.aiError!)),
                 ),
               ),
             TextFormField(
