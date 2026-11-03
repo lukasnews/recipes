@@ -122,8 +122,8 @@ jobs:
         if: always()
         run: rm -f "$RUNNER_TEMP/upload.jks" android/key.properties
 
-  # Rolling pre-release with the latest files. The download URL stays the
-  # same: releases/download/test-build/BaCo.apk
+  # One release per build ("BaCo Android build N"), newest marked as latest.
+  # Stable download link: releases/latest/download/BaCo.apk
   publish:
     needs: [check, build, rules]
     if: github.event_name != 'pull_request'
@@ -137,20 +137,32 @@ jobs:
           name: baco-${{ github.run_number }}
           path: dist
 
-      - name: Publish test build release
+      - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          COMMIT_MSG: ${{ github.event.head_commit.message || 'Manueller Build' }}
+          KEEP: 30
         run: |
-          gh release delete test-build --yes --cleanup-tag || true
-          gh release create test-build dist/* \
-            --prerelease \
+          N=${{ github.run_number }}
+          SUBJECT=$(printf '%s' "$COMMIT_MSG" | head -n1)
+          gh release create "build-$N" dist/* \
+            --latest \
             --target "$GITHUB_SHA" \
-            --title "Test-Build #${{ github.run_number }}" \
-            --notes "Automatischer Test-Build von \`${GITHUB_REF_NAME}\` (${GITHUB_SHA::7}).
+            --title "BaCo Android build $N" \
+            --notes "Built from ${GITHUB_SHA::7}: $SUBJECT
 
-          **Am Handy installieren:** BaCo.apk herunterladen und öffnen.
-          BaCo.aab (nur bei manuellen Läufen) ist für die Play Console."
+          **Am Handy installieren:** BaCo.apk herunterladen und öffnen."
+
+          # Old rolling pre-release from before
+          gh release delete test-build --yes --cleanup-tag 2>/dev/null || true
+
+          # Keep the newest $KEEP builds
+          gh release list --limit 200 --json tagName --jq '.[].tagName' \
+            | grep '^build-' | sort -t- -k2 -n -r | tail -n +$((KEEP + 1)) \
+            | while read -r tag; do
+                gh release delete "$tag" --yes --cleanup-tag
+              done
 
   rules:
     runs-on: ubuntu-latest
