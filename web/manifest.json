@@ -1,6 +1,6 @@
 {
-    "name": "Rezepte",
-    "short_name": "Rezepte",
+    "name": "BaCo – Bake & Cook",
+    "short_name": "BaCo",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

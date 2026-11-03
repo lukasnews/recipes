@@ -1,10 +1,10 @@
-# CLAUDE.md – Rezepte-App
+# CLAUDE.md – BaCo (Bake & Cook)
 
 Diese Datei gibt Claude Code den Kontext für dieses Repository. Sprache im Gespräch und in der App-Oberfläche: **Deutsch (Österreich)**. Code, Bezeichner, Commits und Kommentare: **Englisch**.
 
 ## Projekt in einem Satz
 
-Flutter-App (zuerst Android, später iOS) für einen Haushalt mit mehreren Personen: Rezepte verwalten, per Foto oder Link importieren, gemeinsame Einkaufsliste und Vorrat. Beim Kochen wird der Vorrat abgezogen, und die App zeigt, was man mit dem Vorrat kochen kann. Offline-first, Sync über Firebase, Verteilung über Google Play (Testgruppe).
+**BaCo – Bake & Cook** (Anzeigename „BaCo“, ARB-Schlüssel `appTitle`). Flutter-App (zuerst Android, später iOS) für einen Haushalt mit mehreren Personen: Rezepte verwalten, per Foto oder Link importieren, gemeinsame Einkaufsliste und Vorrat. Beim Kochen wird der Vorrat abgezogen, und die App zeigt, was man mit dem Vorrat kochen kann. Offline-first, Sync über Firebase, Verteilung über Google Play (Testgruppe).
 
 ## Tech-Stack
 

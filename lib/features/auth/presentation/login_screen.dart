@@ -114,6 +114,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       style: theme.textTheme.headlineMedium,
                       textAlign: TextAlign.center,
                     ),
+                    Text(
+                      l10n.appTagline,
+                      style: theme.textTheme.titleMedium,
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 8),
                     Text(l10n.loginSubtitle, textAlign: TextAlign.center),
                     const SizedBox(height: 32),

@@ -1,6 +1,7 @@
 {
   "@@locale": "de",
-  "appTitle": "Rezepte",
+  "appTitle": "BaCo",
+  "appTagline": "Bake & Cook",
   "navRecipes": "Rezepte",
   "navMealPlan": "Wochenplan",
   "navShopping": "Einkauf",

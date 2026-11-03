@@ -1,4 +1,4 @@
-# Rezepte
+# BaCo – Bake & Cook
 
 Flutter-App für einen Haushalt: Rezepte verwalten und importieren, gemeinsame Einkaufsliste und Vorrat. Offline-first, Sync über Firebase.
 
