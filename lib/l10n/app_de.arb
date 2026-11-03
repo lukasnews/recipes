@@ -1,0 +1,19 @@
+{
+  "@@locale": "de",
+  "appTitle": "Rezepte",
+  "navRecipes": "Rezepte",
+  "navMealPlan": "Wochenplan",
+  "navShopping": "Einkauf",
+  "navPantry": "Vorrat",
+  "settingsTitle": "Einstellungen",
+  "profileTooltip": "Profil und Einstellungen",
+  "categoryAll": "Alle",
+  "categoryCooking": "Kochen",
+  "categoryCake": "Kuchen",
+  "categoryCookies": "Kekse",
+  "recipesEmpty": "Noch keine Rezepte",
+  "mealPlanEmpty": "Noch nichts geplant",
+  "shoppingEmpty": "Die Einkaufsliste ist leer",
+  "pantryEmpty": "Der Vorrat ist leer",
+  "settingsComingSoon": "Einstellungen folgen"
+}
