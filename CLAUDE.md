@@ -163,6 +163,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - Paketname / applicationId: `com.javuno.recipes` (Firebase-Projekt `recipes-f1584`). Nach dem ersten Play-Upload nicht mehr änderbar.
 - Firebase-Konfiguration: `android/app/google-services.json` (darf ins Repo). Die Gradle-Plugins google-services und Crashlytics werden nur angewendet, wenn die Datei existiert; ohne sie startet die App mit einem Hinweis-Bildschirm. Login mit Google läuft über `FirebaseAuth.signInWithProvider` (braucht SHA-1 des Upload-Keys in Firebase; die CI schreibt die Fingerabdrücke in die Job-Zusammenfassung).
 - `.github/workflows/ci.yml`: Job `rules` testet die Firestore-Regeln im Emulator. Job `build`: bei jedem Push/PR (und manuell) `flutter analyze`, `flutter test`, dann Release-APK und App-Bundle (AAB) bauen, beide als Artefakt. Sind die Keystore-Secrets gesetzt, wird mit dem Upload-Key signiert, sonst mit dem Debug-Key (APK installierbar, AAB nicht für Play geeignet).
+- Test-Release: Jeder Push/manuelle Lauf ersetzt die Vorabversion `test-build` mit `BaCo.apk` und `BaCo.aab` (fester Link `releases/download/test-build/BaCo.apk`). Caches: Flutter, Pub, Gradle, NDK.
 - Signatur: `android/app/build.gradle.kts` liest `android/key.properties` (gitignored, in CI aus Secrets erzeugt).
 - `.github/workflows/release.yml`: bei Tag `v*` signiertes App-Bundle bauen und in den Play-Track `internal` hochladen.
 - Secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `PLAY_SERVICE_ACCOUNT_JSON`.

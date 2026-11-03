@@ -15,6 +15,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # update the test-build release
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
@@ -98,6 +100,25 @@ jobs:
           name: rezepte-aab-${{ github.run_number }}
           path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 30
+
+      # Rolling pre-release with the latest APK/AAB. The download URL stays
+      # the same: releases/download/test-build/BaCo.apk
+      - name: Publish test build release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk BaCo.apk
+          cp build/app/outputs/bundle/release/app-release.aab BaCo.aab
+          gh release delete test-build --yes --cleanup-tag || true
+          gh release create test-build BaCo.apk BaCo.aab \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "Test-Build #${{ github.run_number }}" \
+            --notes "Automatischer Test-Build von \`${GITHUB_REF_NAME}\` (${GITHUB_SHA::7}).
+
+          **Am Handy installieren:** BaCo.apk herunterladen und öffnen.
+          BaCo.aab ist für die Play Console."
 
       - name: Remove signing key
         if: always()
