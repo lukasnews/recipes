@@ -1,0 +1,4387 @@
+[
+ {
+  "id": "erdaepfel",
+  "name": "Erdäpfel",
+  "synonyms": [
+   "Kartoffeln",
+   "Erdapfel",
+   "Kartoffel",
+   "Grundbirnen"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 100.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "erdaepfel-speckig",
+  "name": "Erdäpfel speckig",
+  "synonyms": [
+   "festkochende Kartoffeln",
+   "speckige Erdäpfel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 100.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "erdaepfel-mehlig",
+  "name": "Erdäpfel mehlig",
+  "synonyms": [
+   "mehligkochende Kartoffeln",
+   "mehlige Erdäpfel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 100.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "suesskartoffel",
+  "name": "Süßkartoffel",
+  "synonyms": [
+   "Süßkartoffeln",
+   "Batate"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 300.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zwiebel",
+  "name": "Zwiebel",
+  "synonyms": [
+   "Zwiebeln",
+   "Zwiebel gelb"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "g": 0.01
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rote-zwiebel",
+  "name": "Rote Zwiebel",
+  "synonyms": [
+   "rote Zwiebeln"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "fruehlingszwiebel",
+  "name": "Frühlingszwiebel",
+  "synonyms": [
+   "Jungzwiebel",
+   "Lauchzwiebel",
+   "Frühlingszwiebeln",
+   "Bundzwiebel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Bund": 6.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schalotte",
+  "name": "Schalotte",
+  "synonyms": [
+   "Schalotten"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "knoblauch",
+  "name": "Knoblauch",
+  "synonyms": [
+   "Knoblauchzehe",
+   "Knoblauchzehen",
+   "Knofel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Zehe": 1.0,
+   "Knolle": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "lauch",
+  "name": "Lauch",
+  "synonyms": [
+   "Porree",
+   "Lauchstange"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Stange": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "karotte",
+  "name": "Karotte",
+  "synonyms": [
+   "Karotten",
+   "Möhre",
+   "Möhren",
+   "Mohrrübe",
+   "gelbe Rübe"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "petersilienwurzel",
+  "name": "Petersilienwurzel",
+  "synonyms": [
+   "Petersilwurzel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "pastinake",
+  "name": "Pastinake",
+  "synonyms": [
+   "Pastinaken"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "sellerie",
+  "name": "Sellerie",
+  "synonyms": [
+   "Knollensellerie",
+   "Zeller",
+   "Sellerieknolle"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 600.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "stangensellerie",
+  "name": "Stangensellerie",
+  "synonyms": [
+   "Staudensellerie",
+   "Bleichsellerie"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Stange": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "paradeiser",
+  "name": "Paradeiser",
+  "synonyms": [
+   "Tomaten",
+   "Tomate",
+   "Paradeis"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "g": 0.0083
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "cocktailparadeiser",
+  "name": "Cocktailparadeiser",
+  "synonyms": [
+   "Kirschtomaten",
+   "Cherrytomaten",
+   "Cocktailtomaten",
+   "Cherryparadeiser"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "paprika-rot",
+  "name": "Paprika rot",
+  "synonyms": [
+   "rote Paprika",
+   "Paprikaschote rot"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "paprika-gelb",
+  "name": "Paprika gelb",
+  "synonyms": [
+   "gelbe Paprika"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "paprika-gruen",
+  "name": "Paprika grün",
+  "synonyms": [
+   "grüne Paprika",
+   "Pfefferoni mild"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "pfefferoni",
+  "name": "Pfefferoni",
+  "synonyms": [
+   "Peperoni",
+   "Chili",
+   "Chilischote",
+   "Chilischoten"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "gurke",
+  "name": "Gurke",
+  "synonyms": [
+   "Salatgurke",
+   "Gurken",
+   "Schlangengurke"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zucchini",
+  "name": "Zucchini",
+  "synonyms": [
+   "Zucchetti",
+   "Zucchino"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "melanzani",
+  "name": "Melanzani",
+  "synonyms": [
+   "Aubergine",
+   "Auberginen",
+   "Melanzane"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kuerbis",
+  "name": "Kürbis",
+  "synonyms": [
+   "Hokkaido",
+   "Hokkaidokürbis",
+   "Butternusskürbis"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 1200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "karfiol",
+  "name": "Karfiol",
+  "synonyms": [
+   "Blumenkohl"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Kopf": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "brokkoli",
+  "name": "Brokkoli",
+  "synonyms": [
+   "Broccoli"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Kopf": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kohlrabi",
+  "name": "Kohlrabi",
+  "synonyms": [
+   "Kohlrübe"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "weisskraut",
+  "name": "Weißkraut",
+  "synonyms": [
+   "Weißkohl",
+   "Kraut"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Kopf": 1500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rotkraut",
+  "name": "Rotkraut",
+  "synonyms": [
+   "Rotkohl",
+   "Blaukraut"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Kopf": 1200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kohl",
+  "name": "Kohl",
+  "synonyms": [
+   "Wirsing",
+   "Wirsingkohl",
+   "Kohlkopf"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Kopf": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kohlsprossen",
+  "name": "Kohlsprossen",
+  "synonyms": [
+   "Rosenkohl",
+   "Sprossenkohl"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "spinat",
+  "name": "Spinat",
+  "synonyms": [
+   "Blattspinat",
+   "Babyspinat"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "haeuptelsalat",
+  "name": "Häuptelsalat",
+  "synonyms": [
+   "Kopfsalat",
+   "Salat",
+   "grüner Salat"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Kopf": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "eisbergsalat",
+  "name": "Eisbergsalat",
+  "synonyms": [
+   "Eissalat"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Kopf": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "vogerlsalat",
+  "name": "Vogerlsalat",
+  "synonyms": [
+   "Feldsalat",
+   "Rapunzel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rucola",
+  "name": "Rucola",
+  "synonyms": [
+   "Rauke"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "radieschen",
+  "name": "Radieschen",
+  "synonyms": [
+   "Radieserl"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Bund": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rettich",
+  "name": "Rettich",
+  "synonyms": [
+   "Rettiche"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rote-rueben",
+  "name": "Rote Rüben",
+  "synonyms": [
+   "Rote Bete",
+   "Rote Beete",
+   "Rote Rübe"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "champignons",
+  "name": "Champignons",
+  "synonyms": [
+   "Champignon",
+   "Pilze",
+   "Egerlinge"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "eierschwammerl",
+  "name": "Eierschwammerl",
+  "synonyms": [
+   "Pfifferlinge",
+   "Eierschwammerln"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "steinpilze",
+  "name": "Steinpilze",
+  "synonyms": [
+   "Steinpilz",
+   "Herrenpilz"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mais",
+  "name": "Mais",
+  "synonyms": [
+   "Zuckermais",
+   "Maiskolben"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "fisolen",
+  "name": "Fisolen",
+  "synonyms": [
+   "grüne Bohnen",
+   "Brechbohnen",
+   "Prinzessbohnen"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zuckerschoten",
+  "name": "Zuckerschoten",
+  "synonyms": [
+   "Kaiserschoten"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "spargel-weiss",
+  "name": "Spargel weiß",
+  "synonyms": [
+   "weißer Spargel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "spargel-gruen",
+  "name": "Spargel grün",
+  "synonyms": [
+   "grüner Spargel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "fenchel",
+  "name": "Fenchel",
+  "synonyms": [
+   "Fenchelknolle"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "ingwer",
+  "name": "Ingwer",
+  "synonyms": [
+   "Ingwerwurzel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 30.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kren",
+  "name": "Kren",
+  "synonyms": [
+   "Meerrettich"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "avocado",
+  "name": "Avocado",
+  "synonyms": [
+   "Avocados"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "apfel",
+  "name": "Apfel",
+  "synonyms": [
+   "Äpfel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "g": 0.0067
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "birne",
+  "name": "Birne",
+  "synonyms": [
+   "Birnen"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "banane",
+  "name": "Banane",
+  "synonyms": [
+   "Bananen"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zitrone",
+  "name": "Zitrone",
+  "synonyms": [
+   "Zitronen"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "limette",
+  "name": "Limette",
+  "synonyms": [
+   "Limetten"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "orange",
+  "name": "Orange",
+  "synonyms": [
+   "Orangen",
+   "Apfelsine",
+   "Apfelsinen"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mandarine",
+  "name": "Mandarine",
+  "synonyms": [
+   "Mandarinen",
+   "Clementine",
+   "Clementinen"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "marillen",
+  "name": "Marillen",
+  "synonyms": [
+   "Aprikosen",
+   "Marille",
+   "Aprikose"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 45.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zwetschken",
+  "name": "Zwetschken",
+  "synonyms": [
+   "Zwetschgen",
+   "Pflaumen",
+   "Zwetschke"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 30.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kirschen",
+  "name": "Kirschen",
+  "synonyms": [
+   "Kirsche"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "weichseln",
+  "name": "Weichseln",
+  "synonyms": [
+   "Sauerkirschen",
+   "Weichsel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "erdbeeren",
+  "name": "Erdbeeren",
+  "synonyms": [
+   "Erdbeere",
+   "Ananas-Erdbeeren"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "himbeeren",
+  "name": "Himbeeren",
+  "synonyms": [
+   "Himbeere"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "heidelbeeren",
+  "name": "Heidelbeeren",
+  "synonyms": [
+   "Blaubeeren",
+   "Heidelbeere"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "ribisel",
+  "name": "Ribisel",
+  "synonyms": [
+   "Johannisbeeren",
+   "Ribiseln"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "brombeeren",
+  "name": "Brombeeren",
+  "synonyms": [
+   "Brombeere"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "weintrauben",
+  "name": "Weintrauben",
+  "synonyms": [
+   "Trauben",
+   "Weinbeeren"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "pfirsich",
+  "name": "Pfirsich",
+  "synonyms": [
+   "Pfirsiche"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "nektarine",
+  "name": "Nektarine",
+  "synonyms": [
+   "Nektarinen"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "ananas",
+  "name": "Ananas",
+  "synonyms": [],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mango",
+  "name": "Mango",
+  "synonyms": [
+   "Mangos"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kiwi",
+  "name": "Kiwi",
+  "synonyms": [
+   "Kiwis"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "granatapfel",
+  "name": "Granatapfel",
+  "synonyms": [
+   "Granatäpfel"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rhabarber",
+  "name": "Rhabarber",
+  "synonyms": [],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {
+   "Stange": 100.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "wassermelone",
+  "name": "Wassermelone",
+  "synonyms": [
+   "Melone"
+  ],
+  "aisle": "produce",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "petersilie",
+  "name": "Petersilie",
+  "synonyms": [
+   "Petersil",
+   "glatte Petersilie",
+   "krause Petersilie"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Bund": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schnittlauch",
+  "name": "Schnittlauch",
+  "synonyms": [],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Bund": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "basilikum",
+  "name": "Basilikum",
+  "synonyms": [
+   "Basilikumblätter"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Bund": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "dille",
+  "name": "Dille",
+  "synonyms": [
+   "Dill"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Bund": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "koriander-frisch",
+  "name": "Koriander frisch",
+  "synonyms": [
+   "Koriandergrün"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Bund": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "minze",
+  "name": "Minze",
+  "synonyms": [
+   "Pfefferminze"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Bund": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rosmarin-frisch",
+  "name": "Rosmarin frisch",
+  "synonyms": [
+   "Rosmarinzweig"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Zweig": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "thymian-frisch",
+  "name": "Thymian frisch",
+  "synonyms": [
+   "Thymianzweig"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Zweig": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "salbei-frisch",
+  "name": "Salbei frisch",
+  "synonyms": [
+   "Salbeiblätter"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Bund": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "ei",
+  "name": "Ei",
+  "synonyms": [
+   "Eier",
+   "Hühnerei",
+   "Hühnereier"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "milch",
+  "name": "Milch",
+  "synonyms": [
+   "Vollmilch",
+   "Kuhmilch",
+   "Frischmilch"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "ml",
+  "conversions": {
+   "Tasse": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schlagobers",
+  "name": "Schlagobers",
+  "synonyms": [
+   "Sahne",
+   "Schlagsahne",
+   "Obers",
+   "Rahm süß",
+   "flüssige Sahne"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "ml",
+  "conversions": {
+   "Becher": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "sauerrahm",
+  "name": "Sauerrahm",
+  "synonyms": [
+   "saure Sahne",
+   "Sauerrahm 15%"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Becher": 250.0,
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "creme-fraiche",
+  "name": "Crème fraîche",
+  "synonyms": [
+   "Creme fraiche",
+   "Crème fraiche"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Becher": 125.0,
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schmand",
+  "name": "Schmand",
+  "synonyms": [],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Becher": 200.0,
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rahm",
+  "name": "Rahm",
+  "synonyms": [
+   "Kaffeeobers",
+   "Kaffeesahne"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "ml",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "butter",
+  "name": "Butter",
+  "synonyms": [
+   "Süßrahmbutter",
+   "Teebutter"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0,
+   "Pkg.": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "butterschmalz",
+  "name": "Butterschmalz",
+  "synonyms": [
+   "Rindsschmalz",
+   "Ghee"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 13.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "topfen",
+  "name": "Topfen",
+  "synonyms": [
+   "Quark",
+   "Speisetopfen",
+   "Magertopfen",
+   "Topfen 20%",
+   "Topfen 10%"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 250.0,
+   "EL": 20.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "joghurt",
+  "name": "Joghurt",
+  "synonyms": [
+   "Jogurt",
+   "Naturjoghurt",
+   "Joghurt natur"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Becher": 250.0,
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "griechisches-joghurt",
+  "name": "Griechisches Joghurt",
+  "synonyms": [
+   "griechischer Joghurt"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Becher": 500.0,
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "buttermilch",
+  "name": "Buttermilch",
+  "synonyms": [],
+  "aisle": "dairy",
+  "baseUnit": "ml",
+  "conversions": {
+   "Becher": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mascarpone",
+  "name": "Mascarpone",
+  "synonyms": [],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "ricotta",
+  "name": "Ricotta",
+  "synonyms": [],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "frischkaese",
+  "name": "Frischkäse",
+  "synonyms": [
+   "Philadelphia",
+   "Doppelrahmfrischkäse"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 200.0,
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mozzarella",
+  "name": "Mozzarella",
+  "synonyms": [],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 125.0,
+   "Stk.": 125.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "parmesan",
+  "name": "Parmesan",
+  "synonyms": [
+   "Parmigiano",
+   "Parmigiano Reggiano",
+   "Grana Padano"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 5.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "emmentaler",
+  "name": "Emmentaler",
+  "synonyms": [
+   "Emmentaler Käse"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Scheibe": 20.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "gouda",
+  "name": "Gouda",
+  "synonyms": [],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Scheibe": 20.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "bergkaese",
+  "name": "Bergkäse",
+  "synonyms": [],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Scheibe": 20.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kaese-gerieben",
+  "name": "Käse gerieben",
+  "synonyms": [
+   "Reibkäse",
+   "geriebener Käse",
+   "Pizzakäse"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "feta",
+  "name": "Feta",
+  "synonyms": [
+   "Schafkäse",
+   "Fetakäse"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "huettenkaese",
+  "name": "Hüttenkäse",
+  "synonyms": [
+   "Cottage Cheese"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Becher": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mozzarella-gerieben",
+  "name": "Mozzarella gerieben",
+  "synonyms": [],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kondensmilch",
+  "name": "Kondensmilch",
+  "synonyms": [
+   "Kaffeemilch"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "ml",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "hafermilch",
+  "name": "Hafermilch",
+  "synonyms": [
+   "Haferdrink"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "ml",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "sojamilch",
+  "name": "Sojamilch",
+  "synonyms": [
+   "Sojadrink"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "ml",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "margarine",
+  "name": "Margarine",
+  "synonyms": [],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 15.0,
+   "Pkg.": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "germ",
+  "name": "Germ",
+  "synonyms": [
+   "Hefe",
+   "frische Hefe",
+   "Frischgerm",
+   "Hefewürfel"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "g",
+  "conversions": {
+   "Würfel": 42.0,
+   "Pkg.": 42.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "faschiertes",
+  "name": "Faschiertes",
+  "synonyms": [
+   "Hackfleisch",
+   "Gehacktes",
+   "Faschiertes gemischt",
+   "Hack"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rinderfaschiertes",
+  "name": "Rinderfaschiertes",
+  "synonyms": [
+   "Rinderhack",
+   "Rinderhackfleisch"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "huehnerbrust",
+  "name": "Hühnerbrust",
+  "synonyms": [
+   "Hähnchenbrust",
+   "Hühnerbrustfilet",
+   "Hähnchenbrustfilet",
+   "Hendlbrust"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "huehnerkeule",
+  "name": "Hühnerkeule",
+  "synonyms": [
+   "Hähnchenschenkel",
+   "Hendlhaxerl",
+   "Hühnerkeulen"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "huhn",
+  "name": "Huhn",
+  "synonyms": [
+   "ganzes Huhn",
+   "Hendl",
+   "Brathendl",
+   "Hähnchen"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 1300.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "putenbrust",
+  "name": "Putenbrust",
+  "synonyms": [
+   "Truthahnbrust",
+   "Putenschnitzel"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schweinsschnitzel",
+  "name": "Schweinsschnitzel",
+  "synonyms": [
+   "Schweineschnitzel",
+   "Schnitzelfleisch Schwein"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 150.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kalbsschnitzel",
+  "name": "Kalbsschnitzel",
+  "synonyms": [
+   "Kalbfleisch Schnitzel"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 150.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schweinsschopf",
+  "name": "Schweinsschopf",
+  "synonyms": [
+   "Schweinenacken",
+   "Schopf",
+   "Schweinskarree"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schweinsbauch",
+  "name": "Schweinsbauch",
+  "synonyms": [
+   "Schweinebauch"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rindfleisch",
+  "name": "Rindfleisch",
+  "synonyms": [
+   "Rind",
+   "Rindsuppenfleisch",
+   "Tafelspitz",
+   "Beinfleisch"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rindsgulasch",
+  "name": "Rindsgulasch",
+  "synonyms": [
+   "Gulaschfleisch",
+   "Rinderwade",
+   "Wadschinken"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rinderfilet",
+  "name": "Rinderfilet",
+  "synonyms": [
+   "Lungenbraten Rind",
+   "Rindslungenbraten"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schweinslungenbraten",
+  "name": "Schweinslungenbraten",
+  "synonyms": [
+   "Schweinefilet"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "lammfleisch",
+  "name": "Lammfleisch",
+  "synonyms": [
+   "Lamm",
+   "Lammkeule"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "speck",
+  "name": "Speck",
+  "synonyms": [
+   "Frühstücksspeck",
+   "Bacon",
+   "Bauchspeck"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Scheibe": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "speckwuerfel",
+  "name": "Speckwürfel",
+  "synonyms": [
+   "Speckwürferl",
+   "Speck gewürfelt"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 125.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schinken",
+  "name": "Schinken",
+  "synonyms": [
+   "Kochschinken",
+   "Beinschinken",
+   "Toastschinken"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Scheibe": 20.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rohschinken",
+  "name": "Rohschinken",
+  "synonyms": [
+   "Prosciutto",
+   "Parmaschinken"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Scheibe": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "salami",
+  "name": "Salami",
+  "synonyms": [],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Scheibe": 8.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "frankfurter",
+  "name": "Frankfurter",
+  "synonyms": [
+   "Würstel",
+   "Wiener Würstchen",
+   "Frankfurter Würstel"
+  ],
+  "aisle": "meat",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kaesekrainer",
+  "name": "Käsekrainer",
+  "synonyms": [],
+  "aisle": "meat",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "bratwurst",
+  "name": "Bratwurst",
+  "synonyms": [
+   "Bratwürstel"
+  ],
+  "aisle": "meat",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "extrawurst",
+  "name": "Extrawurst",
+  "synonyms": [
+   "Fleischwurst",
+   "Lyoner"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Scheibe": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "leberkaese",
+  "name": "Leberkäse",
+  "synonyms": [
+   "Fleischkäse"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "lachs",
+  "name": "Lachs",
+  "synonyms": [
+   "Lachsfilet"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Stk.": 150.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "raeucherlachs",
+  "name": "Räucherlachs",
+  "synonyms": [
+   "geräucherter Lachs"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 100.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "forelle",
+  "name": "Forelle",
+  "synonyms": [
+   "Forellenfilet"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zander",
+  "name": "Zander",
+  "synonyms": [
+   "Zanderfilet"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "garnelen",
+  "name": "Garnelen",
+  "synonyms": [
+   "Shrimps",
+   "Crevetten",
+   "Scampi",
+   "Riesengarnelen"
+  ],
+  "aisle": "meat",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "thunfisch",
+  "name": "Thunfisch",
+  "synonyms": [
+   "Thunfisch in Dose",
+   "Thunfisch natur"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Dose": 150.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mehl-glatt",
+  "name": "Mehl glatt",
+  "synonyms": [
+   "Weizenmehl",
+   "Mehl",
+   "Auszugsmehl"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0,
+   "TL": 3.0,
+   "Tasse": 125.0,
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mehl-griffig",
+  "name": "Mehl griffig",
+  "synonyms": [
+   "Wiener Griessler",
+   "griffiges Mehl",
+   "Doppelgriffig"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0,
+   "TL": 3.0,
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mehl-universal",
+  "name": "Mehl universal",
+  "synonyms": [
+   "Universalmehl"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0,
+   "TL": 3.0,
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "dinkelmehl",
+  "name": "Dinkelmehl",
+  "synonyms": [
+   "Dinkelmehl glatt"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0,
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "vollkornmehl",
+  "name": "Vollkornmehl",
+  "synonyms": [
+   "Weizenvollkornmehl",
+   "Dinkelvollkornmehl"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0,
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "roggenmehl",
+  "name": "Roggenmehl",
+  "synonyms": [],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0,
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "staerke",
+  "name": "Stärke",
+  "synonyms": [
+   "Maisstärke",
+   "Speisestärke",
+   "Maizena",
+   "Kartoffelstärke"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0,
+   "TL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "griess",
+  "name": "Grieß",
+  "synonyms": [
+   "Weizengrieß",
+   "Hartweizengrieß"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 12.0,
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kristallzucker",
+  "name": "Kristallzucker",
+  "synonyms": [
+   "Zucker",
+   "weißer Zucker"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0,
+   "Tasse": 200.0,
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "staubzucker",
+  "name": "Staubzucker",
+  "synonyms": [
+   "Puderzucker"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0,
+   "TL": 3.0,
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "feinkristallzucker",
+  "name": "Feinkristallzucker",
+  "synonyms": [
+   "Feinzucker",
+   "Backzucker"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "brauner-zucker",
+  "name": "Brauner Zucker",
+  "synonyms": [
+   "Rohrzucker",
+   "Brauner Rohrzucker"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "vanillezucker",
+  "name": "Vanillezucker",
+  "synonyms": [
+   "Vanillinzucker"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 8.0,
+   "TL": 4.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "bourbon-vanillezucker",
+  "name": "Bourbon-Vanillezucker",
+  "synonyms": [],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 8.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "vanilleschote",
+  "name": "Vanilleschote",
+  "synonyms": [
+   "Vanille",
+   "Vanilleschoten"
+  ],
+  "aisle": "baking",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "backpulver",
+  "name": "Backpulver",
+  "synonyms": [],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 16.0,
+   "TL": 4.0,
+   "EL": 12.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "natron",
+  "name": "Natron",
+  "synonyms": [
+   "Speisenatron",
+   "Backsoda"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 5.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "trockengerm",
+  "name": "Trockengerm",
+  "synonyms": [
+   "Trockenhefe"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 7.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "gelatine",
+  "name": "Gelatine",
+  "synonyms": [
+   "Blattgelatine",
+   "Gelatineblätter"
+  ],
+  "aisle": "baking",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Blatt": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "gelatine-gemahlen",
+  "name": "Gelatine gemahlen",
+  "synonyms": [
+   "Gelatinepulver"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "puddingpulver",
+  "name": "Puddingpulver",
+  "synonyms": [
+   "Vanillepuddingpulver",
+   "Puddingpulver Vanille"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 37.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kakaopulver",
+  "name": "Kakaopulver",
+  "synonyms": [
+   "Kakao",
+   "Backkakao"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 8.0,
+   "TL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schokolade-zartbitter",
+  "name": "Schokolade Zartbitter",
+  "synonyms": [
+   "Zartbitterschokolade",
+   "Kochschokolade",
+   "Bitterschokolade"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Tafel": 100.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schokolade-vollmilch",
+  "name": "Schokolade Vollmilch",
+  "synonyms": [
+   "Milchschokolade"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Tafel": 100.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schokolade-weiss",
+  "name": "Schokolade weiß",
+  "synonyms": [
+   "weiße Schokolade"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Tafel": 100.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kuvertuere",
+  "name": "Kuvertüre",
+  "synonyms": [
+   "Schokoladenglasur",
+   "Couverture"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schokotropfen",
+  "name": "Schokotropfen",
+  "synonyms": [
+   "Schokodrops",
+   "Schokostreusel"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mandeln-gerieben",
+  "name": "Mandeln gerieben",
+  "synonyms": [
+   "gemahlene Mandeln",
+   "Mandeln gemahlen"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 8.0,
+   "Pkg.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mandeln",
+  "name": "Mandeln",
+  "synonyms": [
+   "ganze Mandeln"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mandelblaettchen",
+  "name": "Mandelblättchen",
+  "synonyms": [
+   "Mandelblätter",
+   "Mandelsplitter"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "haselnuesse-gerieben",
+  "name": "Haselnüsse gerieben",
+  "synonyms": [
+   "gemahlene Haselnüsse",
+   "Haselnüsse gemahlen"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 8.0,
+   "Pkg.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "haselnuesse",
+  "name": "Haselnüsse",
+  "synonyms": [
+   "ganze Haselnüsse"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "walnuesse",
+  "name": "Walnüsse",
+  "synonyms": [
+   "Walnusskerne",
+   "Baumnüsse",
+   "Nüsse"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kokosraspel",
+  "name": "Kokosraspel",
+  "synonyms": [
+   "Kokosflocken"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 6.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rosinen",
+  "name": "Rosinen",
+  "synonyms": [
+   "Sultaninen",
+   "Weinbeeren getrocknet"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mohn",
+  "name": "Mohn",
+  "synonyms": [
+   "Graumohn",
+   "Mohn gemahlen"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "marillenmarmelade",
+  "name": "Marillenmarmelade",
+  "synonyms": [
+   "Aprikosenmarmelade",
+   "Marillenkonfitüre",
+   "Aprikosenkonfitüre"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 20.0,
+   "Glas": 450.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "ribiselmarmelade",
+  "name": "Ribiselmarmelade",
+  "synonyms": [
+   "Johannisbeermarmelade",
+   "Ribiselgelee"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 20.0,
+   "Glas": 450.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "erdbeermarmelade",
+  "name": "Erdbeermarmelade",
+  "synonyms": [
+   "Erdbeerkonfitüre"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 20.0,
+   "Glas": 450.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "powidl",
+  "name": "Powidl",
+  "synonyms": [
+   "Zwetschkenmus",
+   "Pflaumenmus"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 20.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "honig",
+  "name": "Honig",
+  "synonyms": [
+   "Blütenhonig"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 20.0,
+   "TL": 7.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "ahornsirup",
+  "name": "Ahornsirup",
+  "synonyms": [],
+  "aisle": "baking",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zitronat",
+  "name": "Zitronat",
+  "synonyms": [
+   "Orangeat"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "lebkuchengewuerz",
+  "name": "Lebkuchengewürz",
+  "synonyms": [
+   "Lebkuchengewürzmischung"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0,
+   "Pkg.": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "biskotten",
+  "name": "Biskotten",
+  "synonyms": [
+   "Löffelbiskuits"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "butterkekse",
+  "name": "Butterkekse",
+  "synonyms": [
+   "Leibniz",
+   "Butterkeks"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "blaetterteig",
+  "name": "Blätterteig",
+  "synonyms": [
+   "Blätterteig fertig"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Pkg.": 1.0,
+   "g": 0.0037
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "strudelteig",
+  "name": "Strudelteig",
+  "synonyms": [
+   "Filoteig"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Pkg.": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "muerbteig-fertig",
+  "name": "Mürbteig fertig",
+  "synonyms": [
+   "Mürbteig Rolle"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Pkg.": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "pizzateig",
+  "name": "Pizzateig",
+  "synonyms": [
+   "Pizzateig fertig"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Pkg.": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zuckerstreusel",
+  "name": "Zuckerstreusel",
+  "synonyms": [
+   "bunte Streusel",
+   "Schokostreusel bunt"
+  ],
+  "aisle": "baking",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "lebensmittelfarbe",
+  "name": "Lebensmittelfarbe",
+  "synonyms": [],
+  "aisle": "baking",
+  "baseUnit": "ml",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rum",
+  "name": "Rum",
+  "synonyms": [
+   "Inländerrum",
+   "Stroh Rum"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0,
+   "Schuss": 20.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "spaghetti",
+  "name": "Spaghetti",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "penne",
+  "name": "Penne",
+  "synonyms": [
+   "Penne rigate"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "fusilli",
+  "name": "Fusilli",
+  "synonyms": [
+   "Spiralnudeln"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "nudeln",
+  "name": "Nudeln",
+  "synonyms": [
+   "Pasta",
+   "Teigwaren"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "bandnudeln",
+  "name": "Bandnudeln",
+  "synonyms": [
+   "Tagliatelle",
+   "Fleckerl",
+   "Eiernudeln"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "suppennudeln",
+  "name": "Suppennudeln",
+  "synonyms": [
+   "Fadennudeln",
+   "Buchstabennudeln"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "lasagneblaetter",
+  "name": "Lasagneblätter",
+  "synonyms": [
+   "Lasagne Platten"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "reis",
+  "name": "Reis",
+  "synonyms": [
+   "Langkornreis",
+   "Parboiled Reis"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Tasse": 200.0,
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "basmatireis",
+  "name": "Basmatireis",
+  "synonyms": [
+   "Basmati"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Tasse": 200.0,
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "risottoreis",
+  "name": "Risottoreis",
+  "synonyms": [
+   "Arborio",
+   "Carnaroli"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "milchreis",
+  "name": "Milchreis",
+  "synonyms": [
+   "Rundkornreis"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "couscous",
+  "name": "Couscous",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Tasse": 180.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "bulgur",
+  "name": "Bulgur",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Tasse": 180.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "polenta",
+  "name": "Polenta",
+  "synonyms": [
+   "Maisgrieß"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "haferflocken",
+  "name": "Haferflocken",
+  "synonyms": [
+   "Hafer",
+   "Haferflocken zart"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 8.0,
+   "Tasse": 90.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "muesli",
+  "name": "Müsli",
+  "synonyms": [
+   "Granola"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "linsen",
+  "name": "Linsen",
+  "synonyms": [
+   "Berglinsen",
+   "braune Linsen"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rote-linsen",
+  "name": "Rote Linsen",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kichererbsen",
+  "name": "Kichererbsen",
+  "synonyms": [
+   "Kichererbsen Dose"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Dose": 240.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kidneybohnen",
+  "name": "Kidneybohnen",
+  "synonyms": [
+   "rote Bohnen"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Dose": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "weisse-bohnen",
+  "name": "Weiße Bohnen",
+  "synonyms": [
+   "Cannellini",
+   "Bohnen weiß"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Dose": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mais-dose",
+  "name": "Mais Dose",
+  "synonyms": [
+   "Dosenmais",
+   "Mais aus der Dose"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Dose": 285.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "paradeiser-gehackt-dose",
+  "name": "Paradeiser gehackt Dose",
+  "synonyms": [
+   "gehackte Tomaten",
+   "Tomaten Dose",
+   "Dosentomaten",
+   "Pelati",
+   "geschälte Tomaten"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Dose": 400.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "passierte-paradeiser",
+  "name": "Passierte Paradeiser",
+  "synonyms": [
+   "passierte Tomaten",
+   "Passata"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "Pkg.": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "paradeismark",
+  "name": "Paradeismark",
+  "synonyms": [
+   "Tomatenmark",
+   "Tomatenmark zweifach konzentriert"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0,
+   "Dose": 70.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "ketchup",
+  "name": "Ketchup",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "senf",
+  "name": "Senf",
+  "synonyms": [
+   "Estragonsenf",
+   "Kremser Senf",
+   "süßer Senf"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "dijonsenf",
+  "name": "Dijonsenf",
+  "synonyms": [
+   "Dijon-Senf"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 5.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mayonnaise",
+  "name": "Mayonnaise",
+  "synonyms": [
+   "Mayo"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "sojasauce",
+  "name": "Sojasauce",
+  "synonyms": [
+   "Sojasoße",
+   "Shoyu"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "worcestershiresauce",
+  "name": "Worcestershiresauce",
+  "synonyms": [
+   "Worcester Sauce"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "TL": 5.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "essig",
+  "name": "Essig",
+  "synonyms": [
+   "Weinessig",
+   "Weißweinessig",
+   "Apfelessig",
+   "Tafelessig"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0,
+   "Schuss": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "balsamico",
+  "name": "Balsamico",
+  "synonyms": [
+   "Balsamessig",
+   "Aceto Balsamico"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "oel",
+  "name": "Öl",
+  "synonyms": [
+   "Pflanzenöl",
+   "Rapsöl",
+   "Sonnenblumenöl",
+   "Speiseöl"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0
+  },
+  "alwaysAvailable": true
+ },
+ {
+  "id": "olivenoel",
+  "name": "Olivenöl",
+  "synonyms": [
+   "Olivenöl extra vergine"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0,
+   "Schuss": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kuerbiskernoel",
+  "name": "Kürbiskernöl",
+  "synonyms": [
+   "Kernöl"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "sesamoel",
+  "name": "Sesamöl",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "TL": 5.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kokosmilch",
+  "name": "Kokosmilch",
+  "synonyms": [
+   "Kokosnussmilch"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "Dose": 400.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "gemuesesuppe",
+  "name": "Gemüsesuppe",
+  "synonyms": [
+   "Gemüsebrühe",
+   "Gemüsefond",
+   "Suppenwürze",
+   "Gemüsebouillon"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "Würfel": 500.0,
+   "TL": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rindsuppe",
+  "name": "Rindsuppe",
+  "synonyms": [
+   "Rinderbrühe",
+   "Rinderfond",
+   "Rindsbouillon"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "Würfel": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "huehnersuppe",
+  "name": "Hühnersuppe",
+  "synonyms": [
+   "Hühnerbrühe",
+   "Geflügelfond",
+   "Hühnerbouillon"
+  ],
+  "aisle": "dry",
+  "baseUnit": "ml",
+  "conversions": {
+   "Würfel": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "semmelbroesel",
+  "name": "Semmelbrösel",
+  "synonyms": [
+   "Paniermehl",
+   "Brösel",
+   "Semmelbrösel fein"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 8.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "knoedelbrot",
+  "name": "Knödelbrot",
+  "synonyms": [
+   "Semmelwürfel",
+   "Knödelwürfel"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 250.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "oliven",
+  "name": "Oliven",
+  "synonyms": [
+   "schwarze Oliven",
+   "grüne Oliven"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "Glas": 150.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kapern",
+  "name": "Kapern",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "essiggurkerl",
+  "name": "Essiggurkerl",
+  "synonyms": [
+   "Gewürzgurken",
+   "Essiggurken",
+   "Cornichons"
+  ],
+  "aisle": "dry",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Glas": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "pesto",
+  "name": "Pesto",
+  "synonyms": [
+   "Basilikumpesto",
+   "Pesto Genovese"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 15.0,
+   "Glas": 190.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "erdnussbutter",
+  "name": "Erdnussbutter",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 16.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "nutella",
+  "name": "Nutella",
+  "synonyms": [
+   "Nougatcreme",
+   "Haselnusscreme"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 20.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "sesam",
+  "name": "Sesam",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 8.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "sonnenblumenkerne",
+  "name": "Sonnenblumenkerne",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kuerbiskerne",
+  "name": "Kürbiskerne",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "pinienkerne",
+  "name": "Pinienkerne",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "chiasamen",
+  "name": "Chiasamen",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 12.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "leinsamen",
+  "name": "Leinsamen",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 10.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "erdnuesse",
+  "name": "Erdnüsse",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "cashewkerne",
+  "name": "Cashewkerne",
+  "synonyms": [
+   "Cashews"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "getrocknete-paradeiser",
+  "name": "Getrocknete Paradeiser",
+  "synonyms": [
+   "getrocknete Tomaten"
+  ],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "instant-kaffee",
+  "name": "Instant-Kaffee",
+  "synonyms": [
+   "löslicher Kaffee"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kaffee",
+  "name": "Kaffee",
+  "synonyms": [
+   "Kaffeebohnen",
+   "Kaffeepulver"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "tee",
+  "name": "Tee",
+  "synonyms": [
+   "Schwarztee",
+   "Teebeutel"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "reisnudeln",
+  "name": "Reisnudeln",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "glasnudeln",
+  "name": "Glasnudeln",
+  "synonyms": [],
+  "aisle": "dry",
+  "baseUnit": "g",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "tortillas",
+  "name": "Tortillas",
+  "synonyms": [
+   "Wraps",
+   "Tortilla Wraps"
+  ],
+  "aisle": "bread",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Pkg.": 8.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "taco-schalen",
+  "name": "Taco-Schalen",
+  "synonyms": [
+   "Tacos"
+  ],
+  "aisle": "bread",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "salz",
+  "name": "Salz",
+  "synonyms": [
+   "Speisesalz",
+   "Meersalz",
+   "Steinsalz"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 5.0,
+   "EL": 15.0
+  },
+  "alwaysAvailable": true
+ },
+ {
+  "id": "pfeffer",
+  "name": "Pfeffer",
+  "synonyms": [
+   "schwarzer Pfeffer",
+   "Pfeffer gemahlen",
+   "Pfeffer aus der Mühle"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": true
+ },
+ {
+  "id": "pfeffer-weiss",
+  "name": "Pfeffer weiß",
+  "synonyms": [
+   "weißer Pfeffer"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "paprikapulver-edelsuess",
+  "name": "Paprikapulver edelsüß",
+  "synonyms": [
+   "Paprika edelsüß",
+   "Paprikapulver",
+   "Paprika süß"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0,
+   "EL": 8.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "paprikapulver-scharf",
+  "name": "Paprikapulver scharf",
+  "synonyms": [
+   "Paprika scharf",
+   "Rosenpaprika"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "paprikapulver-geraeuchert",
+  "name": "Paprikapulver geräuchert",
+  "synonyms": [
+   "Smoked Paprika",
+   "Pimentón"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "chilipulver",
+  "name": "Chilipulver",
+  "synonyms": [
+   "Chiliflocken",
+   "Cayennepfeffer",
+   "Chili gemahlen"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kuemmel",
+  "name": "Kümmel",
+  "synonyms": [
+   "Kümmel ganz"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kuemmel-gemahlen",
+  "name": "Kümmel gemahlen",
+  "synonyms": [],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kreuzkuemmel",
+  "name": "Kreuzkümmel",
+  "synonyms": [
+   "Cumin",
+   "Kreuzkümmel gemahlen"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "koriander-gemahlen",
+  "name": "Koriander gemahlen",
+  "synonyms": [
+   "Koriander"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "curry",
+  "name": "Curry",
+  "synonyms": [
+   "Currypulver"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0,
+   "EL": 8.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kurkuma",
+  "name": "Kurkuma",
+  "synonyms": [
+   "Gelbwurz"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zimt",
+  "name": "Zimt",
+  "synonyms": [
+   "Zimtpulver",
+   "Zimt gemahlen"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0,
+   "EL": 8.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zimtstange",
+  "name": "Zimtstange",
+  "synonyms": [
+   "Zimtstangen"
+  ],
+  "aisle": "spices",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "muskatnuss",
+  "name": "Muskatnuss",
+  "synonyms": [
+   "Muskat",
+   "Muskatnuss gerieben"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "nelken",
+  "name": "Nelken",
+  "synonyms": [
+   "Gewürznelken"
+  ],
+  "aisle": "spices",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "lorbeerblatt",
+  "name": "Lorbeerblatt",
+  "synonyms": [
+   "Lorbeer",
+   "Lorbeerblätter"
+  ],
+  "aisle": "spices",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Blatt": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "wacholderbeeren",
+  "name": "Wacholderbeeren",
+  "synonyms": [
+   "Wacholder"
+  ],
+  "aisle": "spices",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "piment",
+  "name": "Piment",
+  "synonyms": [
+   "Neugewürz"
+  ],
+  "aisle": "spices",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "majoran",
+  "name": "Majoran",
+  "synonyms": [
+   "Majoran getrocknet"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "oregano",
+  "name": "Oregano",
+  "synonyms": [
+   "Oregano getrocknet"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "thymian",
+  "name": "Thymian",
+  "synonyms": [
+   "Thymian getrocknet"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rosmarin",
+  "name": "Rosmarin",
+  "synonyms": [
+   "Rosmarin getrocknet"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "basilikum-getrocknet",
+  "name": "Basilikum getrocknet",
+  "synonyms": [],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "petersilie-getrocknet",
+  "name": "Petersilie getrocknet",
+  "synonyms": [],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "italienische-kraeuter",
+  "name": "Italienische Kräuter",
+  "synonyms": [
+   "Kräuter der Provence",
+   "Pizzagewürz"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "knoblauchpulver",
+  "name": "Knoblauchpulver",
+  "synonyms": [
+   "Knoblauchgranulat"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zwiebelpulver",
+  "name": "Zwiebelpulver",
+  "synonyms": [],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "senfkoerner",
+  "name": "Senfkörner",
+  "synonyms": [],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "sternanis",
+  "name": "Sternanis",
+  "synonyms": [],
+  "aisle": "spices",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kardamom",
+  "name": "Kardamom",
+  "synonyms": [],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "vanillemark",
+  "name": "Vanillemark",
+  "synonyms": [],
+  "aisle": "spices",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "ingwer-gemahlen",
+  "name": "Ingwer gemahlen",
+  "synonyms": [
+   "Ingwerpulver"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "suppengewuerz",
+  "name": "Suppengewürz",
+  "synonyms": [
+   "Maggi",
+   "Würze"
+  ],
+  "aisle": "spices",
+  "baseUnit": "ml",
+  "conversions": {
+   "TL": 5.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "garam-masala",
+  "name": "Garam Masala",
+  "synonyms": [],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "brathendlgewuerz",
+  "name": "Brathendlgewürz",
+  "synonyms": [
+   "Hendlgewürz",
+   "Grillgewürz"
+  ],
+  "aisle": "spices",
+  "baseUnit": "g",
+  "conversions": {
+   "TL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "wasser",
+  "name": "Wasser",
+  "synonyms": [
+   "Leitungswasser"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {
+   "Tasse": 250.0,
+   "EL": 15.0,
+   "TL": 5.0
+  },
+  "alwaysAvailable": true
+ },
+ {
+  "id": "erbsen",
+  "name": "Erbsen",
+  "synonyms": [
+   "TK-Erbsen",
+   "Erbsen tiefgekühlt",
+   "grüne Erbsen"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 450.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "spinat-tiefgekuehlt",
+  "name": "Spinat tiefgekühlt",
+  "synonyms": [
+   "TK-Spinat",
+   "Rahmspinat",
+   "Cremespinat"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 450.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "gemuesemischung",
+  "name": "Gemüsemischung",
+  "synonyms": [
+   "TK-Gemüse",
+   "Wokgemüse",
+   "Suppengemüse TK"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 450.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "beeren-tiefgekuehlt",
+  "name": "Beeren tiefgekühlt",
+  "synonyms": [
+   "TK-Beeren",
+   "Beerenmischung"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 300.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "pommes",
+  "name": "Pommes",
+  "synonyms": [
+   "Pommes frites",
+   "Pommes tiefgekühlt"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 750.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "fischstaebchen",
+  "name": "Fischstäbchen",
+  "synonyms": [
+   "Fischstäbe"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Pkg.": 15.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "eis",
+  "name": "Eis",
+  "synonyms": [
+   "Vanilleeis",
+   "Speiseeis"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "ml",
+  "conversions": {
+   "Pkg.": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kraeuter-tiefgekuehlt",
+  "name": "Kräuter tiefgekühlt",
+  "synonyms": [
+   "TK-Kräuter"
+  ],
+  "aisle": "frozen",
+  "baseUnit": "g",
+  "conversions": {
+   "EL": 3.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "semmel",
+  "name": "Semmel",
+  "synonyms": [
+   "Semmeln",
+   "Brötchen",
+   "Kaisersemmel",
+   "Weckerl"
+  ],
+  "aisle": "bread",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schwarzbrot",
+  "name": "Schwarzbrot",
+  "synonyms": [
+   "Mischbrot",
+   "Bauernbrot",
+   "Brot"
+  ],
+  "aisle": "bread",
+  "baseUnit": "g",
+  "conversions": {
+   "Scheibe": 40.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "toastbrot",
+  "name": "Toastbrot",
+  "synonyms": [
+   "Toast",
+   "Toastscheiben"
+  ],
+  "aisle": "bread",
+  "baseUnit": "pcs",
+  "conversions": {
+   "Scheibe": 1.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "vollkornbrot",
+  "name": "Vollkornbrot",
+  "synonyms": [],
+  "aisle": "bread",
+  "baseUnit": "g",
+  "conversions": {
+   "Scheibe": 45.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "baguette",
+  "name": "Baguette",
+  "synonyms": [
+   "Stangenbrot",
+   "Pariser"
+  ],
+  "aisle": "bread",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kipferl",
+  "name": "Kipferl",
+  "synonyms": [
+   "Croissant",
+   "Butterkipferl"
+  ],
+  "aisle": "bread",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "laugengebaeck",
+  "name": "Laugengebäck",
+  "synonyms": [
+   "Brezel",
+   "Laugenstange",
+   "Laugenweckerl"
+  ],
+  "aisle": "bread",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "knaeckebrot",
+  "name": "Knäckebrot",
+  "synonyms": [],
+  "aisle": "bread",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zwieback",
+  "name": "Zwieback",
+  "synonyms": [],
+  "aisle": "bread",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "burgerbrot",
+  "name": "Burgerbrot",
+  "synonyms": [
+   "Burger Buns",
+   "Hamburgerbrötchen"
+  ],
+  "aisle": "bread",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "weisswein",
+  "name": "Weißwein",
+  "synonyms": [
+   "Wein weiß",
+   "trockener Weißwein"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {
+   "Schuss": 50.0,
+   "Flasche": 750.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "rotwein",
+  "name": "Rotwein",
+  "synonyms": [
+   "Wein rot"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {
+   "Schuss": 50.0,
+   "Flasche": 750.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "bier",
+  "name": "Bier",
+  "synonyms": [
+   "Helles",
+   "Märzen"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {
+   "Flasche": 500.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "apfelsaft",
+  "name": "Apfelsaft",
+  "synonyms": [
+   "Apfelsaft naturtrüb"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "orangensaft",
+  "name": "Orangensaft",
+  "synonyms": [
+   "O-Saft"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zitronensaft",
+  "name": "Zitronensaft",
+  "synonyms": [
+   "Saft einer Zitrone"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0,
+   "Spritzer": 2.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "mineralwasser",
+  "name": "Mineralwasser",
+  "synonyms": [
+   "Sodawasser",
+   "Soda",
+   "Mineral"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {
+   "Flasche": 1000.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "sirup",
+  "name": "Sirup",
+  "synonyms": [
+   "Holundersirup",
+   "Himbeersirup"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "sekt",
+  "name": "Sekt",
+  "synonyms": [
+   "Prosecco"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {
+   "Flasche": 750.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "schnaps",
+  "name": "Schnaps",
+  "synonyms": [
+   "Obstler",
+   "Marillenschnaps",
+   "Williams"
+  ],
+  "aisle": "drinks",
+  "baseUnit": "ml",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "tofu",
+  "name": "Tofu",
+  "synonyms": [
+   "Naturtofu"
+  ],
+  "aisle": "other",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "raeuchertofu",
+  "name": "Räuchertofu",
+  "synonyms": [],
+  "aisle": "other",
+  "baseUnit": "g",
+  "conversions": {
+   "Pkg.": 200.0
+  },
+  "alwaysAvailable": false
+ },
+ {
+  "id": "backpapier",
+  "name": "Backpapier",
+  "synonyms": [],
+  "aisle": "other",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "frischhaltefolie",
+  "name": "Frischhaltefolie",
+  "synonyms": [
+   "Klarsichtfolie"
+  ],
+  "aisle": "other",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "alufolie",
+  "name": "Alufolie",
+  "synonyms": [
+   "Alu-Folie"
+  ],
+  "aisle": "other",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "kuechenrolle",
+  "name": "Küchenrolle",
+  "synonyms": [
+   "Küchenpapier"
+  ],
+  "aisle": "other",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ },
+ {
+  "id": "zahnstocher",
+  "name": "Zahnstocher",
+  "synonyms": [],
+  "aisle": "other",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false
+ }
+]
