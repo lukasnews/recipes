@@ -6,6 +6,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Firebase config is added by hand (android/app/google-services.json).
+// Without it the app still builds and shows a "not configured" screen.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+}
+
 // Upload key for Play. CI writes android/key.properties from secrets.
 // Without it, release builds fall back to the debug key (installable, not uploadable).
 val keystoreProperties = Properties().apply {

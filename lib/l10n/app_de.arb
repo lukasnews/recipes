@@ -7,13 +7,318 @@
   "navPantry": "Vorrat",
   "settingsTitle": "Einstellungen",
   "profileTooltip": "Profil und Einstellungen",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "delete": "Löschen",
+  "edit": "Bearbeiten",
+  "add": "Hinzufügen",
+  "undo": "Rückgängig",
+  "retry": "Erneut versuchen",
+  "close": "Schließen",
+  "ok": "OK",
+  "errorGeneric": "Etwas ist schiefgelaufen: {error}",
+  "@errorGeneric": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteTitle": "Wirklich löschen?",
+  "confirmDeleteRecipe": "„{title}“ wird für alle im Haushalt gelöscht.",
+  "@confirmDeleteRecipe": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldRequired": "Bitte ausfüllen",
+  "needsOnline": "Dafür brauchst du eine Internetverbindung.",
+  "firebaseMissingTitle": "Firebase ist noch nicht eingerichtet",
+  "firebaseMissingBody": "Dieser Build enthält noch keine Firebase-Konfiguration (google-services.json). Sobald sie im Repository liegt, baut die CI eine Version mit Login und Sync.",
+  "loginSubtitle": "Melde dich an, um Rezepte, Einkaufsliste und Vorrat mit deinem Haushalt zu teilen.",
+  "loginGoogle": "Mit Google anmelden",
+  "loginOr": "oder",
+  "emailLabel": "E-Mail",
+  "passwordLabel": "Passwort",
+  "nameLabel": "Dein Name",
+  "loginEmail": "Anmelden",
+  "registerEmail": "Konto erstellen",
+  "switchToRegister": "Noch kein Konto? Registrieren",
+  "switchToLogin": "Schon ein Konto? Anmelden",
+  "forgotPassword": "Passwort vergessen?",
+  "passwordResetSent": "Wir haben dir eine E-Mail zum Zurücksetzen geschickt.",
+  "authErrorInvalid": "E-Mail oder Passwort stimmt nicht.",
+  "authErrorEmailInUse": "Diese E-Mail wird schon verwendet.",
+  "authErrorWeakPassword": "Das Passwort muss mindestens 6 Zeichen haben.",
+  "authErrorInvalidEmail": "Diese E-Mail-Adresse ist ungültig.",
+  "authErrorNetwork": "Keine Verbindung. Bitte später noch einmal versuchen.",
+  "householdSetupTitle": "Haushalt",
+  "householdSetupIntro": "Lege einen neuen Haushalt an oder tritt mit einem Einladungscode bei.",
+  "householdCreateTitle": "Neuen Haushalt anlegen",
+  "householdNameLabel": "Name des Haushalts",
+  "householdNameHint": "z. B. Familie Huber",
+  "householdCreate": "Anlegen",
+  "householdJoinTitle": "Mit Code beitreten",
+  "inviteCodeLabel": "Einladungscode",
+  "householdJoin": "Beitreten",
+  "inviteNotFound": "Diesen Code gibt es nicht.",
+  "signOut": "Abmelden",
+  "searchRecipesHint": "Rezepte suchen",
   "categoryAll": "Alle",
   "categoryCooking": "Kochen",
   "categoryCake": "Kuchen",
   "categoryCookies": "Kekse",
   "recipesEmpty": "Noch keine Rezepte",
-  "mealPlanEmpty": "Noch nichts geplant",
+  "recipesEmptyHint": "Tippe auf +, um dein erstes Rezept anzulegen.",
+  "noSearchResults": "Nichts gefunden",
+  "sortCookable": "Mit Vorrat kochbar",
+  "newRecipe": "Neues Rezept",
+  "minutesShort": "{minutes} Min.",
+  "@minutesShort": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "coverageLabel": "{covered} von {total} da",
+  "@coverageLabel": {
+    "placeholders": {
+      "covered": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "servingsLabel": "Portionen",
+  "ingredientsTitle": "Zutaten",
+  "stepsTitle": "Zubereitung",
+  "notesTitle": "Notizen",
+  "prepTime": "Vorbereitung",
+  "cookTime": "Kochen",
+  "buyMissing": "Fehlendes einkaufen",
+  "buyMissingDone": "{count, plural, =0{Alles da, nichts zu kaufen} =1{1 Zutat auf die Einkaufsliste gesetzt} other{{count} Zutaten auf die Einkaufsliste gesetzt}}",
+  "@buyMissingDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cooked": "Gekocht",
+  "stockAvailable": "vorhanden",
+  "stockPartial": "nur {amount} da",
+  "@stockPartial": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "stockMissing": "fehlt",
+  "addToMealPlan": "Zum Wochenplan",
+  "addedToMealPlan": "Für {day} eingeplant",
+  "@addedToMealPlan": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "recipeDeleted": "Rezept gelöscht",
+  "cookedTitle": "Gekocht",
+  "cookedIntro": "Diese Mengen werden vom Vorrat abgezogen. Du kannst sie anpassen.",
+  "cookedNothing": "Keine Zutaten mit Mengen zum Abziehen.",
+  "cookedConfirm": "Abziehen",
+  "cookedDone": "Vom Vorrat abgezogen",
+  "cookedClamped": "Nicht alles war im Vorrat. Die Mengen wurden auf 0 gekappt.",
+  "inStock": "im Vorrat: {amount}",
+  "@inStock": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "editRecipeTitle": "Rezept bearbeiten",
+  "titleLabel": "Titel",
+  "categoryLabel": "Kategorie",
+  "customCategory": "Eigene Kategorie …",
+  "customCategoryLabel": "Name der Kategorie",
+  "servingsField": "Portionen",
+  "prepMinutesLabel": "Vorbereitung (Min.)",
+  "cookMinutesLabel": "Kochzeit (Min.)",
+  "tagsLabel": "Tags",
+  "tagsHint": "durch Komma getrennt, z. B. schnell, vegetarisch",
+  "ratingLabel": "Bewertung",
+  "ingredientsField": "Zutaten",
+  "ingredientsHint": "Eine Zutat pro Zeile, z. B. 200 g Mehl glatt",
+  "stepsField": "Zubereitung",
+  "stepsHint": "Ein Schritt pro Zeile",
+  "notesLabel": "Notizen",
+  "checkIngredients": "Zutaten prüfen",
+  "checkIngredientsHint": "So hat die App deine Zutaten erkannt. Tippe auf eine Zeile, um die Zuordnung zu ändern.",
+  "matchNew": "wird neu angelegt",
+  "matchUncertain": "unsicher – bitte prüfen",
+  "matchNone": "ohne Zuordnung",
+  "chooseIngredient": "Zutat auswählen",
+  "createIngredientNamed": "„{name}“ neu anlegen",
+  "@createIngredientNamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noIngredientLink": "Nicht zuordnen",
+  "searchIngredients": "Zutat suchen",
+  "shoppingAddHint": "Was brauchst du? z. B. 1 l Milch",
   "shoppingEmpty": "Die Einkaufsliste ist leer",
+  "removeChecked": "Abgehakte entfernen",
+  "moveCheckedToPantry": "Abgehakte in den Vorrat",
+  "movedToPantry": "In den Vorrat übernommen",
+  "checkedSection": "Erledigt",
+  "aisleProduce": "Obst & Gemüse",
+  "aisleBread": "Brot & Gebäck",
+  "aisleDairy": "Milchprodukte & Eier",
+  "aisleMeat": "Fleisch & Fisch",
+  "aisleBaking": "Backen",
+  "aisleDry": "Trockenwaren & Konserven",
+  "aisleSpices": "Gewürze",
+  "aisleFrozen": "Tiefkühl",
+  "aisleDrinks": "Getränke",
+  "aisleOther": "Sonstiges",
   "pantryEmpty": "Der Vorrat ist leer",
-  "settingsComingSoon": "Einstellungen folgen"
+  "pantryEmptyHint": "Tippe auf +, um etwas in den Vorrat zu legen.",
+  "addToPantry": "In den Vorrat",
+  "locationFridge": "Kühlschrank",
+  "locationPantry": "Speis",
+  "locationFreezer": "Tiefkühler",
+  "amountLabel": "Menge",
+  "unitLabel": "Einheit",
+  "locationLabel": "Lagerort",
+  "minAmountLabel": "Mindestbestand",
+  "minAmountHint": "Fällt der Vorrat darunter, kommt es auf die Einkaufsliste",
+  "belowMin": "knapp",
+  "removeFromPantry": "Aus dem Vorrat entfernen",
+  "addedToShoppingMin": "{name} ist knapp und steht jetzt auf der Einkaufsliste",
+  "@addedToShoppingMin": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "conversionAskTitle": "Umrechnung fehlt",
+  "conversionAsk": "Wie viel {base} sind 1 {unit} {name}?",
+  "@conversionAsk": {
+    "placeholders": {
+      "base": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "conversionSaved": "Umrechnung gespeichert",
+  "weekOf": "Woche ab {date}",
+  "@weekOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "previousWeek": "Vorige Woche",
+  "nextWeek": "Nächste Woche",
+  "addRecipeToDay": "Rezept einplanen",
+  "pickRecipe": "Rezept auswählen",
+  "today": "Heute",
+  "nothingPlanned": "Nichts geplant",
+  "settingsAccount": "Konto",
+  "settingsHousehold": "Haushalt",
+  "inviteCodeTitle": "Einladungscode",
+  "inviteCodeHelp": "Gib diesen Code an die anderen im Haushalt weiter. Sie geben ihn nach dem Anmelden ein.",
+  "copied": "Kopiert",
+  "membersCount": "{count, plural, =1{1 Mitglied} other{{count} Mitglieder}}",
+  "@membersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ingredientsManage": "Zutaten verwalten",
+  "ingredientsManageSubtitle": "Synonyme, Umrechnungen, Doppelte zusammenführen",
+  "renameHousehold": "Umbenennen",
+  "ingredientsTitle2": "Zutaten",
+  "duplicatesTitle": "Mögliche Doppelte",
+  "duplicatesHint": "Diese Einträge sehen nach demselben Produkt aus.",
+  "mergeAction": "Zusammenführen",
+  "mergeInto": "Zusammenführen mit …",
+  "mergeConfirm": "„{source}“ wird zum Synonym von „{target}“. Rezepte, Vorrat und Einkaufsliste werden umgehängt.",
+  "@mergeConfirm": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "mergeUnitMismatch": "Achtung: unterschiedliche Basiseinheiten. Vorrat von „{source}“ wird nicht übernommen.",
+  "@mergeUnitMismatch": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "mergeDone": "Zusammengeführt",
+  "newIngredient": "Neue Zutat",
+  "ingredientName": "Name",
+  "synonymsLabel": "Synonyme",
+  "synonymsHint": "Andere Namen, durch Komma getrennt, z. B. Sahne, Schlagsahne",
+  "aisleLabel": "Abteilung",
+  "baseUnitLabel": "Basiseinheit",
+  "baseUnitG": "Gramm (g)",
+  "baseUnitMl": "Milliliter (ml)",
+  "baseUnitPcs": "Stück",
+  "alwaysAvailableLabel": "Immer im Haus",
+  "alwaysAvailableHint": "Zählt beim Kochen immer als vorhanden, z. B. Salz oder Wasser",
+  "conversionsLabel": "Umrechnungen",
+  "conversionLine": "1 {unit} = {factor} {base}",
+  "@conversionLine": {
+    "placeholders": {
+      "base": {
+        "type": "String"
+      },
+      "factor": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "addConversion": "Umrechnung hinzufügen",
+  "ingredientInUse": "{count, plural, =0{In keinem Rezept} =1{In 1 Rezept} other{In {count} Rezepten}}",
+  "@ingredientInUse": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteIngredientBlocked": "Wird noch in Rezepten verwendet. Zum Entfernen mit einer anderen Zutat zusammenführen.",
+  "emptyState": "Noch nichts da"
 }

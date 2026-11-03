@@ -89,3 +89,29 @@ jobs:
       - name: Remove signing key
         if: always()
         run: rm -f "$RUNNER_TEMP/upload.jks" android/key.properties
+
+  rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: test_rules
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: test_rules/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Firestore rules tests (emulator)
+        run: npm test
