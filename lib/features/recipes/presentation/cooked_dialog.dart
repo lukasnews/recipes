@@ -31,52 +31,59 @@ Future<void> showCookedDialog(
       ),
   };
 
+  final leftovers = TextEditingController(text: '0');
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(l10n.cookedTitle),
       content: SizedBox(
         width: double.maxFinite,
-        child: planned.isEmpty
-            ? Text(l10n.cookedNothing)
-            : ListView(
-                shrinkWrap: true,
-                children: [
-                  Text(l10n.cookedIntro),
-                  const SizedBox(height: 12),
-                  for (final d in planned)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: TextField(
-                        controller: controllers[d.ingredient.id],
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: d.ingredient.name,
-                          suffixText: _unitLabel(d.ingredient.baseUnit),
-                          helperText: l10n.inStock(
-                            formatBaseAmount(
-                              pantry[d.ingredient.id]?.amount ?? 0,
-                              d.ingredient.baseUnit,
-                            ),
-                          ),
-                        ),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Text(planned.isEmpty ? l10n.cookedNothing : l10n.cookedIntro),
+            const SizedBox(height: 12),
+            for (final d in planned)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: TextField(
+                  controller: controllers[d.ingredient.id],
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: d.ingredient.name,
+                    suffixText: _unitLabel(d.ingredient.baseUnit),
+                    helperText: l10n.inStock(
+                      formatBaseAmount(
+                        pantry[d.ingredient.id]?.amount ?? 0,
+                        d.ingredient.baseUnit,
                       ),
                     ),
-                ],
+                  ),
+                ),
               ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: leftovers,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: l10n.freezeLeftovers,
+                prefixIcon: const Icon(Icons.ac_unit),
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: Text(l10n.cancel),
         ),
-        if (planned.isNotEmpty)
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.cookedConfirm),
-          ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(l10n.cookedConfirm),
+        ),
       ],
     ),
   );
@@ -85,10 +92,24 @@ Future<void> showCookedDialog(
     for (final e in controllers.entries)
       e.key: parseUserNumber(e.value.text) ?? 0,
   };
+  final frozenPortions = int.tryParse(leftovers.text.trim()) ?? 0;
   for (final c in controllers.values) {
     c.dispose();
   }
+  leftovers.dispose();
   if (confirmed != true || !context.mounted) return;
+
+  if (frozenPortions > 0) {
+    fire(
+      ref
+          .read(frozenMealRepositoryProvider)
+          .add(
+            title: recipe.title,
+            portions: frozenPortions,
+            recipeId: recipe.id,
+          ),
+    );
+  }
 
   var clamped = false;
   final applied = <String, double>{};

@@ -13,6 +13,7 @@ import '../../ingredients/domain/ingredient.dart';
 import '../../ingredients/domain/ingredient_factory.dart';
 import '../../ingredients/presentation/ingredient_picker.dart';
 import '../domain/pantry_item.dart';
+import 'frozen_meals_tab.dart';
 import 'stock_actions.dart';
 
 String baseLabel(BaseUnit u) => u == BaseUnit.pcs ? 'Stk.' : u.name;
@@ -25,8 +26,33 @@ double stockStep(BaseUnit base, double amount) {
   return 10;
 }
 
-class PantryScreen extends ConsumerWidget {
+class PantryScreen extends StatelessWidget {
   const PantryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.navPantry),
+          actions: const [ProfileButton()],
+          bottom: TabBar(
+            tabs: [
+              Tab(text: l10n.pantryTabIngredients),
+              Tab(text: l10n.pantryTabMeals),
+            ],
+          ),
+        ),
+        body: const TabBarView(children: [_IngredientsTab(), FrozenMealsTab()]),
+      ),
+    );
+  }
+}
+
+class _IngredientsTab extends ConsumerWidget {
+  const _IngredientsTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,10 +62,6 @@ class PantryScreen extends ConsumerWidget {
     final ingredients = ref.watch(ingredientsByIdProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.navPantry),
-        actions: const [ProfileButton()],
-      ),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'pantry-fab',
         onPressed: () => showAddToPantrySheet(context),

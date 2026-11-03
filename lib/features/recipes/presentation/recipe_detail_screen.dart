@@ -113,6 +113,9 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     );
     final needs = {for (final n in coverage.needs) n.ingredient.id: n};
     final allergens = recipeAllergens(recipe, ingredients);
+    final frozen = (ref.watch(frozenMealsProvider).value ?? const [])
+        .where((m) => m.recipeId == recipe.id)
+        .fold<int>(0, (sum, m) => sum + m.portions);
     final affected = affectedMembers(
       allergens,
       ref.watch(membersProvider).value ?? const [],
@@ -180,6 +183,11 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                   ),
                 ),
               for (final t in recipe.tags) Chip(label: Text('#$t')),
+              if (frozen > 0)
+                Chip(
+                  avatar: const Icon(Icons.ac_unit),
+                  label: Text(l10n.inFreezer(frozen)),
+                ),
             ],
           ),
           if (allergens.isNotEmpty) ...[

@@ -24,7 +24,9 @@ import '../features/import/data/text_recognizer.dart';
 import '../features/ingredients/data/ingredient_repository.dart';
 import '../features/ingredients/domain/ingredient.dart';
 import '../features/mealplan/data/meal_plan_repository.dart';
+import '../features/pantry/data/frozen_meal_repository.dart';
 import '../features/pantry/data/pantry_repository.dart';
+import '../features/pantry/domain/frozen_meal.dart';
 import '../features/pantry/domain/pantry_item.dart';
 import '../features/recipes/data/photo_repository.dart';
 import '../features/recipes/data/recipe_repository.dart';
@@ -231,4 +233,17 @@ final memberRepositoryProvider = Provider<MemberRepository>(
 
 final membersProvider = StreamProvider<List<HouseholdMember>>(
   (ref) => ref.watch(memberRepositoryProvider).watchAll(),
+);
+
+// --- Frozen meals ---------------------------------------------------------
+
+final frozenMealRepositoryProvider = Provider<FrozenMealRepository>(
+  (ref) => FrozenMealRepository(
+    ref.watch(firestoreProvider),
+    _requireHousehold(ref),
+  ),
+);
+
+final frozenMealsProvider = StreamProvider<List<FrozenMeal>>(
+  (ref) => ref.watch(frozenMealRepositoryProvider).watchAll(),
 );

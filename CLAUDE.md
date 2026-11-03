@@ -95,6 +95,9 @@ households/{hid}/pantry/{ingredientId}       # doc id = ingredient id
   location             # fridge|pantry|freezer
   minAmount?, expiresOn?, updatedAt
 
+households/{hid}/frozenMeals/{id}   # cooked dishes in the freezer
+  title, portions: int (increment), frozenOn, recipeId?, note
+
 households/{hid}/shopping/{itemId}
   ingredientId?, text, amount?, unit?, aisle
   checked: bool, fromRecipeId?, addedBy, createdAt
@@ -121,6 +124,8 @@ households/{hid}/cookLog/{logId}
 - **Zutaten zusammenführen:** Doppelte (z. B. „Sahne“ und „Schlagobers“) erkennt `IngredientMatcher.findDuplicates`; die Zutaten-Verwaltung zeigt sie an. Beim Zusammenführen werden Name und Synonyme der aufgelösten Zutat Synonyme der behaltenen; Rezepte, Vorrat (nur bei gleicher Basiseinheit) und Einkaufsliste werden umgehängt.
 - **Bevorzugter Begriff:** `name` ist der angezeigte Begriff. In der Zutaten-Bearbeitung kann ein Synonym zum Namen gemacht werden (`Ingredient.withPreferredName`), der alte Name wird Synonym. Die id bleibt, Erkennung findet weiter alle Begriffe. Verknüpfte Einkaufsposten zeigen immer den aktuellen Namen.
 - **Neue Zutat beim Speichern:** Zeilen ohne Treffer legen eine Zutat an (Basiseinheit aus der Einheit geraten, Abteilung `other`). Unsichere Treffer werden im Rezept-Editor markiert und können per Tippen geändert werden.
+- **Gerichte im Tiefkühler:** Vorrat-Reiter → „Gerichte“; Portionen mit +/− (Increment, letzte Portion löscht den Eintrag), Hinweis „bald essen“ nach 90 Tagen. Im „Gekocht“-Dialog „Reste einfrieren (Portionen)“; Rezept-Detail zeigt Portionen im Tiefkühler.
+- **Einkauf → Vorrat:** Übernahme-Bildschirm (`planTransfer`) mit Menge/Einheit/Lagerort je abgehaktem Eintrag; Freitext-Einträge werden nachträglich zugeordnet, fehlende Umrechnung einmal erfragt; Einträge ohne Menge werden nur von der Liste genommen.
 - **Allergien:** pro Person in `members/{uid}` (Einstellungen → Allergien & Unverträglichkeiten). Rezept-Allergene = Vereinigung der Zutaten-Allergene; Rezept-Detail zeigt Warnung mit betroffenen Personen, Liste ein Warnsymbol und den Filter „Für alle verträglich“. Seed-Daten tragen Allergene; ältere Haushalte bekommen sie einmalig per `backfillSeed` (`households.seedVersion`).
 - **Österreichische Begriffe** sind gleichwertig: Topfen/Quark, Schlagobers/Sahne, Paradeiser/Tomaten, Erdäpfel/Kartoffeln, Karfiol/Blumenkohl, Marillen/Aprikosen, Faschiertes/Hackfleisch, Mehl glatt/griffig.
 
@@ -225,6 +230,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [ ] Import-Offline-Warteschlange (jetzt: ML-Kit-Rückfall)
 - [ ] Ablaufdatum im Vorrat, Hinweis „bald ablaufend“
 - [ ] Barcode-Scan + Open Food Facts
+- [ ] Aktionen der Märkte (Spar, Billa, Hofer …) – zurückgestellt: keine offizielle Schnittstelle; Optionen: Flugblatt-Links oder inoffizielles Aktions-Portal
 - [ ] Wochenplaner → Einkaufsliste
 - [ ] Backup/Export und Import (JSON)
 - [ ] Konto- und Datenlöschung in der App, Datenschutzerklärung (GitHub Pages)

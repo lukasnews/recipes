@@ -447,5 +447,48 @@
         "type": "String"
       }
     }
+  },
+  "pantryTabIngredients": "Zutaten",
+  "pantryTabMeals": "Gerichte",
+  "frozenMealsEmpty": "Keine Gerichte im Tiefkühler",
+  "frozenMealsEmptyHint": "Reste einfrieren geht direkt im „Gekocht“-Dialog oder hier mit +.",
+  "freezeMeal": "Gericht einfrieren",
+  "frozenPortions": "{count, plural, =1{1 Portion} other{{count} Portionen}}",
+  "frozenSince": "eingefroren am {date}",
+  "frozenOld": "bald essen",
+  "portionsLabel": "Portionen",
+  "frozenOnLabel": "Eingefroren am",
+  "mealTitleLabel": "Gericht",
+  "fromRecipe": "Aus Rezept wählen",
+  "freezeLeftovers": "Reste einfrieren (Portionen)",
+  "frozenAdded": "{title} im Tiefkühler eingetragen",
+  "inFreezer": "{count, plural, =1{1 Portion im Tiefkühler} other{{count} Portionen im Tiefkühler}}",
+  "@frozenPortions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@frozenSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@frozenAdded": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@inFreezer": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
