@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipes/app/app.dart';
 import 'package:recipes/app/providers.dart';
+import 'package:recipes/core/firebase/photo_cache.dart';
 import 'package:recipes/features/auth/data/auth_repository.dart';
 import 'package:recipes/features/household/data/household_repository.dart';
 import 'package:recipes/features/import/data/photo_picker.dart';
@@ -83,6 +85,7 @@ Widget testApp({
 }) => ProviderScope(
   overrides: [
     photoPickerProvider.overrideWithValue(FakePhotoPicker()),
+    photoCacheProvider.overrideWithValue(FakePhotoCache()),
     photoRepositoryProvider.overrideWithValue(photos ?? FakePhotoRepository()),
     recipeImportServiceProvider.overrideWith(
       (ref) async => importService ?? fakeImportService(),
@@ -147,3 +150,14 @@ RecipeImportService fakeImportService({
   ocr: FakeOcr(ocrText),
   readBytes: (_) async => Uint8List(0),
 );
+
+class FakePhotoCache implements PhotoCache {
+  final put_ = <String, String>{};
+  @override
+  Future<File?> cached(String path) async => null;
+  @override
+  Future<File> download(String path, String url) async => File('/nonexistent');
+  @override
+  Future<void> put(String path, String localFile) async =>
+      put_[path] = localFile;
+}

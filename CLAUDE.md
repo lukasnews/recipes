@@ -18,7 +18,7 @@ Diese Datei gibt Claude Code den Kontext für dieses Repository. Sprache im Gesp
 | KI | firebase_ai (Firebase AI Logic, Gemini Developer API) |
 | Texterkennung | google_mlkit_text_recognition (on-device) |
 | Barcode | google_mlkit_barcode_scanning + Open Food Facts API |
-| Sonstiges | image_picker, wakelock_plus (Kochmodus), http, html (JSON-LD-Parsing), receive_sharing_intent (Links teilen) |
+| Sonstiges | flutter_cache_manager (Foto-Cache, Schlüssel = Storage-Pfad, 1 Jahr), image_picker, wakelock_plus (Kochmodus), http, html (JSON-LD-Parsing), receive_sharing_intent (Links teilen) |
 
 Neue Pakete nur nach Rückfrage hinzufügen. Vor dem Hinzufügen prüfen, ob das Paket gepflegt wird und Android + iOS unterstützt.
 
@@ -123,7 +123,7 @@ households/{hid}/cookLog/{logId}
 
 - Firestore-Offline-Persistenz ist an. Jede Schreiboperation muss offline funktionieren und darf nicht auf ein Server-Ergebnis warten (kein `await` auf Writes, das die UI blockiert).
 - Online-pflichtig sind nur: KI-Erkennung, Link-Import, Barcode-Produktsuche, Foto-Upload. Ohne Netz: Auftrag in eine lokale Warteschlange, beim nächsten Online-Sein verarbeiten, Status in der UI zeigen.
-- Fotos vor dem Upload auf max. 1600 px Kante und JPEG ~80 % verkleinern (macht `image_picker`). Pfad: `households/{hid}/recipes/{rid}/{ms}.jpg`; der Upload hängt den Pfad per `arrayUnion` an `photoPaths`.
+- Fotos vor dem Upload auf max. 1600 px Kante und JPEG ~80 % verkleinern (macht `image_picker`). Pfad: `households/{hid}/recipes/{rid}/{ms}.jpg`; der Upload hängt den Pfad per `arrayUnion` an `photoPaths`. Anzeige nur über `StorageImage` → `photoFileProvider`: zuerst Disk-Cache, sonst einmal Download-URL holen und laden. Eigene Uploads kommen direkt in den Cache.
 
 ## Sicherheit
 

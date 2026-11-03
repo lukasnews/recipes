@@ -172,7 +172,10 @@ class _RecipeTile extends StatelessWidget {
                 child: SizedBox(
                   width: 56,
                   height: 56,
-                  child: StorageImage(path: r.photoPaths.first),
+                  child: StorageImage(
+                    path: r.photoPaths.first,
+                    thumbnailWidth: 56,
+                  ),
                 ),
               ),
         title: Text(r.title),

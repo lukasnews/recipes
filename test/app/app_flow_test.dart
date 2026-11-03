@@ -118,10 +118,12 @@ void main() {
     final db = FakeFirebaseFirestore();
     await seedHousehold(db);
     final auth = FakeAuthRepository(const AuthUser(uid: 'u1'));
+    final photos = FakePhotoRepository();
     await tester.pumpWidget(
       testApp(
         db: db,
         auth: auth,
+        photos: photos,
         importService: fakeImportService(
           aiResult: const RecipeDraft(
             title: 'Marillenknödel',
@@ -146,5 +148,11 @@ void main() {
       find.text('Ausgangsbild auch als Rezeptfoto speichern'),
       findsOneWidget,
     );
+
+    await tester.tap(find.text('Ausgangsbild auch als Rezeptfoto speichern'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Speichern'));
+    await tester.pumpAndSettle();
+    expect(photos.uploaded, ['/tmp/rezept.jpg']);
   });
 }

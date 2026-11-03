@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/firebase/photo_cache.dart';
 import '../core/matching/ingredient_matcher.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/household/data/household_repository.dart';
@@ -187,7 +189,18 @@ final photoRepositoryProvider = Provider<PhotoRepository>(
   ),
 );
 
-/// Download URL per storage path, cached for the session.
-final photoUrlProvider = FutureProvider.family<String, String>(
-  (ref, path) => ref.watch(photoRepositoryProvider).downloadUrl(path),
+final photoCacheProvider = Provider<PhotoCache>(
+  (ref) => CacheManagerPhotoCache(),
 );
+
+/// Local file for a photo: from the disk cache, downloaded only once.
+final photoFileProvider = FutureProvider.family<File, String>((
+  ref,
+  path,
+) async {
+  final cache = ref.watch(photoCacheProvider);
+  final hit = await cache.cached(path);
+  if (hit != null) return hit;
+  final url = await ref.read(photoRepositoryProvider).downloadUrl(path);
+  return cache.download(path, url);
+});
