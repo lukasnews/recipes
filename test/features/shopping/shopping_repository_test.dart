@@ -1,7 +1,6 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:recipes/core/units/units.dart';
-import 'package:recipes/features/ingredients/domain/ingredient.dart';
+import 'package:recipes/features/pantry/domain/pantry_item.dart';
 import 'package:recipes/features/shopping/data/shopping_repository.dart';
 
 void main() {
@@ -48,37 +47,17 @@ void main() {
     expect(await repo.watchAll().first, hasLength(2));
   });
 
-  test('moveCheckedToPantry increments stock in base unit', () async {
-    const milk = Ingredient(id: 'milch', name: 'Milch', baseUnit: BaseUnit.ml);
-    const butter = Ingredient(
-      id: 'butter',
-      name: 'Butter',
-      baseUnit: BaseUnit.g,
-    );
+  test('transferToPantry adds stock with location and removes items', () async {
     await db.doc('households/h1/pantry/milch').set({'amount': 200});
-    await repo.add(
-      text: 'Milch',
-      current: const [],
-      ingredientId: 'milch',
-      amount: 1,
-      unit: 'l',
+    await repo.add(text: 'Milch', current: const [], ingredientId: 'milch');
+    final items = await repo.watchAll().first;
+    await repo.transferToPantry(
+      stock: {'milch': (1000, StorageLocation.fridge)},
+      removeItemIds: items.map((i) => i.id),
     );
-    await repo.add(
-      text: 'Butter',
-      current: const [],
-      ingredientId: 'butter',
-      amount: 1,
-      unit: 'Becher', // no conversion known
-    );
-    var items = await repo.watchAll().first;
-    for (final i in items) {
-      await repo.setChecked(i.id, true);
-    }
-    items = await repo.watchAll().first;
-    await repo.moveCheckedToPantry(items, {'milch': milk, 'butter': butter});
-    final pantry = await db.doc('households/h1/pantry/milch').get();
-    expect(pantry.data()!['amount'], 1200);
-    final left = await repo.watchAll().first;
-    expect(left.map((i) => i.text), ['Butter']);
+    final pantry = (await db.doc('households/h1/pantry/milch').get()).data()!;
+    expect(pantry['amount'], 1200);
+    expect(pantry['location'], 'fridge');
+    expect(await repo.watchAll().first, isEmpty);
   });
 }

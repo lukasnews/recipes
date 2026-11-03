@@ -98,4 +98,14 @@ class Ingredient {
     ];
     return copyWith(name: p, synonyms: others);
   }
+
+  /// Units offered when entering an amount for this ingredient.
+  List<String> get unitChoices => {
+    ...switch (baseUnit) {
+      BaseUnit.g => const ['g', 'kg', 'dag'],
+      BaseUnit.ml => const ['ml', 'l', 'dl'],
+      BaseUnit.pcs => const ['Stk.'],
+    },
+    ...conversions.keys,
+  }.toList();
 }

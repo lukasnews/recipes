@@ -306,16 +306,8 @@ class _AddSheetState extends ConsumerState<_AddSheet> {
 
   Ingredient? get _existing => widget.choice.ingredient;
 
-  List<String> get _units {
-    final ing = _existing;
-    if (ing == null) return const ['g', 'kg', 'ml', 'l', 'Stk.'];
-    final generic = switch (ing.baseUnit) {
-      BaseUnit.g => const ['g', 'kg', 'dag'],
-      BaseUnit.ml => const ['ml', 'l', 'dl'],
-      BaseUnit.pcs => const ['Stk.'],
-    };
-    return {...generic, ...ing.conversions.keys}.toList();
-  }
+  List<String> get _units =>
+      _existing?.unitChoices ?? const ['g', 'kg', 'ml', 'l', 'Stk.'];
 
   @override
   void initState() {

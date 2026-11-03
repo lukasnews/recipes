@@ -6,12 +6,12 @@ import '../../../core/firebase/fire.dart';
 import '../../../core/units/ingredient_line_parser.dart';
 import '../../../core/units/units.dart';
 import '../../../core/widgets/async_view.dart';
-import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/profile_button.dart';
 import '../../ingredients/domain/ingredient.dart';
 import '../domain/shopping_item.dart';
+import 'pantry_transfer_sheet.dart';
 
 /// "1500 g" -> "1,5 kg", "2 Stk." -> "2", "½ TL" stays.
 String shoppingQuantity(ShoppingItem item) {
@@ -89,15 +89,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
             icon: const Icon(Icons.playlist_remove),
             itemBuilder: (context) => [
               PopupMenuItem(
-                onTap: () {
-                  fire(
-                    repo.moveCheckedToPantry(
-                      items,
-                      ref.read(ingredientsByIdProvider),
-                    ),
-                  );
-                  showSnack(context, l10n.movedToPantry);
-                },
+                onTap: () => showPantryTransferSheet(context, items),
                 child: Text(l10n.moveCheckedToPantry),
               ),
               PopupMenuItem(
@@ -180,7 +172,26 @@ class _ShoppingList extends ConsumerWidget {
             for (final item in byAisle[aisle]!) _ItemTile(item: item),
           ],
         if (done.isNotEmpty) ...[
-          header(l10n.checkedSection),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.checkedSection,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+                FilledButton.tonalIcon(
+                  onPressed: () => showPantryTransferSheet(context, items),
+                  icon: const Icon(Icons.kitchen_outlined),
+                  label: Text(l10n.moveCheckedToPantry),
+                ),
+              ],
+            ),
+          ),
           for (final item in done) _ItemTile(item: item),
         ],
       ],

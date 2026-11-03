@@ -396,5 +396,18 @@
         "type": "String"
       }
     }
+  },
+  "transferTitle": "In den Vorrat übernehmen",
+  "transferHint": "Mengen und Lagerort prüfen. Einträge ohne Menge werden nur von der Liste genommen.",
+  "transferConfirm": "Übernehmen",
+  "transferUnlinked": "Keiner Zutat zugeordnet – wird nur von der Liste genommen",
+  "transferLink": "Zuordnen",
+  "transferDone": "{count, plural, =0{Von der Liste genommen} =1{1 Zutat in den Vorrat übernommen} other{{count} Zutaten in den Vorrat übernommen}}",
+  "@transferDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../ingredients/domain/ingredient.dart';
+import '../../pantry/domain/pantry_item.dart';
 import '../domain/shopping_item.dart';
 
 class ShoppingRepository {
@@ -71,30 +72,27 @@ class ShoppingRepository {
     return batch.commit();
   }
 
-  /// Moves checked items into the pantry and removes them from the list.
-  /// Items whose amount can't be converted stay checked on the list.
-  Future<void> moveCheckedToPantry(
-    List<ShoppingItem> items,
-    Map<String, Ingredient> ingredients,
-  ) {
+  /// Adds stock (base unit per ingredient, with location) and removes the
+  /// shopping items in one batch.
+  Future<void> transferToPantry({
+    required Map<String, (double, StorageLocation)> stock,
+    required Iterable<String> removeItemIds,
+  }) {
     final batch = _db.batch();
     final pantry = _db
         .collection('households')
         .doc(householdId)
         .collection('pantry');
-    for (final item in items.where((i) => i.checked)) {
-      final ing = ingredients[item.ingredientId];
-      final base = (ing == null || item.amount == null)
-          ? null
-          : ing.toBase(item.amount!, item.unit);
-      if (ing != null && item.amount != null && base == null) continue;
-      if (ing != null && base != null && base > 0) {
-        batch.set(pantry.doc(ing.id), {
-          'amount': FieldValue.increment(base),
-          'updatedAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
-      }
-      batch.delete(_col.doc(item.id));
+    stock.forEach((id, entry) {
+      final (amount, location) = entry;
+      batch.set(pantry.doc(id), {
+        'amount': FieldValue.increment(amount),
+        'location': location.name,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    });
+    for (final id in removeItemIds) {
+      batch.delete(_col.doc(id));
     }
     return batch.commit();
   }
