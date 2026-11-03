@@ -1,0 +1,64 @@
+rules_version = '2';
+
+// Household data is readable and writable only by its members.
+// Paste into Firebase console -> Firestore -> Rules, or deploy with
+// `firebase deploy --only firestore:rules`.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function householdPath(hid) {
+      return /databases/$(database)/documents/households/$(hid);
+    }
+
+    // Reads see committed state.
+    function isMember(hid) {
+      return signedIn() && request.auth.uid in get(householdPath(hid)).data.memberIds;
+    }
+
+    // Writes see the state after the batch, so creating a household and
+    // seeding its ingredients works in one batch.
+    function isMemberAfter(hid) {
+      return signedIn() && request.auth.uid in getAfter(householdPath(hid)).data.memberIds;
+    }
+
+    match /users/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
+    // Invite code -> household id. Get only, never list.
+    match /invites/{code} {
+      allow get: if signedIn();
+      allow create: if isMemberAfter(request.resource.data.householdId)
+        && getAfter(householdPath(request.resource.data.householdId)).data.inviteCode == code;
+      allow delete: if isMember(resource.data.householdId);
+    }
+
+    match /households/{hid} {
+      allow get: if signedIn() && request.auth.uid in resource.data.memberIds;
+
+      allow create: if signedIn()
+        && request.resource.data.memberIds == [request.auth.uid];
+
+      // Members may change the household (name, leaving, ...).
+      allow update: if (signedIn() && request.auth.uid in resource.data.memberIds)
+        // Joining: only add yourself, proving the invite code.
+        || (signedIn()
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['memberIds', 'joinCode'])
+          && request.resource.data.joinCode == resource.data.inviteCode
+          && request.resource.data.memberIds.toSet()
+               == resource.data.memberIds.toSet().union([request.auth.uid].toSet()));
+
+      // At least one segment, so this never matches the household doc itself
+      // (in rules v2 a bare {document=**} also matches zero segments).
+      match /{collection}/{document=**} {
+        allow read: if isMember(hid);
+        allow write: if isMemberAfter(hid);
+      }
+    }
+  }
+}
