@@ -39,4 +39,17 @@ void main() {
       isFalse,
     );
   });
+
+  test('setup errors switch to the other Gemini backend', () {
+    expect(
+      GeminiRecipeExtractor.isBackendSetupError(
+        Exception('Firebase AI Logic genai config not found. Learn more'),
+      ),
+      isTrue,
+    );
+    expect(
+      GeminiRecipeExtractor.isBackendSetupError(Exception('quota exceeded')),
+      isFalse,
+    );
+  });
 }

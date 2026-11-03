@@ -89,22 +89,48 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
     TextPart(pageText),
   ]);
 
+  /// Backends in order: Gemini Developer API first, then the Agent Platform
+  /// (Vertex) Gemini API. If the first one isn't set up in the Firebase
+  /// project ("genai config not found", missing API key) the second is used.
+  static List<FirebaseAI Function()> backends = [
+    FirebaseAI.googleAI,
+    FirebaseAI.agentPlatform,
+  ];
+
+  static bool isBackendSetupError(Object e) {
+    final m = e.toString().toLowerCase();
+    return m.contains('genai config') ||
+        m.contains('api key') ||
+        m.contains('api_key') ||
+        m.contains('not been used in project') ||
+        m.contains('is disabled') ||
+        m.contains('servicedisabled');
+  }
+
   Future<List<RecipeDraft>> _run(List<Part> parts) async {
     final candidates = {modelName, ...fallbackModels}.toList();
     Object? lastError;
-    for (final name in candidates) {
-      try {
-        return await _extractWith(name, parts);
-      } catch (e) {
-        if (!isUnknownModel(e)) rethrow;
-        lastError = e;
+    for (final backend in backends) {
+      for (final name in candidates) {
+        try {
+          return await _extractWith(backend(), name, parts);
+        } catch (e) {
+          lastError = e;
+          if (isUnknownModel(e)) continue;
+          if (isBackendSetupError(e)) break;
+          rethrow;
+        }
       }
     }
     throw lastError ?? StateError('no model');
   }
 
-  Future<List<RecipeDraft>> _extractWith(String name, List<Part> parts) async {
-    final model = FirebaseAI.googleAI().generativeModel(
+  Future<List<RecipeDraft>> _extractWith(
+    FirebaseAI ai,
+    String name,
+    List<Part> parts,
+  ) async {
+    final model = ai.generativeModel(
       model: name,
       generationConfig: GenerationConfig(
         responseMimeType: 'application/json',
