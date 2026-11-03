@@ -13,9 +13,11 @@ import '../core/matching/ingredient_matcher.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/household/data/household_repository.dart';
 import '../features/household/domain/household.dart';
+import '../features/import/data/link_importer.dart';
 import '../features/import/data/photo_picker.dart';
 import '../features/import/data/recipe_extractor.dart';
 import '../features/import/data/recipe_import_service.dart';
+import '../features/import/data/shared_links.dart';
 import '../features/import/data/text_recognizer.dart';
 import '../features/ingredients/data/ingredient_repository.dart';
 import '../features/ingredients/domain/ingredient.dart';
@@ -174,9 +176,18 @@ final photoPickerProvider = Provider<PhotoPicker>(
   (ref) => ImagePickerPhotoPicker(),
 );
 
+final recipeExtractorProvider = FutureProvider<RecipeExtractor>(
+  (ref) async => GeminiRecipeExtractor(await ref.watch(aiModelProvider.future)),
+);
+
+final linkImporterProvider = FutureProvider<LinkImporter>(
+  (ref) async =>
+      LinkImporter(extractor: await ref.watch(recipeExtractorProvider.future)),
+);
+
 final recipeImportServiceProvider = FutureProvider<RecipeImportService>(
   (ref) async => RecipeImportService(
-    extractor: GeminiRecipeExtractor(await ref.watch(aiModelProvider.future)),
+    extractor: await ref.watch(recipeExtractorProvider.future),
     ocr: MlKitTextRecognizer(),
   ),
 );
@@ -204,3 +215,7 @@ final photoFileProvider = FutureProvider.family<File, String>((
   final url = await ref.read(photoRepositoryProvider).downloadUrl(path);
   return cache.download(path, url);
 });
+
+final sharedLinkSourceProvider = Provider<SharedLinkSource>(
+  (ref) => ReceiveSharingIntentLinks(),
+);

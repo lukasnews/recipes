@@ -383,5 +383,18 @@
         "type": "int"
       }
     }
+  },
+  "importLink": "Aus Link (Webseite)",
+  "importLinkSubtitle": "Oder in Browser/App „Teilen“ → BaCo",
+  "importLinkLabel": "Adresse der Rezeptseite",
+  "importLinkConfirm": "Übernehmen",
+  "importLinkHint": "Von der Webseite übernommen – bitte prüfen.",
+  "sourceLabel": "Quelle: {host}",
+  "@sourceLabel": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
   }
 }

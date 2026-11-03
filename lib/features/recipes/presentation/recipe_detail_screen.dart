@@ -253,6 +253,16 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 ),
               ),
           ],
+          if (recipe.sourceUrl != null) ...[
+            const SizedBox(height: 16),
+            SelectableText(
+              l10n.sourceLabel(
+                Uri.tryParse(recipe.sourceUrl!)?.host ?? recipe.sourceUrl!,
+              ),
+              style: theme.textTheme.bodySmall,
+            ),
+            SelectableText(recipe.sourceUrl!, style: theme.textTheme.bodySmall),
+          ],
           if (recipe.notes.isNotEmpty) ...[
             const SizedBox(height: 24),
             Text(l10n.notesTitle, style: theme.textTheme.titleLarge),

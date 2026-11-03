@@ -19,6 +19,7 @@ class RecipeDraft {
     this.aiError,
     this.position = 1,
     this.count = 1,
+    this.sourceUrl,
   });
 
   final String title;
@@ -44,6 +45,9 @@ class RecipeDraft {
   final int position;
   final int count;
 
+  /// Web page the recipe came from (link import).
+  final String? sourceUrl;
+
   RecipeDraft copyWith({
     List<String>? imagePaths,
     bool? recognizedOffline,
@@ -51,6 +55,7 @@ class RecipeDraft {
     String? aiError,
     int? position,
     int? count,
+    String? sourceUrl,
   }) => RecipeDraft(
     title: title,
     servings: servings,
@@ -64,6 +69,7 @@ class RecipeDraft {
     aiError: aiError ?? this.aiError,
     position: position ?? this.position,
     count: count ?? this.count,
+    sourceUrl: sourceUrl ?? this.sourceUrl,
   );
 }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,8 +11,9 @@ import '../../../app/routes.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../data/photo_picker.dart';
 import '../domain/recipe_draft.dart';
+import '../domain/web_recipe.dart';
 
-enum _AddChoice { manual, camera, gallery }
+enum _AddChoice { manual, camera, gallery, link }
 
 /// Bottom sheet behind the "+" button: empty recipe, photo or screenshot.
 Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
@@ -40,6 +42,12 @@ Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
             subtitle: Text(l10n.importSubtitle),
             onTap: () => Navigator.pop(context, _AddChoice.gallery),
           ),
+          ListTile(
+            leading: const Icon(Icons.link),
+            title: Text(l10n.importLink),
+            subtitle: Text(l10n.importLinkSubtitle),
+            onTap: () => Navigator.pop(context, _AddChoice.link),
+          ),
         ],
       ),
     ),
@@ -52,6 +60,8 @@ Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
       await importFromPhotos(context, ref, PhotoSource.camera);
     case _AddChoice.gallery:
       await importFromPhotos(context, ref, PhotoSource.gallery);
+    case _AddChoice.link:
+      await askAndImportLink(context, ref);
   }
 }
 
@@ -60,10 +70,65 @@ Future<void> importFromPhotos(
   WidgetRef ref,
   PhotoSource source,
 ) async {
-  final l10n = context.l10n;
   final paths = await ref.read(photoPickerProvider).pick(source);
   if (paths.isEmpty || !context.mounted) return;
+  await _runImport(context, () async {
+    final service = await ref.read(recipeImportServiceProvider.future);
+    return service.import(paths);
+  });
+}
 
+/// Asks for a web address (prefilled from the clipboard) and imports it.
+Future<void> askAndImportLink(BuildContext context, WidgetRef ref) async {
+  final l10n = context.l10n;
+  final clip = (await Clipboard.getData(Clipboard.kTextPlain))?.text ?? '';
+  if (!context.mounted) return;
+  final controller = TextEditingController(
+    text: findUrl(clip)?.toString() ?? '',
+  );
+  final url = await showDialog<Uri>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(l10n.importLink),
+      content: TextField(
+        controller: controller,
+        autofocus: true,
+        keyboardType: TextInputType.url,
+        decoration: InputDecoration(
+          labelText: l10n.importLinkLabel,
+          hintText: 'https://…',
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, findUrl(controller.text)),
+          child: Text(l10n.importLinkConfirm),
+        ),
+      ],
+    ),
+  );
+  controller.dispose();
+  if (url == null || !context.mounted) return;
+  await importFromLink(context, ref, url);
+}
+
+Future<void> importFromLink(BuildContext context, WidgetRef ref, Uri url) =>
+    _runImport(context, () async {
+      final importer = await ref.read(linkImporterProvider.future);
+      return importer.import(url);
+    });
+
+/// Shared flow: progress dialog, optional choice when several recipes were
+/// found, then the review screen for each one.
+Future<void> _runImport(
+  BuildContext context,
+  Future<List<RecipeDraft>> Function() load,
+) async {
+  final l10n = context.l10n;
   final navigator = Navigator.of(context, rootNavigator: true);
   unawaited(
     showDialog<void>(
@@ -83,25 +148,26 @@ Future<void> importFromPhotos(
       ),
     ),
   );
+  final List<RecipeDraft> drafts;
   try {
-    final service = await ref.read(recipeImportServiceProvider.future);
-    final drafts = await service.import(paths);
-    navigator.pop();
-    if (!context.mounted) return;
-    final chosen = drafts.length == 1
-        ? drafts
-        : await _chooseDrafts(context, drafts);
-    // Review one after another; back on one just skips it.
-    for (final (i, d) in chosen.indexed) {
-      if (!context.mounted) return;
-      await context.push(
-        Routes.newRecipe,
-        extra: d.copyWith(position: i + 1, count: chosen.length),
-      );
-    }
+    drafts = await load();
   } catch (e) {
     navigator.pop();
     showGlobalSnack(l10n.importFailed('$e'));
+    return;
+  }
+  navigator.pop();
+  if (!context.mounted || drafts.isEmpty) return;
+  final chosen = drafts.length == 1
+      ? drafts
+      : await _chooseDrafts(context, drafts);
+  // Review one after another; back on one just skips it.
+  for (final (i, d) in chosen.indexed) {
+    if (!context.mounted) return;
+    await context.push(
+      Routes.newRecipe,
+      extra: d.copyWith(position: i + 1, count: chosen.length),
+    );
   }
 }
 

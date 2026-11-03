@@ -241,8 +241,11 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
       rating: _rating,
       notes: _notes.text.trim(),
       sourceType:
-          _original?.sourceType ?? (widget.draft == null ? 'manual' : 'ocr'),
-      sourceUrl: _original?.sourceUrl,
+          _original?.sourceType ??
+          (widget.draft == null
+              ? 'manual'
+              : (widget.draft!.sourceUrl != null ? 'url' : 'ocr')),
+      sourceUrl: _original?.sourceUrl ?? widget.draft?.sourceUrl,
       ingredients: lines,
       steps: _steps.text
           .split('\n')
@@ -409,11 +412,15 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
                   leading: Icon(
                     widget.draft!.recognizedOffline
                         ? Icons.wifi_off
+                        : widget.draft!.sourceUrl != null
+                        ? Icons.link
                         : Icons.auto_awesome,
                   ),
                   title: Text(
                     widget.draft!.recognizedOffline
                         ? l10n.importOfflineHint
+                        : widget.draft!.sourceUrl != null
+                        ? l10n.importLinkHint
                         : l10n.importReviewHint,
                   ),
                   subtitle: widget.draft!.aiError == null

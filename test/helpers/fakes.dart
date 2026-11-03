@@ -13,6 +13,7 @@ import 'package:recipes/features/household/data/household_repository.dart';
 import 'package:recipes/features/import/data/photo_picker.dart';
 import 'package:recipes/features/import/data/recipe_extractor.dart';
 import 'package:recipes/features/import/data/recipe_import_service.dart';
+import 'package:recipes/features/import/data/shared_links.dart';
 import 'package:recipes/features/import/data/text_recognizer.dart';
 import 'package:recipes/features/import/domain/recipe_draft.dart';
 import 'package:recipes/features/ingredients/domain/ingredient.dart';
@@ -85,6 +86,7 @@ Widget testApp({
 }) => ProviderScope(
   overrides: [
     photoPickerProvider.overrideWithValue(FakePhotoPicker()),
+    sharedLinkSourceProvider.overrideWithValue(FakeSharedLinks()),
     photoCacheProvider.overrideWithValue(FakePhotoCache()),
     photoRepositoryProvider.overrideWithValue(photos ?? FakePhotoRepository()),
     recipeImportServiceProvider.overrideWith(
@@ -109,8 +111,16 @@ class FakeExtractor implements RecipeExtractor {
   FakeExtractor(this.results, {this.fail = false});
   final List<RecipeDraft> results;
   final bool fail;
+  String? lastText;
   @override
   Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages) async {
+    if (fail) throw Exception('offline');
+    return results;
+  }
+
+  @override
+  Future<List<RecipeDraft>> extractFromText(String pageText) async {
+    lastText = pageText;
     if (fail) throw Exception('offline');
     return results;
   }
@@ -161,4 +171,11 @@ class FakePhotoCache implements PhotoCache {
   @override
   Future<void> put(String path, String localFile) async =>
       put_[path] = localFile;
+}
+
+class FakeSharedLinks implements SharedLinkSource {
+  // ignore: close_sinks
+  final controller = StreamController<Uri>.broadcast();
+  @override
+  Stream<Uri> links() => controller.stream;
 }

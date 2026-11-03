@@ -8,6 +8,9 @@ import '../domain/recipe_draft.dart';
 abstract class RecipeExtractor {
   /// Usually one draft; several when the images show several recipes.
   Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages);
+
+  /// Same for the text of a web page without recipe metadata.
+  Future<List<RecipeDraft>> extractFromText(String pageText);
 }
 
 /// Gemini via Firebase AI Logic. Handles print, handwriting and screenshots.
@@ -72,12 +75,26 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
   );
 
   @override
-  Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages) async {
+  Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages) => _run([
+    const TextPart(_prompt),
+    for (final img in jpegImages) InlineDataPart('image/jpeg', img),
+  ]);
+
+  @override
+  Future<List<RecipeDraft>> extractFromText(String pageText) => _run([
+    const TextPart(
+      '$_prompt\n- Die Quelle ist der Text einer Webseite; Werbung, '
+      'Kommentare und Nährwerte ignorieren.',
+    ),
+    TextPart(pageText),
+  ]);
+
+  Future<List<RecipeDraft>> _run(List<Part> parts) async {
     final candidates = {modelName, ...fallbackModels}.toList();
     Object? lastError;
     for (final name in candidates) {
       try {
-        return await _extractWith(name, jpegImages);
+        return await _extractWith(name, parts);
       } catch (e) {
         if (!isUnknownModel(e)) rethrow;
         lastError = e;
@@ -86,10 +103,7 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
     throw lastError ?? StateError('no model');
   }
 
-  Future<List<RecipeDraft>> _extractWith(
-    String name,
-    List<Uint8List> jpegImages,
-  ) async {
+  Future<List<RecipeDraft>> _extractWith(String name, List<Part> parts) async {
     final model = FirebaseAI.googleAI().generativeModel(
       model: name,
       generationConfig: GenerationConfig(
@@ -98,10 +112,7 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
         temperature: 0,
       ),
     );
-    final content = Content.multi([
-      const TextPart(_prompt),
-      for (final img in jpegImages) InlineDataPart('image/jpeg', img),
-    ]);
+    final content = Content.multi(parts);
 
     String? lastText;
     // Validate against the schema; ask once more if it doesn't fit.

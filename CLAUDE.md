@@ -140,7 +140,7 @@ households/{hid}/cookLog/{logId}
 
 - Prompt verlangt strukturiertes JSON nach festem Schema: `{recipes: [{title, servings, prepMinutes?, cookMinutes?, ingredients: [{amount?, unit?, name, note?}], steps: [string]}]}`. Mehrere Rezepte auf einem Bild → Auswahl-Dialog, dann nacheinander prüfen („Rezept 1 von 2“). Unbekannte Modellnamen fallen auf `gemini-flash-latest` → `gemini-2.5-flash` → `gemini-2.0-flash` zurück; der Fehlergrund steht im Hinweis-Banner und in Crashlytics. Antwort mit dem Schema validieren; bei Fehler einmal neu fragen, sonst Rohtext im Prüf-Bildschirm zeigen.
 - Jeder Import endet im **Prüf-Bildschirm**. Nichts wird ungeprüft gespeichert.
-- Link-Import: zuerst JSON-LD `schema.org/Recipe` aus dem HTML lesen, nur wenn das fehlt, Seitentext an die KI.
+- Link-Import: zuerst JSON-LD `schema.org/Recipe` aus dem HTML lesen, nur wenn das fehlt, Seitentext an die KI. Umsetzung: `LinkImporter` (http, Browser-User-Agent) → `draftsFromJsonLd` (auch `@graph`, `HowToSection`, ISO-Dauer, `recipeYield`) → sonst `pageText` (ohne Skripte/Menüs, max. 30k Zeichen) → `RecipeExtractor.extractFromText`. Einstieg: „+“ → „Aus Link“ (Zwischenablage vorbefüllt) oder Android-„Teilen“ → BaCo (`receive_sharing_intent`, `ShareListener` in der Shell, Intent-Filter `text/plain`). Rezept speichert `source: {type: url, url}`.
 
 ## UI
 
@@ -212,7 +212,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Mindestbestand → Einkaufsliste
 - [x] Abgehakte Einkäufe in den Vorrat übernehmen
 - [ ] Kochmodus (Schritt für Schritt, Wakelock, Timer)
-- [ ] Link-Import (JSON-LD, Teilen-Menü) mit Prüf-Bildschirm
+- [x] Link-Import (JSON-LD, Teilen-Menü) mit Prüf-Bildschirm
 - [x] Texterkennung gedruckt (ML Kit) mit Prüf-Bildschirm (Rückfall ohne Internet)
 
 ### Phase 3 – Komfort (Ziel: Produktionszugang im Play Store)
