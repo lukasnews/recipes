@@ -86,4 +86,16 @@ class Ingredient {
     conversions: conversions ?? this.conversions,
     alwaysAvailable: alwaysAvailable ?? this.alwaysAvailable,
   );
+
+  /// Shows [preferred] (one of the synonyms) as the name; the old name becomes
+  /// a synonym, so matching still finds every term.
+  Ingredient withPreferredName(String preferred) {
+    final p = preferred.trim();
+    if (p.isEmpty || p.toLowerCase() == name.toLowerCase()) return this;
+    final others = [
+      name,
+      ...synonyms.where((s) => s.trim().toLowerCase() != p.toLowerCase()),
+    ];
+    return copyWith(name: p, synonyms: others);
+  }
 }

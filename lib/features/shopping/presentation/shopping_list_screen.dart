@@ -197,6 +197,10 @@ class _ItemTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.watch(shoppingRepositoryProvider);
     final qty = shoppingQuantity(item);
+    // Linked items follow renames of the ingredient (e.g. preferred name).
+    final name =
+        ref.watch(ingredientsByIdProvider)[item.ingredientId]?.name ??
+        item.text;
     return Dismissible(
       key: ValueKey(item.id),
       direction: DismissDirection.endToStart,
@@ -212,7 +216,7 @@ class _ItemTile extends ConsumerWidget {
         value: item.checked,
         onChanged: (v) => fire(repo.setChecked(item.id, v ?? false)),
         title: Text(
-          [if (qty.isNotEmpty) qty, item.text].join(' '),
+          [if (qty.isNotEmpty) qty, name].join(' '),
           style: item.checked
               ? const TextStyle(decoration: TextDecoration.lineThrough)
               : null,

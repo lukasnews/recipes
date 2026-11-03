@@ -284,8 +284,10 @@ class _IngredientRow extends StatelessWidget {
       ),
       _ => (Icons.remove, scheme.outline, null),
     };
+    final id = need?.ingredient.id;
     return ListTile(
       contentPadding: EdgeInsets.zero,
+      onTap: id == null ? null : () => context.push(Routes.ingredient(id)),
       leading: Icon(icon, color: color),
       title: Text([if (qty.isNotEmpty) qty, name].join(' ')),
       subtitle: Text([?line.note, ?hint].join(' · ')),

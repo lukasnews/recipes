@@ -115,6 +115,7 @@ households/{hid}/cookLog/{logId}
 - **Mindestbestand:** fällt `amount` unter `minAmount`, Eintrag auf die Einkaufsliste (einmalig, kein Duplikat).
 - **Suche** läuft lokal über die gecachten Rezepte (Firestore hat keine Volltextsuche). Haushalte sind klein, das reicht.
 - **Zutaten zusammenführen:** Doppelte (z. B. „Sahne“ und „Schlagobers“) erkennt `IngredientMatcher.findDuplicates`; die Zutaten-Verwaltung zeigt sie an. Beim Zusammenführen werden Name und Synonyme der aufgelösten Zutat Synonyme der behaltenen; Rezepte, Vorrat (nur bei gleicher Basiseinheit) und Einkaufsliste werden umgehängt.
+- **Bevorzugter Begriff:** `name` ist der angezeigte Begriff. In der Zutaten-Bearbeitung kann ein Synonym zum Namen gemacht werden (`Ingredient.withPreferredName`), der alte Name wird Synonym. Die id bleibt, Erkennung findet weiter alle Begriffe. Verknüpfte Einkaufsposten zeigen immer den aktuellen Namen.
 - **Neue Zutat beim Speichern:** Zeilen ohne Treffer legen eine Zutat an (Basiseinheit aus der Einheit geraten, Abteilung `other`). Unsichere Treffer werden im Rezept-Editor markiert und können per Tippen geändert werden.
 - **Österreichische Begriffe** sind gleichwertig: Topfen/Quark, Schlagobers/Sahne, Paradeiser/Tomaten, Erdäpfel/Kartoffeln, Karfiol/Blumenkohl, Marillen/Aprikosen, Faschiertes/Hackfleisch, Mehl glatt/griffig.
 

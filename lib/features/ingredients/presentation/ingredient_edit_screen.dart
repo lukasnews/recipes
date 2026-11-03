@@ -55,6 +55,24 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
     }
   }
 
+  List<String> get _synonymList => _synonyms.text
+      .split(',')
+      .map((s) => s.trim())
+      .where((s) => s.isNotEmpty)
+      .toList();
+
+  void _prefer(String term) {
+    final current = _name.text.trim();
+    if (term == current) return;
+    setState(() {
+      _name.text = term;
+      _synonyms.text = [
+        if (current.isNotEmpty) current,
+        ..._synonymList.where((s) => s.toLowerCase() != term.toLowerCase()),
+      ].join(', ');
+    });
+  }
+
   String get _baseLabel => _base == BaseUnit.pcs ? 'Stk.' : _base.name;
 
   void _save() {
@@ -64,11 +82,7 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
     if (name.isEmpty) return;
     final updated = original.copyWith(
       name: name,
-      synonyms: _synonyms.text
-          .split(',')
-          .map((s) => s.trim())
-          .where((s) => s.isNotEmpty)
-          .toList(),
+      synonyms: _synonymList,
       aisle: _aisle,
       baseUnit: _base,
       alwaysAvailable: _always,
@@ -142,17 +156,38 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
           TextField(
             controller: _name,
             decoration: InputDecoration(labelText: l10n.ingredientName),
+            onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _synonyms,
             maxLines: null,
+            onChanged: (_) => setState(() {}),
             decoration: InputDecoration(
               labelText: l10n.synonymsLabel,
               helperText: l10n.synonymsHint,
               helperMaxLines: 2,
             ),
           ),
+          if (_synonymList.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(l10n.displayNameLabel, style: theme.textTheme.titleSmall),
+            Text(l10n.displayNameHint, style: theme.textTheme.bodySmall),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final term in [_name.text.trim(), ..._synonymList])
+                  if (term.isNotEmpty)
+                    ChoiceChip(
+                      label: Text(term),
+                      selected: term == _name.text.trim(),
+                      onSelected: (_) => _prefer(term),
+                    ),
+              ],
+            ),
+          ],
           const SizedBox(height: 12),
           DropdownButtonFormField<Aisle>(
             initialValue: _aisle,

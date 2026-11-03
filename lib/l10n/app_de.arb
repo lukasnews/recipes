@@ -321,5 +321,7 @@
     }
   },
   "deleteIngredientBlocked": "Wird noch in Rezepten verwendet. Zum Entfernen mit einer anderen Zutat zusammenführen.",
-  "emptyState": "Noch nichts da"
+  "emptyState": "Noch nichts da",
+  "displayNameLabel": "Angezeigter Name",
+  "displayNameHint": "Welchen Begriff soll die App überall anzeigen? Die anderen bleiben Synonyme und werden weiter erkannt."
 }
