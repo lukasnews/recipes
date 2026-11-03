@@ -69,6 +69,7 @@ class HouseholdRepository {
         'name': name,
         'memberIds': [uid],
         'inviteCode': code,
+        'seedVersion': seedVersion,
         'createdAt': FieldValue.serverTimestamp(),
       })
       ..set(_db.collection('invites').doc(code), {'householdId': household.id})
@@ -105,4 +106,31 @@ class HouseholdRepository {
 
   Future<void> rename(String hid, String name) =>
       _db.collection('households').doc(hid).update({'name': name});
+
+  static const seedVersion = 2;
+
+  /// One-time update for households created before allergens existed:
+  /// copies allergens from the seed list onto matching ingredients.
+  /// Updates (not sets) so deleted or merged ingredients stay gone.
+  Future<void> backfillSeed(String hid, List<Ingredient> seed) async {
+    final ref = _db.collection('households').doc(hid);
+    final snap = await ref.get();
+    final version = (snap.data()?['seedVersion'] as num?)?.toInt() ?? 1;
+    if (version >= seedVersion) return;
+    final ingredients = ref.collection('ingredients');
+    final existing = {
+      for (final d in (await ingredients.get()).docs) d.id: d.data(),
+    };
+    final batch = _db.batch();
+    for (final ing in seed) {
+      final data = existing[ing.id];
+      if (data == null || ing.allergens.isEmpty) continue;
+      if ((data['allergens'] as List<dynamic>?)?.isNotEmpty ?? false) continue;
+      batch.update(ingredients.doc(ing.id), {
+        'allergens': [for (final a in ing.allergens) a.name]..sort(),
+      });
+    }
+    batch.update(ref, {'seedVersion': seedVersion});
+    await batch.commit();
+  }
 }

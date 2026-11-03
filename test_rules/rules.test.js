@@ -133,6 +133,22 @@ describe('joining', () => {
   });
 });
 
+describe('members', () => {
+  beforeEach(reset);
+
+  test('own allergies: write own, read all, not others', async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await updateDoc(doc(ctx.firestore(), 'households/h1'), { memberIds: ['alice', 'bob'] });
+    });
+    const alice = as('alice');
+    const bob = as('bob');
+    await assertSucceeds(setDoc(doc(alice, 'households/h1/members/alice'), { allergens: ['gluten'] }));
+    await assertSucceeds(getDoc(doc(bob, 'households/h1/members/alice')));
+    await assertFails(setDoc(doc(bob, 'households/h1/members/alice'), { allergens: [] }));
+    await assertFails(setDoc(doc(as('mallory'), 'households/h1/members/mallory'), { allergens: [] }));
+  });
+});
+
 describe('users', () => {
   beforeEach(reset);
 

@@ -13,6 +13,7 @@ import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/rating_stars.dart';
 import '../../../core/widgets/storage_image.dart';
 import '../../mealplan/domain/meal_plan_day.dart';
+import '../domain/allergen_check.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_stock.dart';
 import 'cooked_dialog.dart';
@@ -111,6 +112,11 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
       servings: servings,
     );
     final needs = {for (final n in coverage.needs) n.ingredient.id: n};
+    final allergens = recipeAllergens(recipe, ingredients);
+    final affected = affectedMembers(
+      allergens,
+      ref.watch(membersProvider).value ?? const [],
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -176,6 +182,32 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
               for (final t in recipe.tags) Chip(label: Text('#$t')),
             ],
           ),
+          if (allergens.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Card(
+              color: affected.isEmpty
+                  ? theme.colorScheme.surfaceContainerHighest
+                  : theme.colorScheme.errorContainer,
+              child: ListTile(
+                leading: Icon(
+                  affected.isEmpty
+                      ? Icons.info_outline
+                      : Icons.warning_amber_rounded,
+                ),
+                title: Text(l10n.allergenWarning(l10n.allergenList(allergens))),
+                subtitle: affected.isEmpty
+                    ? null
+                    : Text(
+                        l10n.allergenAffects(
+                          [
+                            for (final (m, a) in affected)
+                              '${m.displayName} (${l10n.allergenList(a)})',
+                          ].join(', '),
+                        ),
+                      ),
+              ),
+            ),
+          ],
           const SizedBox(height: 8),
           RatingStars(
             rating: recipe.rating,

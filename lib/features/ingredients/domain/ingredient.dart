@@ -1,6 +1,7 @@
 import '../../../core/firebase/map_utils.dart';
 import '../../../core/matching/ingredient_matcher.dart';
 import '../../../core/units/units.dart';
+import '../../household/domain/allergen.dart';
 
 /// Supermarket section, used to group the shopping list.
 enum Aisle {
@@ -28,6 +29,7 @@ class Ingredient {
     this.baseUnit = BaseUnit.pcs,
     this.conversions = const {},
     this.alwaysAvailable = false,
+    this.allergens = const {},
   });
 
   factory Ingredient.fromMap(String id, Map<String, dynamic> m) => Ingredient(
@@ -42,6 +44,7 @@ class Ingredient {
         if (e.value is num) '${e.key}': (e.value as num).toDouble(),
     },
     alwaysAvailable: m.flag('alwaysAvailable'),
+    allergens: Allergen.parseAll(m.strings('allergens')),
   );
 
   final String id;
@@ -54,6 +57,9 @@ class Ingredient {
   final Map<String, double> conversions;
   final bool alwaysAvailable;
 
+  /// EU allergens, e.g. gluten for flour, milk for Topfen.
+  final Set<Allergen> allergens;
+
   Map<String, dynamic> toMap() => {
     'name': name,
     'synonyms': synonyms,
@@ -61,6 +67,7 @@ class Ingredient {
     'baseUnit': baseUnit.name,
     'conversions': conversions,
     'alwaysAvailable': alwaysAvailable,
+    'allergens': [for (final a in allergens) a.name]..sort(),
   };
 
   MatchCandidate get candidate =>
@@ -77,6 +84,7 @@ class Ingredient {
     BaseUnit? baseUnit,
     Map<String, double>? conversions,
     bool? alwaysAvailable,
+    Set<Allergen>? allergens,
   }) => Ingredient(
     id: id,
     name: name ?? this.name,
@@ -85,6 +93,7 @@ class Ingredient {
     baseUnit: baseUnit ?? this.baseUnit,
     conversions: conversions ?? this.conversions,
     alwaysAvailable: alwaysAvailable ?? this.alwaysAvailable,
+    allergens: allergens ?? this.allergens,
   );
 
   /// Shows [preferred] (one of the synonyms) as the name; the old name becomes

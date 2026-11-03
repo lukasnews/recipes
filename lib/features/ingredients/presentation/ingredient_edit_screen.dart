@@ -7,6 +7,7 @@ import '../../../core/firebase/fire.dart';
 import '../../../core/units/units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
+import '../../household/domain/allergen.dart';
 import '../domain/ingredient.dart';
 import 'ingredient_picker.dart';
 import 'merge.dart';
@@ -27,6 +28,7 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
   Aisle _aisle = Aisle.other;
   BaseUnit _base = BaseUnit.pcs;
   bool _always = false;
+  Set<Allergen> _allergens = {};
   final _conversions = <(String, TextEditingController)>[];
   Ingredient? _original;
 
@@ -47,6 +49,7 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
     _aisle = i.aisle;
     _base = i.baseUnit;
     _always = i.alwaysAvailable;
+    _allergens = {...i.allergens};
     for (final e in i.conversions.entries) {
       _conversions.add((
         e.key,
@@ -86,6 +89,7 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
       aisle: _aisle,
       baseUnit: _base,
       alwaysAvailable: _always,
+      allergens: _allergens,
       conversions: {
         for (final (unit, c) in _conversions)
           if ((parseUserNumber(c.text) ?? 0) > 0)
@@ -218,6 +222,23 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
             onChanged: (v) => setState(() => _always = v),
           ),
           const SizedBox(height: 8),
+          Text(l10n.ingredientAllergens, style: theme.textTheme.titleSmall),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final a in Allergen.values)
+                FilterChip(
+                  label: Text(l10n.allergen(a)),
+                  selected: _allergens.contains(a),
+                  onSelected: (on) => setState(
+                    () => on ? _allergens.add(a) : _allergens.remove(a),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
           Text(l10n.conversionsLabel, style: theme.textTheme.titleSmall),
           for (final (i, (unit, controller)) in _conversions.indexed)
             Row(

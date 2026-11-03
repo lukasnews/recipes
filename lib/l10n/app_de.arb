@@ -409,5 +409,43 @@
         "type": "int"
       }
     }
+  },
+  "allergenGluten": "Gluten",
+  "allergenCrustaceans": "Krebstiere",
+  "allergenEggs": "Eier",
+  "allergenFish": "Fisch",
+  "allergenPeanuts": "Erdnüsse",
+  "allergenSoy": "Soja",
+  "allergenMilk": "Milch/Laktose",
+  "allergenNuts": "Nüsse",
+  "allergenCelery": "Sellerie",
+  "allergenMustard": "Senf",
+  "allergenSesame": "Sesam",
+  "allergenSulphites": "Sulfite",
+  "allergenLupin": "Lupinen",
+  "allergenMolluscs": "Weichtiere",
+  "allergiesTitle": "Allergien & Unverträglichkeiten",
+  "allergiesSubtitle": "Rezepte zeigen eine Warnung, wenn jemand betroffen ist",
+  "allergiesMine": "Meine",
+  "allergiesMineHint": "Tippe an, was du nicht verträgst. Gilt nur für dich.",
+  "allergiesHousehold": "Im Haushalt",
+  "allergiesNone": "keine",
+  "allergenWarning": "Enthält {allergens}",
+  "allergenAffects": "betrifft {names}",
+  "ingredientAllergens": "Allergene",
+  "filterSafeForAll": "Für alle verträglich",
+  "@allergenWarning": {
+    "placeholders": {
+      "allergens": {
+        "type": "String"
+      }
+    }
+  },
+  "@allergenAffects": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
   }
 }

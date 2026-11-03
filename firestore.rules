@@ -57,7 +57,16 @@ service cloud.firestore {
       // (in rules v2 a bare {document=**} also matches zero segments).
       match /{collection}/{document=**} {
         allow read: if isMember(hid);
-        allow write: if isMemberAfter(hid);
+        // members/ has its own rule below (only your own entry).
+        allow write: if collection != 'members' && isMemberAfter(hid);
+      }
+
+      // Name and allergies per person: everyone in the household reads,
+      // each person writes only their own document.
+      match /members/{uid} {
+        allow write: if request.auth != null
+          && request.auth.uid == uid
+          && isMemberAfter(hid);
       }
     }
   }

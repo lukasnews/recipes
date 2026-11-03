@@ -69,4 +69,12 @@ void main() {
     final always = list.where((i) => i.alwaysAvailable).map((i) => i.id);
     expect(always, containsAll(['salz', 'pfeffer', 'wasser', 'oel']));
   });
+
+  test('common allergens are tagged', () {
+    final byId = {for (final i in list) i.id: i};
+    expect(byId['mehl-glatt']!.allergens.map((a) => a.name), ['gluten']);
+    expect(byId['topfen']!.allergens.map((a) => a.name), ['milk']);
+    expect(byId['ei']!.allergens.map((a) => a.name), ['eggs']);
+    expect(byId['kokosmilch']!.allergens, isEmpty);
+  });
 }

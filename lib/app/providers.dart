@@ -12,6 +12,8 @@ import '../core/firebase/photo_cache.dart';
 import '../core/matching/ingredient_matcher.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/household/data/household_repository.dart';
+import '../features/household/data/member_repository.dart';
+import '../features/household/domain/allergen.dart';
 import '../features/household/domain/household.dart';
 import '../features/import/data/link_importer.dart';
 import '../features/import/data/photo_picker.dart';
@@ -218,4 +220,15 @@ final photoFileProvider = FutureProvider.family<File, String>((
 
 final sharedLinkSourceProvider = Provider<SharedLinkSource>(
   (ref) => ReceiveSharingIntentLinks(),
+);
+
+// --- Members & allergies --------------------------------------------------
+
+final memberRepositoryProvider = Provider<MemberRepository>(
+  (ref) =>
+      MemberRepository(ref.watch(firestoreProvider), _requireHousehold(ref)),
+);
+
+final membersProvider = StreamProvider<List<HouseholdMember>>(
+  (ref) => ref.watch(memberRepositoryProvider).watchAll(),
 );

@@ -109,6 +109,13 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             ListTile(
+              leading: const Icon(Icons.health_and_safety_outlined),
+              title: Text(l10n.allergiesTitle),
+              subtitle: Text(l10n.allergiesSubtitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push(Routes.allergies),
+            ),
+            ListTile(
               leading: const Icon(Icons.egg_outlined),
               title: Text(l10n.ingredientsManage),
               subtitle: Text(l10n.ingredientsManageSubtitle),

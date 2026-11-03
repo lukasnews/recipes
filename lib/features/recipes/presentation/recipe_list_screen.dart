@@ -12,6 +12,7 @@ import '../../../core/widgets/profile_button.dart';
 import '../../../core/widgets/rating_stars.dart';
 import '../../../core/widgets/storage_image.dart';
 import '../../import/presentation/import_actions.dart';
+import '../domain/allergen_check.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_stock.dart';
 
@@ -40,6 +41,7 @@ class RecipeListScreen extends ConsumerStatefulWidget {
 class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
   String? _category;
   bool _cookable = false;
+  bool _safeForAll = false;
   String _query = '';
 
   @override
@@ -48,6 +50,9 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
     final recipesValue = ref.watch(recipesProvider);
     final ingredients = ref.watch(ingredientsByIdProvider);
     final pantry = ref.watch(pantryProvider).value ?? const {};
+    final members = ref.watch(membersProvider).value ?? const [];
+    bool isSafe(Recipe r) =>
+        affectedMembers(recipeAllergens(r, ingredients), members).isEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -70,6 +75,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
           final filtered = recipes
               .where((r) => _category == null || r.category == _category)
               .where((r) => recipeMatches(r, _query))
+              .where((r) => !_safeForAll || isSafe(r))
               .toList();
           var coverages = [
             for (final r in filtered) computeCoverage(r, ingredients, pantry),
@@ -101,6 +107,13 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                       selected: _cookable,
                       onSelected: (v) => setState(() => _cookable = v),
                     ),
+                    if (members.any((m) => m.allergens.isNotEmpty))
+                      FilterChip(
+                        avatar: const Icon(Icons.health_and_safety_outlined),
+                        label: Text(l10n.filterSafeForAll),
+                        selected: _safeForAll,
+                        onSelected: (v) => setState(() => _safeForAll = v),
+                      ),
                     ChoiceChip(
                       label: Text(l10n.categoryAll),
                       selected: _category == null,
@@ -133,6 +146,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                         itemBuilder: (context, i) => _RecipeTile(
                           coverage: coverages[i],
                           showCoverage: _cookable,
+                          warn: !isSafe(coverages[i].recipe),
                         ),
                       ),
               ),
@@ -145,10 +159,17 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
 }
 
 class _RecipeTile extends StatelessWidget {
-  const _RecipeTile({required this.coverage, required this.showCoverage});
+  const _RecipeTile({
+    required this.coverage,
+    required this.showCoverage,
+    this.warn = false,
+  });
 
   final RecipeCoverage coverage;
   final bool showCoverage;
+
+  /// Someone in the household can't eat this.
+  final bool warn;
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +201,17 @@ class _RecipeTile extends StatelessWidget {
               ),
         title: Text(r.title),
         subtitle: Text(subtitle),
-        trailing: r.rating > 0 ? RatingStars(rating: r.rating, size: 16) : null,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (warn)
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Theme.of(context).colorScheme.error,
+              ),
+            if (r.rating > 0) RatingStars(rating: r.rating, size: 16),
+          ],
+        ),
         onTap: () => context.push(Routes.recipe(r.id)),
       ),
     );

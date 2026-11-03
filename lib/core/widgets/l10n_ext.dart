@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../../features/household/domain/allergen.dart';
 import '../../features/ingredients/domain/ingredient.dart';
 import '../../features/pantry/domain/pantry_item.dart';
 import '../../features/recipes/domain/recipe.dart';
@@ -42,4 +43,26 @@ extension LabelL10n on AppLocalizations {
     RecipeCategories.cookies => categoryCookies,
     _ => c,
   };
+
+  String allergen(Allergen a) => switch (a) {
+    Allergen.gluten => allergenGluten,
+    Allergen.crustaceans => allergenCrustaceans,
+    Allergen.eggs => allergenEggs,
+    Allergen.fish => allergenFish,
+    Allergen.peanuts => allergenPeanuts,
+    Allergen.soy => allergenSoy,
+    Allergen.milk => allergenMilk,
+    Allergen.nuts => allergenNuts,
+    Allergen.celery => allergenCelery,
+    Allergen.mustard => allergenMustard,
+    Allergen.sesame => allergenSesame,
+    Allergen.sulphites => allergenSulphites,
+    Allergen.lupin => allergenLupin,
+    Allergen.molluscs => allergenMolluscs,
+  };
+
+  String allergenList(Iterable<Allergen> list) =>
+      (list.toList()..sort((a, b) => a.index - b.index))
+          .map(allergen)
+          .join(', ');
 }

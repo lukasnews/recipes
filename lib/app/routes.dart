@@ -12,5 +12,6 @@ abstract final class Routes {
   static const pantry = '/pantry';
   static const settings = '/settings';
   static const ingredients = '/settings/ingredients';
+  static const allergies = '/settings/allergies';
   static String ingredient(String id) => '/settings/ingredients/$id';
 }

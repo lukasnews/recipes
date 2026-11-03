@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/auth/presentation/login_screen.dart';
+import '../features/household/presentation/allergies_screen.dart';
 import '../features/household/presentation/household_setup_screen.dart';
 import '../features/import/domain/recipe_draft.dart';
 import '../features/ingredients/presentation/ingredient_edit_screen.dart';
@@ -139,6 +140,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SettingsScreen(),
         routes: [
+          GoRoute(
+            path: 'allergies',
+            builder: (context, state) => const AllergiesScreen(),
+          ),
           GoRoute(
             path: 'ingredients',
             builder: (context, state) => const IngredientsScreen(),
