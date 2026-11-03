@@ -64,7 +64,7 @@ jobs:
             keytool -list -v -keystore "$RUNNER_TEMP/upload.jks" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" \
               | grep -E 'SHA1:|SHA256:' | sed 's/^[[:space:]]*//'
             echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Build APK
         run: flutter build apk --release --build-number=${{ github.run_number }}
