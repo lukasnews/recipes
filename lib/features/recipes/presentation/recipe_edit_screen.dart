@@ -254,7 +254,9 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
     );
     fire(recipeRepo.save(recipe, isNew: isNew));
     _syncPhotos(recipe.id);
-    if (isNew) {
+    // When several imported recipes are reviewed in a row, go back so the
+    // import flow can open the next one.
+    if (isNew && (widget.draft?.count ?? 1) == 1) {
       context.pushReplacement(Routes.recipe(recipe.id));
     } else {
       context.pop();
@@ -384,7 +386,13 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_original == null ? l10n.newRecipe : l10n.editRecipeTitle),
+        title: Text(
+          _original != null
+              ? l10n.editRecipeTitle
+              : (widget.draft?.count ?? 1) > 1
+              ? l10n.importPosition(widget.draft!.position, widget.draft!.count)
+              : l10n.newRecipe,
+        ),
         actions: [TextButton(onPressed: _save, child: Text(l10n.save))],
       ),
       body: Form(

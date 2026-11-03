@@ -21,19 +21,21 @@ class RecipeImportService {
 
   static Future<Uint8List> _readFile(String path) => File(path).readAsBytes();
 
-  Future<RecipeDraft> import(List<String> imagePaths) async {
+  Future<List<RecipeDraft>> import(List<String> imagePaths) async {
     try {
       final images = [for (final p in imagePaths) await readBytes(p)];
-      final draft = await extractor.extract(images);
-      return draft.copyWith(imagePaths: imagePaths);
+      final drafts = await extractor.extract(images);
+      return [for (final d in drafts) d.copyWith(imagePaths: imagePaths)];
     } catch (e, s) {
       reportError(e, s);
       final texts = [for (final p in imagePaths) await ocr.recognize(p)];
-      return draftFromOcrText(texts.join('\n')).copyWith(
-        imagePaths: imagePaths,
-        recognizedOffline: true,
-        aiError: describeAiError(e),
-      );
+      return [
+        draftFromOcrText(texts.join('\n')).copyWith(
+          imagePaths: imagePaths,
+          recognizedOffline: true,
+          aiError: describeAiError(e),
+        ),
+      ];
     }
   }
 }

@@ -9,6 +9,7 @@ import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../data/photo_picker.dart';
+import '../domain/recipe_draft.dart';
 
 enum _AddChoice { manual, camera, gallery }
 
@@ -84,13 +85,71 @@ Future<void> importFromPhotos(
   );
   try {
     final service = await ref.read(recipeImportServiceProvider.future);
-    final draft = await service.import(paths);
+    final drafts = await service.import(paths);
     navigator.pop();
-    if (context.mounted) {
-      await context.push(Routes.newRecipe, extra: draft);
+    if (!context.mounted) return;
+    final chosen = drafts.length == 1
+        ? drafts
+        : await _chooseDrafts(context, drafts);
+    // Review one after another; back on one just skips it.
+    for (final (i, d) in chosen.indexed) {
+      if (!context.mounted) return;
+      await context.push(
+        Routes.newRecipe,
+        extra: d.copyWith(position: i + 1, count: chosen.length),
+      );
     }
   } catch (e) {
     navigator.pop();
     showGlobalSnack(l10n.importFailed('$e'));
   }
+}
+
+Future<List<RecipeDraft>> _chooseDrafts(
+  BuildContext context,
+  List<RecipeDraft> drafts,
+) async {
+  final l10n = context.l10n;
+  final selected = {for (var i = 0; i < drafts.length; i++) i};
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) => AlertDialog(
+        title: Text(l10n.importMultipleTitle(drafts.length)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.importMultipleHint),
+            for (final (i, d) in drafts.indexed)
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                value: selected.contains(i),
+                title: Text(d.title),
+                onChanged: (v) => setState(
+                  () => v == true ? selected.add(i) : selected.remove(i),
+                ),
+              ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: selected.isEmpty
+                ? null
+                : () => Navigator.pop(context, true),
+            child: Text(l10n.importMultipleConfirm),
+          ),
+        ],
+      ),
+    ),
+  );
+  if (ok != true) return const [];
+  return [
+    for (final (i, d) in drafts.indexed)
+      if (selected.contains(i)) d,
+  ];
 }

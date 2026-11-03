@@ -138,7 +138,7 @@ households/{hid}/cookLog/{logId}
 - Ablauf: „+“ im Rezepte-Reiter → Foto aufnehmen oder Bilder/Screenshots wählen (max. 6, schon auf 1600 px/JPEG 80 verkleinert) → `RecipeImportService`: Gemini, bei Fehler/offline ML Kit + `draftFromOcrText` → `RecipeDraft` → Rezept-Editor als Prüf-Bildschirm (Hinweis-Banner, Zutaten-Zuordnung, optional Ausgangsbild als Foto speichern).
 - Kamera, ML Kit, KI und Storage liegen hinter Interfaces (`PhotoPicker`, `TextRecognizerService`, `RecipeExtractor`, `PhotoRepository`); Tests nutzen Fakes aus `test/helpers/fakes.dart`.
 
-- Prompt verlangt strukturiertes JSON nach festem Schema: `{title, servings, prepMinutes?, cookMinutes?, ingredients: [{amount?, unit?, name, note?}], steps: [string]}`. Antwort mit dem Schema validieren; bei Fehler einmal neu fragen, sonst Rohtext im Prüf-Bildschirm zeigen.
+- Prompt verlangt strukturiertes JSON nach festem Schema: `{recipes: [{title, servings, prepMinutes?, cookMinutes?, ingredients: [{amount?, unit?, name, note?}], steps: [string]}]}`. Mehrere Rezepte auf einem Bild → Auswahl-Dialog, dann nacheinander prüfen („Rezept 1 von 2“). Unbekannte Modellnamen fallen auf `gemini-flash-latest` → `gemini-2.5-flash` → `gemini-2.0-flash` zurück; der Fehlergrund steht im Hinweis-Banner und in Crashlytics. Antwort mit dem Schema validieren; bei Fehler einmal neu fragen, sonst Rohtext im Prüf-Bildschirm zeigen.
 - Jeder Import endet im **Prüf-Bildschirm**. Nichts wird ungeprüft gespeichert.
 - Link-Import: zuerst JSON-LD `schema.org/Recipe` aus dem HTML lesen, nur wenn das fehlt, Seitentext an die KI.
 

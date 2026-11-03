@@ -362,5 +362,26 @@
         "type": "String"
       }
     }
+  },
+  "importMultipleTitle": "{count} Rezepte erkannt",
+  "@importMultipleTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importMultipleHint": "Welche willst du übernehmen? Du prüfst sie danach nacheinander.",
+  "importMultipleConfirm": "Übernehmen",
+  "importPosition": "Rezept {position} von {count}",
+  "@importPosition": {
+    "placeholders": {
+      "position": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

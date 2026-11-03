@@ -2,9 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:recipes/features/import/domain/recipe_draft.dart';
 
 void main() {
-  group('draftFromAiJson', () {
+  group('draftsFromAiJson', () {
     test('valid answer becomes ingredient lines and steps', () {
-      final d = draftFromAiJson('''
+      final d = draftsFromAiJson('''
 ```json
 {"title": "Topfenknödel", "servings": 4, "prepMinutes": 20,
  "ingredients": [
@@ -14,7 +14,7 @@ void main() {
    {"name": "Butter", "note": "zum Anbraten"}
  ],
  "steps": ["Alles verrühren.", "  ", "Knödel formen."]}
-```''');
+```''').single;
       expect(d.title, 'Topfenknödel');
       expect(d.servings, 4);
       expect(d.prepMinutes, 20);
@@ -37,12 +37,27 @@ void main() {
         '{"title": "X", "ingredients": [{"amount": 1}], "steps": []}',
       ]) {
         expect(
-          () => draftFromAiJson(bad),
+          () => draftsFromAiJson(bad),
           throwsA(isA<InvalidDraftException>()),
           reason: bad,
         );
       }
     });
+  });
+
+  test('several recipes on one page stay separate', () {
+    final ds = draftsFromAiJson('''
+{"recipes": [
+  {"title": "Vanillekipferl", "ingredients": [{"amount": 280, "unit": "g", "name": "Mehl"}],
+   "steps": ["Kneten."]},
+  {"title": "", "ingredients": [], "steps": []},
+  {"title": "Linzer Augen", "ingredients": [{"amount": 1, "unit": "Pkg.", "name": "Vanillezucker"}],
+   "steps": ["Ausstechen."]}
+]}''');
+    expect(ds.map((d) => d.title), ['Vanillekipferl', 'Linzer Augen']);
+    expect(ds.first.ingredientLines, ['280 g Mehl']);
+    expect(ds.last.ingredientLines, ['1 Pkg. Vanillezucker']);
+    expect([for (final d in ds) (d.position, d.count)], [(1, 2), (2, 2)]);
   });
 
   group('draftFromOcrText', () {

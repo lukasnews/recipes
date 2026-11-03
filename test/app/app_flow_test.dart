@@ -155,4 +155,54 @@ void main() {
     await tester.pumpAndSettle();
     expect(photos.uploaded, ['/tmp/rezept.jpg']);
   });
+
+  testWidgets('two recipes on one photo: choose, then review one by one', (
+    tester,
+  ) async {
+    tester.view
+      ..physicalSize = const Size(800, 2400)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final db = FakeFirebaseFirestore();
+    final hid = await seedHousehold(db);
+    final auth = FakeAuthRepository(const AuthUser(uid: 'u1'));
+    await tester.pumpWidget(
+      testApp(
+        db: db,
+        auth: auth,
+        importService: fakeImportService(
+          aiResults: const [
+            RecipeDraft(
+              title: 'Vanillekipferl',
+              ingredientLines: ['280 g Mehl'],
+            ),
+            RecipeDraft(title: 'Linzer Augen', ingredientLines: ['200 g Mehl']),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Neues Rezept'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Aus Foto oder Screenshot'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('2 Rezepte erkannt'), findsOneWidget);
+    await tester.tap(find.text('Übernehmen'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Rezept 1 von 2'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Speichern'));
+    await tester.pumpAndSettle();
+    expect(find.text('Rezept 2 von 2'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Speichern'));
+    await tester.pumpAndSettle();
+
+    final recipes = await db.collection('households/$hid/recipes').get();
+    expect(
+      recipes.docs.map((d) => d.data()['title']),
+      containsAll(['Vanillekipferl', 'Linzer Augen']),
+    );
+  });
 }

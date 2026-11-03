@@ -7,7 +7,7 @@ import '../../helpers/fakes.dart';
 void main() {
   test('uses the AI result when available', () async {
     final s = fakeImportService(aiResult: const RecipeDraft(title: 'Strudel'));
-    final d = await s.import(['/a.jpg', '/b.jpg']);
+    final d = (await s.import(['/a.jpg', '/b.jpg'])).single;
     expect(d.title, 'Strudel');
     expect(d.imagePaths, ['/a.jpg', '/b.jpg']);
     expect(d.recognizedOffline, isFalse);
@@ -15,7 +15,7 @@ void main() {
 
   test('falls back to on-device OCR when the AI fails', () async {
     final s = fakeImportService(ocrText: 'Gulasch\n500 g Rindfleisch');
-    final d = await s.import(['/a.jpg']);
+    final d = (await s.import(['/a.jpg'])).single;
     expect(d.title, 'Gulasch');
     expect(d.ingredientLines, ['500 g Rindfleisch']);
     expect(d.recognizedOffline, isTrue);
@@ -23,7 +23,7 @@ void main() {
 
   test('the AI error reason is kept for the banner', () async {
     final s = fakeImportService(ocrText: 'X');
-    final d = await s.import(['/a.jpg']);
+    final d = (await s.import(['/a.jpg'])).single;
     expect(d.aiError, contains('offline'));
   });
 

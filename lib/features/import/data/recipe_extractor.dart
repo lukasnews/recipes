@@ -6,7 +6,8 @@ import '../domain/recipe_draft.dart';
 
 /// Reads a recipe from one or more images.
 abstract class RecipeExtractor {
-  Future<RecipeDraft> extract(List<Uint8List> jpegImages);
+  /// Usually one draft; several when the images show several recipes.
+  Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages);
 }
 
 /// Gemini via Firebase AI Logic. Handles print, handwriting and screenshots.
@@ -41,9 +42,10 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
 - Zwischenüberschriften wie "Für den Teig" weglassen.
 - steps: ein Eintrag pro Arbeitsschritt, ohne Nummerierung.
 - servings: Anzahl Portionen, falls angegeben.
+- Stehen mehrere Rezepte auf den Bildern, jedes als eigenen Eintrag in recipes; Zutaten und Schritte nie zwischen Rezepten vermischen.
 - Nichts erfinden, was nicht auf den Bildern steht.''';
 
-  static final _schema = Schema.object(
+  static final _recipeSchema = Schema.object(
     properties: {
       'title': Schema.string(),
       'servings': Schema.integer(),
@@ -65,8 +67,12 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
     optionalProperties: ['servings', 'prepMinutes', 'cookMinutes'],
   );
 
+  static final _schema = Schema.object(
+    properties: {'recipes': Schema.array(items: _recipeSchema)},
+  );
+
   @override
-  Future<RecipeDraft> extract(List<Uint8List> jpegImages) async {
+  Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages) async {
     final candidates = {modelName, ...fallbackModels}.toList();
     Object? lastError;
     for (final name in candidates) {
@@ -80,7 +86,7 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
     throw lastError ?? StateError('no model');
   }
 
-  Future<RecipeDraft> _extractWith(
+  Future<List<RecipeDraft>> _extractWith(
     String name,
     List<Uint8List> jpegImages,
   ) async {
@@ -106,13 +112,13 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
       lastText = response.text;
       if (lastText == null) continue;
       try {
-        return draftFromAiJson(lastText);
+        return draftsFromAiJson(lastText);
       } on InvalidDraftException {
         continue;
       }
     }
     // Still invalid: show the raw text in the review screen.
     final fallback = draftFromOcrText(lastText ?? '');
-    return fallback.copyWith(notes: lastText ?? '');
+    return [fallback.copyWith(notes: lastText ?? '')];
   }
 }

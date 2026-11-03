@@ -106,13 +106,13 @@ class FakePhotoPicker implements PhotoPicker {
 }
 
 class FakeExtractor implements RecipeExtractor {
-  FakeExtractor(this.result, {this.fail = false});
-  final RecipeDraft result;
+  FakeExtractor(this.results, {this.fail = false});
+  final List<RecipeDraft> results;
   final bool fail;
   @override
-  Future<RecipeDraft> extract(List<Uint8List> jpegImages) async {
+  Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages) async {
     if (fail) throw Exception('offline');
-    return result;
+    return results;
   }
 }
 
@@ -141,11 +141,12 @@ class FakePhotoRepository implements PhotoRepository {
 
 RecipeImportService fakeImportService({
   RecipeDraft? aiResult,
+  List<RecipeDraft>? aiResults,
   String ocrText = '',
 }) => RecipeImportService(
   extractor: FakeExtractor(
-    aiResult ?? const RecipeDraft(),
-    fail: aiResult == null,
+    aiResults ?? [?aiResult],
+    fail: aiResult == null && aiResults == null,
   ),
   ocr: FakeOcr(ocrText),
   readBytes: (_) async => Uint8List(0),

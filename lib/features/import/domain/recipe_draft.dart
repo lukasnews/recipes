@@ -17,6 +17,8 @@ class RecipeDraft {
     this.imagePaths = const [],
     this.recognizedOffline = false,
     this.aiError,
+    this.position = 1,
+    this.count = 1,
   });
 
   final String title;
@@ -38,11 +40,17 @@ class RecipeDraft {
   /// Why the AI could not be used (shown in the review banner).
   final String? aiError;
 
+  /// "Rezept [position] von [count]" when one image held several recipes.
+  final int position;
+  final int count;
+
   RecipeDraft copyWith({
     List<String>? imagePaths,
     bool? recognizedOffline,
     String? notes,
     String? aiError,
+    int? position,
+    int? count,
   }) => RecipeDraft(
     title: title,
     servings: servings,
@@ -54,6 +62,8 @@ class RecipeDraft {
     imagePaths: imagePaths ?? this.imagePaths,
     recognizedOffline: recognizedOffline ?? this.recognizedOffline,
     aiError: aiError ?? this.aiError,
+    position: position ?? this.position,
+    count: count ?? this.count,
   );
 }
 
@@ -78,10 +88,11 @@ double? _double(Object? v) => switch (v) {
 };
 
 /// Validates the AI answer against the fixed schema
-/// `{title, servings, prepMinutes?, cookMinutes?,
-///   ingredients: [{amount?, unit?, name, note?}], steps: [string]}`.
-/// Throws [InvalidDraftException] when it doesn't fit.
-RecipeDraft draftFromAiJson(String raw) {
+/// `{recipes: [{title, servings, prepMinutes?, cookMinutes?,
+///   ingredients: [{amount?, unit?, name, note?}], steps: [string]}]}`.
+/// A single recipe object without `recipes` is accepted too. Invalid
+/// entries are skipped; throws [InvalidDraftException] if none is valid.
+List<RecipeDraft> draftsFromAiJson(String raw) {
   var text = raw.trim();
   // Tolerate ```json fences.
   final fence = RegExp(r'^```(?:json)?\s*([\s\S]*?)\s*```$').firstMatch(text);
@@ -95,6 +106,30 @@ RecipeDraft draftFromAiJson(String raw) {
   if (decoded is! Map<String, dynamic>) {
     throw InvalidDraftException('not an object');
   }
+  final list = decoded['recipes'];
+  final maps = list is List ? list : [decoded];
+  final drafts = <RecipeDraft>[];
+  InvalidDraftException? firstError;
+  for (final m in maps) {
+    try {
+      if (m is! Map<String, dynamic>) {
+        throw InvalidDraftException('recipe is not an object');
+      }
+      drafts.add(_draftFromMap(m));
+    } on InvalidDraftException catch (e) {
+      firstError ??= e;
+    }
+  }
+  if (drafts.isEmpty) {
+    throw firstError ?? InvalidDraftException('no recipes');
+  }
+  return [
+    for (final (i, d) in drafts.indexed)
+      d.copyWith(position: i + 1, count: drafts.length),
+  ];
+}
+
+RecipeDraft _draftFromMap(Map<String, dynamic> decoded) {
   final title = decoded['title'];
   if (title is! String || title.trim().isEmpty) {
     throw InvalidDraftException('title missing');
