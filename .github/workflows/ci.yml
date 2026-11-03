@@ -57,6 +57,14 @@ jobs:
           keyAlias=$KEY_ALIAS
           keyPassword=$KEY_PASSWORD
           PROPS
+          # Fingerprints are public; Firebase needs them for Google sign-in.
+          {
+            echo "### Upload key fingerprints"
+            echo '```'
+            keytool -list -v -keystore "$RUNNER_TEMP/upload.jks" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" \
+              | grep -E 'SHA1:|SHA256:' | sed 's/^[[:space:]]*//'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build APK
         run: flutter build apk --release --build-number=${{ github.run_number }}
