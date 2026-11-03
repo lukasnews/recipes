@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "651037863938",
+    "project_id": "recipes-f1584",
+    "storage_bucket": "recipes-f1584.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651037863938:android:076ea6e0585adf20b3771b",
+        "android_client_info": {
+          "package_name": "com.javuno.recipes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCR9F01XxVOi2dNiD3xLc_4uBWLJq5HIg8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

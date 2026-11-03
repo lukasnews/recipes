@@ -15,7 +15,7 @@ flutter run -d web-server --web-port 8080
 
 ## Firebase einrichten
 
-1. Firebase-Projekt anlegen, Android-App `at.lukasnews.recipes` registrieren.
+1. Firebase-Projekt anlegen, Android-App `com.javuno.recipes` registrieren.
 2. SHA-1 und SHA-256 des Upload-Keys eintragen (stehen in der Zusammenfassung jedes CI-Laufs).
 3. Authentication: E-Mail/Passwort und Google aktivieren.
 4. Firestore-Datenbank anlegen (europe-west3), Inhalt von `firestore.rules` unter „Regeln“ einfügen.
