@@ -23,7 +23,9 @@ val hasUploadKey = keystoreProperties.getProperty("storeFile") != null
 
 android {
     namespace = "com.javuno.recipes"
-    compileSdk = flutter.compileSdkVersion
+    // receive_sharing_intent needs 37; only affects compiling, not which
+    // devices the app runs on (minSdk) or runtime behavior (targetSdk).
+    compileSdk = maxOf(flutter.compileSdkVersion, 37)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
