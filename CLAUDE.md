@@ -150,7 +150,8 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 
 ## CI (GitHub Actions)
 
-- `.github/workflows/ci.yml`: bei jedem Push/PR `flutter analyze`, `flutter test`, `flutter build apk --debug`, APK als Artefakt.
+- `.github/workflows/ci.yml`: bei jedem Push/PR (und manuell) `flutter analyze`, `flutter test`, dann Release-APK und App-Bundle (AAB) bauen, beide als Artefakt. Sind die Keystore-Secrets gesetzt, wird mit dem Upload-Key signiert, sonst mit dem Debug-Key (APK installierbar, AAB nicht für Play geeignet).
+- Signatur: `android/app/build.gradle.kts` liest `android/key.properties` (gitignored, in CI aus Secrets erzeugt).
 - `.github/workflows/release.yml`: bei Tag `v*` signiertes App-Bundle bauen und in den Play-Track `internal` hochladen.
 - Secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `PLAY_SERVICE_ACCOUNT_JSON`.
 - `versionCode` aus der GitHub-Run-Nummer ableiten.
@@ -168,7 +169,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 
 ### Phase 1 – Grundgerüst (Ziel: im Haushalt nutzbar, interner Test)
 - [x] Projekt anlegen, Ordnerstruktur, Lints (`flutter_lints` strikt), Theme, go_router-Shell mit 4 Reitern
-- [ ] CI-Workflow `ci.yml`
+- [x] CI-Workflow `ci.yml`
 - [ ] Firebase einbinden (flutterfire configure), Offline-Persistenz, Crashlytics
 - [ ] Login (Google + E-Mail), Haushalt anlegen, per Einladungscode beitreten
 - [ ] `firestore.rules` und `storage.rules` mit Tests (Emulator)
