@@ -4,6 +4,11 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      aab:
+        description: Auch App-Bundle (AAB) für Google Play bauen
+        type: boolean
+        default: true
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -13,11 +18,35 @@ env:
   FLUTTER_VERSION: 3.47.9
 
 jobs:
+  # analyze + tests run in parallel to the build; publishing waits for both.
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # update the test-build release
-    timeout-minutes: 45
+    timeout-minutes: 30
+    env:
+      # AAB only for manual runs (checkbox) and version tags; pushes get the
+      # APK only, which is all a test phone needs.
+      BUILD_AAB: ${{ (github.event_name == 'workflow_dispatch' && inputs.aab) || startsWith(github.ref, 'refs/tags/v') }}
     steps:
       - uses: actions/checkout@v5
 
@@ -32,27 +61,10 @@ jobs:
           channel: stable
           cache: true
 
-      # Caches ~/.gradle (dependencies, wrapper, build cache). Only the
-      # default branch writes the cache; branches read it.
       - uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-read-only: false
-
-      # Flutter pins an NDK version that isn't preinstalled on the runner.
-      - name: Cache Android NDK
-        uses: actions/cache@v4
-        with:
-          path: /usr/local/lib/android/sdk/ndk
-          key: ndk-${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}
 
       - name: Install dependencies
         run: flutter pub get
-
-      - name: Analyze
-        run: flutter analyze
-
-      - name: Test
-        run: flutter test
 
       - name: Set up signing key
         env:
@@ -81,48 +93,64 @@ jobs:
             echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
+      # Most of the build time is Dart AOT compilation per CPU type. Test
+      # phones are all arm64, so the APK is built for that only.
       - name: Build APK
-        run: flutter build apk --release --build-number=${{ github.run_number }}
+        run: >
+          flutter build apk --release --target-platform android-arm64
+          --build-number=${{ github.run_number }}
 
       - name: Build App Bundle
+        if: env.BUILD_AAB == 'true'
         run: flutter build appbundle --release --build-number=${{ github.run_number }}
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v5
-        with:
-          name: rezepte-apk-${{ github.run_number }}
-          path: build/app/outputs/flutter-apk/app-release.apk
-          retention-days: 30
+      - name: Collect files
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk dist/BaCo.apk
+          if [ -f build/app/outputs/bundle/release/app-release.aab ]; then
+            cp build/app/outputs/bundle/release/app-release.aab dist/BaCo.aab
+          fi
 
-      - name: Upload App Bundle
-        uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v5
         with:
-          name: rezepte-aab-${{ github.run_number }}
-          path: build/app/outputs/bundle/release/app-release.aab
-          retention-days: 30
+          name: baco-${{ github.run_number }}
+          path: dist/
+          retention-days: 7
 
-      # Rolling pre-release with the latest APK/AAB. The download URL stays
-      # the same: releases/download/test-build/BaCo.apk
+      - name: Remove signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.jks" android/key.properties
+
+  # Rolling pre-release with the latest files. The download URL stays the
+  # same: releases/download/test-build/BaCo.apk
+  publish:
+    needs: [check, build, rules]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: baco-${{ github.run_number }}
+          path: dist
+
       - name: Publish test build release
-        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
-          cp build/app/outputs/flutter-apk/app-release.apk BaCo.apk
-          cp build/app/outputs/bundle/release/app-release.aab BaCo.aab
           gh release delete test-build --yes --cleanup-tag || true
-          gh release create test-build BaCo.apk BaCo.aab \
+          gh release create test-build dist/* \
             --prerelease \
             --target "$GITHUB_SHA" \
             --title "Test-Build #${{ github.run_number }}" \
             --notes "Automatischer Test-Build von \`${GITHUB_REF_NAME}\` (${GITHUB_SHA::7}).
 
           **Am Handy installieren:** BaCo.apk herunterladen und öffnen.
-          BaCo.aab ist für die Play Console."
-
-      - name: Remove signing key
-        if: always()
-        run: rm -f "$RUNNER_TEMP/upload.jks" android/key.properties
+          BaCo.aab (nur bei manuellen Läufen) ist für die Play Console."
 
   rules:
     runs-on: ubuntu-latest
