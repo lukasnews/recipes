@@ -68,8 +68,9 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
     if (ing == null) return;
     setState(() {
       line.ingredient = ing;
-      if (!ing!.unitChoices.contains(line.unit))
+      if (!ing!.unitChoices.contains(line.unit)) {
         line.unit = ing.unitChoices.first;
+      }
       line.location = defaultLocation(ing.aisle);
     });
   }
