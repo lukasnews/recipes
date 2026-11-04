@@ -17,6 +17,7 @@ import '../../mealplan/domain/meal_plan_day.dart';
 import '../domain/allergen_check.dart';
 import '../domain/cook_history.dart';
 import '../domain/recipe.dart';
+import '../domain/recipe_share.dart';
 import '../domain/recipe_stock.dart';
 import 'cooked_dialog.dart';
 
@@ -47,6 +48,22 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     }
     context.pop();
     showSnack(context, l10n.recipeDeleted);
+  }
+
+  void _share(Recipe recipe, int servings) {
+    final l10n = context.l10n;
+    final text = recipeShareText(
+      recipe,
+      labels: (
+        servings: l10n.servingsCount,
+        ingredients: l10n.ingredientsTitle,
+        steps: l10n.stepsTitle,
+      ),
+      ingredients: ref.read(ingredientsByIdProvider),
+      display: ref.read(unitDisplayProvider),
+      servings: servings,
+    );
+    fire(ref.read(sharerProvider).shareText(text, subject: recipe.title));
   }
 
   Future<void> _planDay(Recipe recipe) async {
@@ -132,6 +149,11 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
             tooltip: l10n.addToMealPlan,
             onPressed: () => _planDay(recipe),
             icon: const Icon(Icons.calendar_month_outlined),
+          ),
+          IconButton(
+            tooltip: l10n.shareRecipe,
+            onPressed: () => _share(recipe, servings),
+            icon: const Icon(Icons.share_outlined),
           ),
           IconButton(
             tooltip: l10n.edit,

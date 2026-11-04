@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipes/app/app.dart';
 import 'package:recipes/app/providers.dart';
 import 'package:recipes/core/firebase/photo_cache.dart';
+import 'package:recipes/core/share/sharer.dart';
 import 'package:recipes/features/auth/data/auth_repository.dart';
 import 'package:recipes/features/household/data/household_repository.dart';
 import 'package:recipes/features/import/data/photo_picker.dart';
@@ -83,8 +84,10 @@ Widget testApp({
   required FakeAuthRepository auth,
   RecipeImportService? importService,
   FakePhotoRepository? photos,
+  FakeSharer? sharer,
 }) => ProviderScope(
   overrides: [
+    sharerProvider.overrideWithValue(sharer ?? FakeSharer()),
     photoPickerProvider.overrideWithValue(FakePhotoPicker()),
     sharedLinkSourceProvider.overrideWithValue(FakeSharedLinks()),
     photoCacheProvider.overrideWithValue(FakePhotoCache()),
@@ -178,4 +181,20 @@ class FakeSharedLinks implements SharedLinkSource {
   final controller = StreamController<Uri>.broadcast();
   @override
   Stream<Uri> links() => controller.stream;
+}
+
+class FakeSharer implements Sharer {
+  final texts = <String>[];
+  final files = <String>[];
+
+  @override
+  Future<void> shareText(String text, {String? subject}) async =>
+      texts.add(text);
+
+  @override
+  Future<void> shareFile(
+    String path, {
+    String? mimeType,
+    String? subject,
+  }) async => files.add(path);
 }

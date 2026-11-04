@@ -18,7 +18,7 @@ Diese Datei gibt Claude Code den Kontext für dieses Repository. Sprache im Gesp
 | KI | firebase_ai (Firebase AI Logic, Gemini Developer API) |
 | Texterkennung | google_mlkit_text_recognition (on-device) |
 | Barcode | google_mlkit_barcode_scanning + Open Food Facts API |
-| Sonstiges | flutter_cache_manager (Foto-Cache, Schlüssel = Storage-Pfad, 1 Jahr), image_picker, wakelock_plus (Kochmodus), http, html (JSON-LD-Parsing), receive_sharing_intent (Links teilen) |
+| Sonstiges | share_plus (Teilen, hinter `Sharer`), path_provider, flutter_cache_manager (Foto-Cache, Schlüssel = Storage-Pfad, 1 Jahr), image_picker, wakelock_plus (Kochmodus), http, html (JSON-LD-Parsing), receive_sharing_intent (Links teilen) |
 
 Neue Pakete nur nach Rückfrage hinzufügen. Vor dem Hinzufügen prüfen, ob das Paket gepflegt wird und Android + iOS unterstützt.
 
@@ -241,6 +241,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Wochenplaner → Einkaufsliste
 - [x] Kochverlauf (zuletzt gekocht, Sortierung „Lange nicht gekocht“)
 - [x] Mehrere Haushalte wechseln
+- [x] Rezept teilen (Text mit Zutaten in gewählter Einheit, `recipeShareText`)
 - [ ] Backup/Export und Import (JSON)
 - [ ] Konto- und Datenlöschung in der App, Datenschutzerklärung (GitHub Pages)
 

@@ -616,5 +616,14 @@
   },
   "switchHousehold": "Haushalt wechseln",
   "addHousehold": "Weiteren Haushalt hinzufügen",
-  "addHouseholdSubtitle": "Neu anlegen oder mit Einladungscode beitreten"
+  "addHouseholdSubtitle": "Neu anlegen oder mit Einladungscode beitreten",
+  "shareRecipe": "Rezept teilen",
+  "servingsCount": "{count, plural, =1{1 Portion} other{{count} Portionen}}",
+  "@servingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

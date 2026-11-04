@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/firebase/photo_cache.dart';
 import '../core/matching/ingredient_matcher.dart';
+import '../core/share/sharer.dart';
 import '../core/units/display_units.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/household/data/household_repository.dart';
@@ -226,6 +227,8 @@ final photoFileProvider = FutureProvider.family<File, String>((
   final url = await ref.read(photoRepositoryProvider).downloadUrl(path);
   return cache.download(path, url);
 });
+
+final sharerProvider = Provider<Sharer>((ref) => const SystemSharer());
 
 final sharedLinkSourceProvider = Provider<SharedLinkSource>(
   (ref) => ReceiveSharingIntentLinks(),
