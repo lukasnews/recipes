@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../ingredients/domain/ingredient.dart';
+import '../../recipes/domain/recipe.dart';
 import '../domain/household.dart';
 
 class InviteNotFoundException implements Exception {}
@@ -56,6 +57,7 @@ class HouseholdRepository {
     required String uid,
     required String name,
     required List<Ingredient> seed,
+    List<Recipe> recipes = const [],
   }) async {
     var code = _newCode();
     for (var i = 0; i < 5; i++) {
@@ -79,6 +81,14 @@ class HouseholdRepository {
       }, SetOptions(merge: true));
     for (final ing in seed) {
       batch.set(household.collection('ingredients').doc(ing.id), ing.toMap());
+    }
+    for (final r in recipes) {
+      batch.set(household.collection('recipes').doc(r.id), {
+        ...r.toMap(),
+        'createdBy': uid,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
     }
     await batch.commit();
     return household.id;

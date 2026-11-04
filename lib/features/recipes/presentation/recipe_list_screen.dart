@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
+import '../../../core/firebase/fire.dart';
 import '../../../core/matching/normalize.dart';
 import '../../../core/widgets/async_view.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -17,6 +18,7 @@ import '../domain/allergen_check.dart';
 import '../domain/cook_history.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_stock.dart';
+import '../domain/sample_recipes.dart';
 
 /// Local full text search over title, tags and ingredient lines.
 bool recipeMatches(Recipe r, String query) {
@@ -47,6 +49,16 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
   bool _longNotCooked = false;
   bool _showFilters = false;
   String _query = '';
+
+  /// Example recipes for a household that has none (yet).
+  Future<void> _addSamples() async {
+    final raw = await ref.read(sampleRecipesRawProvider.future);
+    final recipes = sampleRecipes(raw, ref.read(ingredientMatcherProvider));
+    final repo = ref.read(recipeRepositoryProvider);
+    for (final r in recipes) {
+      fire(repo.save(r, isNew: true));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -206,6 +218,11 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                         icon: Icons.menu_book_outlined,
                         message:
                             '${l10n.recipesEmpty}\n${l10n.recipesEmptyHint}',
+                        action: OutlinedButton.icon(
+                          onPressed: _addSamples,
+                          icon: const Icon(Icons.auto_awesome_outlined),
+                          label: Text(l10n.addSampleRecipes),
+                        ),
                       )
                     : coverages.isEmpty
                     ? EmptyState(

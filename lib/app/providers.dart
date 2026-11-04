@@ -37,6 +37,7 @@ import '../features/recipes/data/photo_repository.dart';
 import '../features/recipes/data/recipe_repository.dart';
 import '../features/recipes/domain/cook_history.dart';
 import '../features/recipes/domain/recipe.dart';
+import '../features/recipes/domain/sample_recipes.dart';
 import '../features/settings/data/account_deletion.dart';
 import '../features/settings/data/backup_service.dart';
 import '../features/shopping/data/shopping_repository.dart';
@@ -98,6 +99,22 @@ String _requireUid(Ref ref) {
 }
 
 // --- Seed -----------------------------------------------------------------
+
+/// Example recipes for new households, linked to the seed ingredients.
+final sampleRecipesProvider = FutureProvider<List<Recipe>>((ref) async {
+  final seed = await ref.watch(seedIngredientsProvider.future);
+  return sampleRecipes(
+    await ref.watch(sampleRecipesRawProvider.future),
+    IngredientMatcher(seed.map((i) => i.candidate)),
+  );
+});
+
+final sampleRecipesRawProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
+  final raw = await rootBundle.loadString('assets/seed/recipes_de.json');
+  return (jsonDecode(raw) as List<dynamic>).cast<Map<String, dynamic>>();
+});
 
 final seedIngredientsProvider = FutureProvider<List<Ingredient>>((ref) async {
   final raw = await rootBundle.loadString('assets/seed/ingredients_de.json');

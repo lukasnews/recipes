@@ -729,5 +729,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "addSampleRecipes": "Beispielrezepte hinzufügen"
 }

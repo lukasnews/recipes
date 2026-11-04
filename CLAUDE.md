@@ -48,6 +48,7 @@ lib/
   app/providers.dart   # all Riverpod providers (session, repositories, live data)
 assets/
   seed/ingredients_de.json   # seed ingredient list incl. Austrian synonyms
+  seed/recipes_de.json       # 4 example recipes for new households (lines: [amount, unit, name, note])
 test/                        # mirrors lib/; test/helpers/fakes.dart = fake auth + fake Firestore app
 test_rules/                  # Firestore rules tests (Node, emulator): cd test_rules && npm ci && npm test
 ```
@@ -132,6 +133,7 @@ households/{hid}/cookLog/{logId}
 - **Sicherung:** Einstellungen → Daten → „Daten sichern“ schreibt `BaCo-<Haushalt>-<Datum>.json` (`BackupService.export`, Format `baco-backup` v1, Timestamps als `{"$ts": iso}`; ohne `members`) und öffnet das Teilen-Menü. Wiederherstellen: Datei mit BaCo teilen/öffnen (Intent-Filter `application/json`, `application/octet-stream`) → `SharedFile` → Bestätigung → `restore` (gleiche ids überschreiben, Batches à 450, Fotos fremder Haushalte entfernt).
 - **Barcode:** Vorrat → Scan-Symbol → Kamerafoto → `BarcodeReader` (ML Kit, EAN/UPC) → bekannter Code aus `barcodes/` (offline) oder `ProductLookup` (Open Food Facts v2, neutraler User-Agent `BaCo/1.0`, keine Nutzerdaten) → Zutat per Matcher (ganzer Name oder einzelnes Wort, nur sichere Treffer) oder Auswahl mit vorbefülltem Namen → Hinzufügen-Formular mit Packungsgröße (`parseProductQuantity`). Nach dem Speichern wird der Code gemerkt. Passt die Packungseinheit nicht zur Zutat, wird die Umrechnung einmal erfragt.
 - **Konto löschen** (Einstellungen, ganz unten): Bestätigung → neu anmelden (Google bzw. Passwort) → Haushalte, in denen man allein ist, komplett löschen (Unter-Sammlungen in Batches, Fotos, Einladung, dann Haushalt; Regel erlaubt Löschen nur dem letzten Mitglied) bzw. aus gemeinsamen austreten (erst eigenen `members`-Eintrag, dann `memberIds`) → `users/{uid}` → Auth-Konto. Braucht Netz.
+- **Beispielrezepte:** Neue Haushalte bekommen Kaiserschmarrn, Rindsgulasch, Erdäpfelsalat und Vanillekipferl (`sampleRecipes`, nur sichere Zutaten-Treffer verknüpft) im selben Batch wie die Zutaten. Leere Rezeptliste zeigt „Beispielrezepte hinzufügen“.
 - **Suche** läuft lokal über die gecachten Rezepte (Firestore hat keine Volltextsuche). Haushalte sind klein, das reicht.
 - **Zutaten zusammenführen:** Doppelte (z. B. „Sahne“ und „Schlagobers“) erkennt `IngredientMatcher.findDuplicates`; die Zutaten-Verwaltung zeigt sie an. Beim Zusammenführen werden Name und Synonyme der aufgelösten Zutat Synonyme der behaltenen; Rezepte, Vorrat (nur bei gleicher Basiseinheit) und Einkaufsliste werden umgehängt.
 - **Bevorzugter Begriff:** `name` ist der angezeigte Begriff. In der Zutaten-Bearbeitung kann ein Synonym zum Namen gemacht werden (`Ingredient.withPreferredName`), der alte Name wird Synonym. Die id bleibt, Erkennung findet weiter alle Begriffe. Verknüpfte Einkaufsposten zeigen immer den aktuellen Namen.

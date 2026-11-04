@@ -62,9 +62,10 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
     }
     await _run((uid) async {
       final seed = await ref.read(seedIngredientsProvider.future);
+      final recipes = await ref.read(sampleRecipesProvider.future);
       await ref
           .read(householdRepositoryProvider)
-          .createHousehold(uid: uid, name: name, seed: seed);
+          .createHousehold(uid: uid, name: name, seed: seed, recipes: recipes);
     });
   }
 

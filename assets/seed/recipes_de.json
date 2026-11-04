@@ -1,0 +1,292 @@
+[
+ {
+  "id": "beispiel-kaiserschmarrn",
+  "title": "Kaiserschmarrn",
+  "category": "cooking",
+  "servings": 2,
+  "prepMinutes": 10,
+  "cookMinutes": 15,
+  "tags": [
+   "süß",
+   "schnell"
+  ],
+  "ingredients": [
+   [
+    125,
+    "g",
+    "Mehl glatt",
+    null
+   ],
+   [
+    250,
+    "ml",
+    "Milch",
+    null
+   ],
+   [
+    4,
+    null,
+    "Eier",
+    null
+   ],
+   [
+    30,
+    "g",
+    "Kristallzucker",
+    null
+   ],
+   [
+    1,
+    "Pkg.",
+    "Vanillezucker",
+    null
+   ],
+   [
+    40,
+    "g",
+    "Butter",
+    "zum Backen"
+   ],
+   [
+    40,
+    "g",
+    "Rosinen",
+    "in Rum eingeweicht, nach Belieben"
+   ],
+   [
+    null,
+    null,
+    "Staubzucker",
+    "zum Bestreuen"
+   ]
+  ],
+  "steps": [
+   "Eier trennen. Dotter mit Milch, Mehl und Vanillezucker glatt rühren.",
+   "Eiklar mit dem Kristallzucker steif schlagen und vorsichtig unter den Teig heben.",
+   "Butter in einer großen Pfanne erhitzen, Teig eingießen, Rosinen darüberstreuen und bei mittlerer Hitze 4 Minuten backen.",
+   "Wenden, mit zwei Gabeln in Stücke reißen und weitere 3 Minuten fertig backen.",
+   "Mit Staubzucker bestreuen. Dazu passt Zwetschkenröster oder Apfelmus."
+  ]
+ },
+ {
+  "id": "beispiel-gulasch",
+  "title": "Rindsgulasch",
+  "category": "cooking",
+  "servings": 4,
+  "prepMinutes": 20,
+  "cookMinutes": 150,
+  "tags": [
+   "Klassiker"
+  ],
+  "ingredients": [
+   [
+    1,
+    "kg",
+    "Rindsgulasch",
+    "Wadschinken, in Würfeln"
+   ],
+   [
+    1,
+    "kg",
+    "Zwiebel",
+    null
+   ],
+   [
+    4,
+    "EL",
+    "Öl",
+    null
+   ],
+   [
+    3,
+    "EL",
+    "Paprikapulver edelsüß",
+    null
+   ],
+   [
+    2,
+    "EL",
+    "Paradeismark",
+    null
+   ],
+   [
+    2,
+    null,
+    "Knoblauch",
+    "Zehen"
+   ],
+   [
+    1,
+    "TL",
+    "Kümmel",
+    "gemahlen"
+   ],
+   [
+    1,
+    "TL",
+    "Majoran",
+    null
+   ],
+   [
+    1,
+    "EL",
+    "Essig",
+    null
+   ],
+   [
+    null,
+    null,
+    "Salz",
+    null
+   ]
+  ],
+  "steps": [
+   "Zwiebeln fein schneiden und im Öl bei mittlerer Hitze 20 Minuten langsam goldbraun rösten.",
+   "Paradeismark kurz mitrösten, Paprikapulver einrühren und sofort mit Essig und etwas Wasser ablöschen.",
+   "Fleisch, Knoblauch, Kümmel und Majoran dazugeben, salzen und knapp mit Wasser bedecken.",
+   "Zugedeckt 2½ Stunden leise schmoren, bis das Fleisch weich ist. Ab und zu umrühren und Wasser nachgießen.",
+   "Abschmecken. Schmeckt aufgewärmt am nächsten Tag noch besser."
+  ]
+ },
+ {
+  "id": "beispiel-erdaepfelsalat",
+  "title": "Erdäpfelsalat",
+  "category": "cooking",
+  "servings": 4,
+  "prepMinutes": 20,
+  "cookMinutes": 25,
+  "tags": [
+   "Beilage"
+  ],
+  "ingredients": [
+   [
+    1,
+    "kg",
+    "Erdäpfel speckig",
+    null
+   ],
+   [
+    1,
+    null,
+    "Zwiebel",
+    "fein gehackt"
+   ],
+   [
+    250,
+    "ml",
+    "Rindsuppe",
+    "heiß"
+   ],
+   [
+    4,
+    "EL",
+    "Essig",
+    null
+   ],
+   [
+    4,
+    "EL",
+    "Öl",
+    null
+   ],
+   [
+    1,
+    "TL",
+    "Senf",
+    null
+   ],
+   [
+    1,
+    "Prise",
+    "Kristallzucker",
+    null
+   ],
+   [
+    null,
+    null,
+    "Salz",
+    null
+   ],
+   [
+    null,
+    null,
+    "Pfeffer",
+    null
+   ],
+   [
+    null,
+    null,
+    "Schnittlauch",
+    "zum Bestreuen"
+   ]
+  ],
+  "steps": [
+   "Erdäpfel in der Schale etwa 25 Minuten weich kochen, schälen und noch warm in dünne Scheiben schneiden.",
+   "Rindsuppe mit Essig, Senf, Zucker, Salz und Pfeffer aufkochen und mit der Zwiebel über die warmen Erdäpfel gießen.",
+   "Vorsichtig mischen und 15 Minuten ziehen lassen, dann das Öl unterheben.",
+   "Abschmecken und mit Schnittlauch bestreuen. Lauwarm servieren."
+  ]
+ },
+ {
+  "id": "beispiel-vanillekipferl",
+  "title": "Vanillekipferl",
+  "category": "cookies",
+  "servings": 60,
+  "prepMinutes": 40,
+  "cookMinutes": 12,
+  "tags": [
+   "Weihnachten"
+  ],
+  "ingredients": [
+   [
+    280,
+    "g",
+    "Mehl glatt",
+    null
+   ],
+   [
+    210,
+    "g",
+    "Butter",
+    "kalt"
+   ],
+   [
+    100,
+    "g",
+    "Mandeln gerieben",
+    null
+   ],
+   [
+    70,
+    "g",
+    "Staubzucker",
+    null
+   ],
+   [
+    2,
+    null,
+    "Eier",
+    "nur die Dotter"
+   ],
+   [
+    2,
+    "Pkg.",
+    "Vanillezucker",
+    "zum Wälzen"
+   ],
+   [
+    100,
+    "g",
+    "Staubzucker",
+    "zum Wälzen"
+   ]
+  ],
+  "steps": [
+   "Mehl, Butter, Mandeln, Staubzucker und Dotter rasch zu einem glatten Teig kneten.",
+   "Teig in Folie wickeln und 30 Minuten kühl rasten lassen.",
+   "Backrohr auf 170 °C Ober-/Unterhitze vorheizen. Teig zu dünnen Rollen formen, Stücke abschneiden und zu Kipferln biegen.",
+   "Auf einem Backblech mit Backpapier 12 Minuten hell backen.",
+   "Staubzucker mit Vanillezucker mischen und die Kipferl noch warm darin wälzen."
+  ]
+ }
+]

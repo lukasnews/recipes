@@ -36,7 +36,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(NavigationBar), findsOneWidget);
-    expect(find.textContaining('Noch keine Rezepte'), findsOneWidget);
+    // New households start with example recipes.
+    expect(find.text('Kaiserschmarrn'), findsOneWidget);
   });
 
   testWidgets('ready household: tabs, settings with invite code', (

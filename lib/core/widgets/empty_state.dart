@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 
 /// Centered icon and message for empty lists.
 class EmptyState extends StatelessWidget {
-  const EmptyState({super.key, required this.icon, required this.message});
+  const EmptyState({
+    super.key,
+    required this.icon,
+    required this.message,
+    this.action,
+  });
 
   final IconData icon;
   final String message;
+
+  /// Optional button below the message.
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +31,7 @@ class EmptyState extends StatelessWidget {
               style: theme.textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
+            if (action != null) ...[const SizedBox(height: 24), action!],
           ],
         ),
       ),
