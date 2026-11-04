@@ -42,6 +42,7 @@ import '../features/recipes/domain/recipe.dart';
 import '../features/recipes/domain/sample_recipes.dart';
 import '../features/settings/data/account_deletion.dart';
 import '../features/settings/data/backup_service.dart';
+import '../features/shopping/data/home_screen_widget.dart';
 import '../features/shopping/data/shopping_repository.dart';
 import '../features/shopping/domain/shopping_item.dart';
 
@@ -304,6 +305,10 @@ final productLookupProvider = Provider<ProductLookup>(
 final barcodeRepositoryProvider = Provider<BarcodeRepository>(
   (ref) =>
       BarcodeRepository(ref.watch(firestoreProvider), _requireHousehold(ref)),
+);
+
+final homeScreenWidgetProvider = Provider<HomeScreenWidget>(
+  (ref) => platformHomeScreenWidget(),
 );
 
 final sharerProvider = Provider<Sharer>((ref) => const SystemSharer());

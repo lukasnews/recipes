@@ -1,0 +1,59 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:recipes/features/auth/data/auth_repository.dart';
+import 'package:recipes/features/mealplan/data/meal_plan_repository.dart';
+import 'package:recipes/features/mealplan/domain/meal_plan_day.dart';
+import 'package:recipes/features/recipes/data/recipe_repository.dart';
+import 'package:recipes/features/recipes/domain/recipe.dart';
+
+import '../../helpers/fakes.dart';
+
+void main() {
+  testWidgets('home screen widget shows today and open items; tap opens '
+      'the shopping list', (tester) async {
+    final db = FakeFirebaseFirestore();
+    final hid = await seedHousehold(db);
+    await RecipeRepository(
+      db,
+      hid,
+    ).save(const Recipe(id: 'k', title: 'Kaiserschmarrn'), isNew: true);
+    await MealPlanRepository(db, hid).add(dayKey(DateTime.now()), 'k');
+    final shop = db.collection('households').doc(hid).collection('shopping');
+    await shop.add({
+      'text': 'Sahne',
+      'ingredientId': 'schlagobers',
+      'amount': 250,
+      'unit': 'ml',
+      'aisle': 'dairy',
+      'checked': false,
+    });
+    await shop.add({
+      'text': 'Semmeln',
+      'amount': 6,
+      'unit': 'Stk.',
+      'aisle': 'bread',
+      'checked': false,
+    });
+    await shop.add({'text': 'Kaffee', 'aisle': 'drinks', 'checked': true});
+    final widget = FakeHomeScreenWidget();
+    await tester.pumpWidget(
+      testApp(
+        db: db,
+        auth: FakeAuthRepository(const AuthUser(uid: 'u1')),
+        homeWidget: widget,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final last = widget.updates.last;
+    expect(last.title, 'Einkauf (2)');
+    expect(last.today, 'Heute: Kaiserschmarrn');
+    // Linked item shows the ingredient's current name; bread before dairy.
+    expect(last.items, '• 6 Semmeln\n• 250 ml Schlagobers');
+
+    widget.clickController.add(Uri.parse('baco://shopping'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Schlagobers'), findsWidgets);
+    expect(find.textContaining('Was brauchst du?'), findsOneWidget);
+  });
+}

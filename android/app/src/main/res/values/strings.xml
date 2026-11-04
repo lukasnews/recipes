@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_label">BaCo Einkauf</string>
+    <string name="widget_description">Heutiges Gericht und offene Einkaufsliste</string>
+    <string name="widget_open_app">BaCo öffnen, um die Liste zu laden</string>
+</resources>

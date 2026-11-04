@@ -26,6 +26,7 @@ import 'package:recipes/features/recipes/data/photo_upload_queue.dart';
 import 'package:recipes/features/recipes/data/timer_alarms.dart';
 import 'package:recipes/features/recipes/domain/nutrition.dart';
 import 'package:recipes/features/recipes/presentation/cook_timers.dart';
+import 'package:recipes/features/shopping/data/home_screen_widget.dart';
 
 class FakeAuthRepository implements AuthRepository {
   FakeAuthRepository([this._user]);
@@ -119,8 +120,12 @@ Widget testApp({
   ProductLookup? products,
   List<Ingredient>? seed,
   FakeExtractor? extractor,
+  FakeHomeScreenWidget? homeWidget,
 }) => ProviderScope(
   overrides: [
+    homeScreenWidgetProvider.overrideWithValue(
+      homeWidget ?? FakeHomeScreenWidget(),
+    ),
     recipeExtractorProvider.overrideWith(
       (ref) async => extractor ?? FakeExtractor(const []),
     ),
@@ -306,4 +311,20 @@ class MemoryPendingUploadStore implements PendingUploadStore {
   Future<String> keep(String file) async => file;
   @override
   Future<void> discard(String file) async {}
+}
+
+class FakeHomeScreenWidget implements HomeScreenWidget {
+  final updates = <WidgetContent>[];
+  // ignore: close_sinks
+  final clickController = StreamController<Uri?>.broadcast();
+  Uri? launchedWith;
+
+  @override
+  Future<void> update(WidgetContent content) async => updates.add(content);
+
+  @override
+  Future<Uri?> initialClick() async => launchedWith;
+
+  @override
+  Stream<Uri?> clicks() => clickController.stream;
 }

@@ -771,5 +771,30 @@
         "type": "String"
       }
     }
+  },
+  "widgetTitle": "{count, plural, =0{Einkauf} other{Einkauf ({count})}}",
+  "widgetToday": "Heute: {titles}",
+  "widgetListEmpty": "Die Einkaufsliste ist leer",
+  "widgetMore": "+ {count} weitere",
+  "@widgetTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@widgetToday": {
+    "placeholders": {
+      "titles": {
+        "type": "String"
+      }
+    }
+  },
+  "@widgetMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
