@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthUser {
   const AuthUser({required this.uid, this.email, this.displayName});
@@ -49,14 +50,49 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   AuthUser? get currentUser => _map(_auth.currentUser);
 
+  /// Web client id; normally read by the plugin from google-services.json
+  /// (`default_web_client_id`), this define only overrides it.
+  static const _webClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
+
+  Future<void>? _googleInit;
+
+  /// Native account picker (Credential Manager), no browser round trip.
+  /// Returns null when the native flow isn't configured, so the caller can
+  /// fall back to the browser flow.
+  Future<AuthCredential?> _nativeGoogleCredential() async {
+    final google = GoogleSignIn.instance;
+    try {
+      await (_googleInit ??= google.initialize(
+        serverClientId: _webClientId.isEmpty ? null : _webClientId,
+      ));
+      final account = await google.authenticate();
+      final idToken = account.authentication.idToken;
+      if (idToken == null) return null;
+      return GoogleAuthProvider.credential(idToken: idToken);
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled ||
+          e.code == GoogleSignInExceptionCode.interrupted) {
+        throw const GoogleSignInCancelled();
+      }
+      debugPrint('Native Google sign-in unavailable: ${e.code}');
+      return null;
+    }
+  }
+
+  GoogleAuthProvider get _browserProvider =>
+      GoogleAuthProvider()..setCustomParameters({'prompt': 'select_account'});
+
   @override
   Future<void> signInWithGoogle() async {
-    final provider = GoogleAuthProvider()
-      ..setCustomParameters({'prompt': 'select_account'});
     if (kIsWeb) {
-      await _auth.signInWithPopup(provider);
+      await _auth.signInWithPopup(_browserProvider);
+      return;
+    }
+    final credential = await _nativeGoogleCredential();
+    if (credential != null) {
+      await _auth.signInWithCredential(credential);
     } else {
-      await _auth.signInWithProvider(provider);
+      await _auth.signInWithProvider(_browserProvider);
     }
   }
 
@@ -83,7 +119,13 @@ class FirebaseAuthRepository implements AuthRepository {
       _auth.sendPasswordResetEmail(email: email.trim());
 
   @override
-  Future<void> signOut() => _auth.signOut();
+  Future<void> signOut() async {
+    // Next sign-in shows the account picker again.
+    if (!kIsWeb && _googleInit != null) {
+      await GoogleSignIn.instance.signOut().catchError((Object _) {});
+    }
+    await _auth.signOut();
+  }
 
   @override
   bool get usesPassword =>
@@ -106,10 +148,20 @@ class FirebaseAuthRepository implements AuthRepository {
     } else if (kIsWeb) {
       await user.reauthenticateWithPopup(GoogleAuthProvider());
     } else {
-      await user.reauthenticateWithProvider(GoogleAuthProvider());
+      final credential = await _nativeGoogleCredential();
+      if (credential != null) {
+        await user.reauthenticateWithCredential(credential);
+      } else {
+        await user.reauthenticateWithProvider(GoogleAuthProvider());
+      }
     }
   }
 
   @override
   Future<void> deleteUser() async => _auth.currentUser?.delete();
+}
+
+/// The person closed the Google account picker.
+class GoogleSignInCancelled implements Exception {
+  const GoogleSignInCancelled();
 }
