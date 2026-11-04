@@ -107,7 +107,7 @@ households/{hid}/barcodes/{code}   # remembered EAN -> ingredient
   ingredientId, amount?, unit?, name?, updatedAt
 
 households/{hid}/mealplan/{yyyy-MM-dd}
-  recipeIds: [string]
+  recipeIds: [string], frozenMealIds?: [string]
 
 households/{hid}/cookLog/{logId}
   recipeId, servings, cookedAt
@@ -124,6 +124,7 @@ households/{hid}/cookLog/{logId}
 - **„Was kann ich kochen?“** wird lokal berechnet: pro Rezept Anteil der Zutaten, die der Vorrat abdeckt (alwaysAvailable zählt als vorhanden), plus Liste der fehlenden. Sortierung: abgedeckt absteigend, dann fehlende Anzahl.
 - **Fehlendes einkaufen:** fehlende Differenz je Zutat auf die Einkaufsliste; existiert die Zutat schon unabgehakt, Menge addieren statt doppelt anlegen.
 - **Mindestbestand:** fällt `amount` unter `minAmount`, Eintrag auf die Einkaufsliste (einmalig, kein Duplikat).
+- **Wochenplan:** Auswahl zeigt zuerst „Aus dem Tiefkühler“ (Gerichte mit Portionen), dann Rezepte ohne Kategorie Kekse. Geplantes Tiefkühl-Gericht antippen → „Portion entnehmen“ (Increment −1). Tiefkühl-Gerichte zählen nicht für „Woche einkaufen“.
 - **Woche einkaufen** (Wochenplan): Bedarf aller ab heute geplanten Rezepte der angezeigten Woche summiert, Vorrat einmal abgezogen (`weekShoppingNeeds`), Auswahl per Häkchen, dann auf die Einkaufsliste.
 - **Kochverlauf:** aus `cookLog` (ohne `undone`) → `cookStats` (Anzahl, zuletzt). Rezept-Detail „Zuletzt vor … gekocht · n×“, Liste mit Chip „Lange nicht gekocht“ (`longNotCooked`).
 - **Ablaufdatum:** `pantry.expiresOn` optional in beiden Vorrat-Formularen. ≤ 3 Tage = „bald ablaufend“, davor „abgelaufen“; solche Einträge stehen oben im Abschnitt „Bald ablaufend“. „Was kann ich kochen?“ reiht bei gleicher Abdeckung Rezepte vor, die bald Ablaufendes verbrauchen.
@@ -166,7 +167,7 @@ households/{hid}/cookLog/{logId}
 ## UI
 
 - Bottom-Navigation: **Rezepte · Wochenplan · Einkauf · Vorrat**. Einstellungen über Profilbild oben rechts.
-- Kategorien (Kochen, Kuchen, Kekse, eigene) sind Filter-Chips im Rezepte-Reiter, keine eigenen Reiter.
+- Kategorien (Kochen, Kuchen, Kekse, eigene) sind Filter-Chips im Rezepte-Reiter, keine eigenen Reiter. Weitere Filter (Mit Vorrat kochbar, Lange nicht gekocht, Für alle verträglich) liegen hinter dem Filter-Knopf rechts (Zähler zeigt aktive).
 - Alle Texte über `flutter_localizations` / ARB-Dateien (`lib/l10n/app_de.arb`), keine hart codierten Strings in Widgets.
 - Material 3, Hell- und Dunkelmodus, große Touch-Ziele (Kochen mit nassen Händen). Theme in `lib/app/theme.dart`, Routen in `lib/app/routes.dart` / `router.dart` (StatefulShellRoute, Einstellungen als Vollbild-Route über der Shell).
 

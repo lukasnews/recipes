@@ -167,7 +167,7 @@ final shoppingProvider = StreamProvider<List<ShoppingItem>>(
   (ref) => ref.watch(shoppingRepositoryProvider).watchAll(),
 );
 
-final mealPlanProvider = StreamProvider<Map<String, List<String>>>(
+final mealPlanProvider = StreamProvider<Map<String, MealPlanDay>>(
   (ref) => ref.watch(mealPlanRepositoryProvider).watchAll(),
 );
 

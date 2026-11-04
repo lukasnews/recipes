@@ -45,6 +45,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
   bool _cookable = false;
   bool _safeForAll = false;
   bool _longNotCooked = false;
+  bool _showFilters = false;
   String _query = '';
 
   @override
@@ -95,6 +96,13 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
             ];
           }
 
+          final showSafeFilter = members.any((m) => m.allergens.isNotEmpty);
+          final activeFilters = [
+            _cookable,
+            _longNotCooked,
+            _safeForAll && showSafeFilter,
+          ].where((b) => b).length;
+
           return Column(
             children: [
               Padding(
@@ -105,53 +113,92 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                   onChanged: (v) => setState(() => _query = v),
                 ),
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    FilterChip(
-                      avatar: const Icon(Icons.kitchen_outlined),
-                      label: Text(l10n.sortCookable),
-                      selected: _cookable,
-                      onSelected: (v) => setState(() {
-                        _cookable = v;
-                        if (v) _longNotCooked = false;
-                      }),
-                    ),
-                    FilterChip(
-                      avatar: const Icon(Icons.history),
-                      label: Text(l10n.sortLongNotCooked),
-                      selected: _longNotCooked,
-                      onSelected: (v) => setState(() {
-                        _longNotCooked = v;
-                        if (v) _cookable = false;
-                      }),
-                    ),
-                    if (members.any((m) => m.allergens.isNotEmpty))
-                      FilterChip(
-                        avatar: const Icon(Icons.health_and_safety_outlined),
-                        label: Text(l10n.filterSafeForAll),
-                        selected: _safeForAll,
-                        onSelected: (v) => setState(() => _safeForAll = v),
+              Row(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
+                      child: Row(
+                        spacing: 8,
+                        children: [
+                          ChoiceChip(
+                            label: Text(l10n.categoryAll),
+                            selected: _category == null,
+                            onSelected: (_) => setState(() => _category = null),
+                          ),
+                          for (final c in [
+                            ...RecipeCategories.builtIn,
+                            ...custom,
+                          ])
+                            ChoiceChip(
+                              label: Text(l10n.category(c)),
+                              selected: _category == c,
+                              onSelected: (_) => setState(() => _category = c),
+                            ),
+                        ],
                       ),
-                    ChoiceChip(
-                      label: Text(l10n.categoryAll),
-                      selected: _category == null,
-                      onSelected: (_) => setState(() => _category = null),
                     ),
-                    for (final c in [...RecipeCategories.builtIn, ...custom])
-                      ChoiceChip(
-                        label: Text(l10n.category(c)),
-                        selected: _category == c,
-                        onSelected: (_) => setState(() => _category = c),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Badge(
+                      isLabelVisible: activeFilters > 0 && !_showFilters,
+                      label: Text('$activeFilters'),
+                      child: IconButton(
+                        tooltip: l10n.moreFilters,
+                        isSelected: _showFilters,
+                        onPressed: () =>
+                            setState(() => _showFilters = !_showFilters),
+                        icon: const Icon(Icons.tune),
+                        selectedIcon: const Icon(Icons.expand_less),
                       ),
-                  ],
-                ),
+                    ),
+                  ),
+                ],
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                alignment: Alignment.topCenter,
+                child: !_showFilters
+                    ? const SizedBox(width: double.infinity)
+                    : Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            FilterChip(
+                              avatar: const Icon(Icons.kitchen_outlined),
+                              label: Text(l10n.sortCookable),
+                              selected: _cookable,
+                              onSelected: (v) => setState(() {
+                                _cookable = v;
+                                if (v) _longNotCooked = false;
+                              }),
+                            ),
+                            FilterChip(
+                              avatar: const Icon(Icons.history),
+                              label: Text(l10n.sortLongNotCooked),
+                              selected: _longNotCooked,
+                              onSelected: (v) => setState(() {
+                                _longNotCooked = v;
+                                if (v) _cookable = false;
+                              }),
+                            ),
+                            if (showSafeFilter)
+                              FilterChip(
+                                avatar: const Icon(
+                                  Icons.health_and_safety_outlined,
+                                ),
+                                label: Text(l10n.filterSafeForAll),
+                                selected: _safeForAll,
+                                onSelected: (v) =>
+                                    setState(() => _safeForAll = v),
+                              ),
+                          ],
+                        ),
+                      ),
               ),
               Expanded(
                 child: recipes.isEmpty

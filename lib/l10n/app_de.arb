@@ -671,5 +671,25 @@
         "type": "String"
       }
     }
+  },
+  "moreFilters": "Weitere Filter",
+  "fromFreezer": "Aus dem Tiefkühler",
+  "frozenMealGone": "Nicht mehr im Tiefkühler",
+  "frozenTake": "Portion entnehmen",
+  "frozenTakeQuestion": "{count, plural, =1{Die letzte Portion aus dem Tiefkühler nehmen?} other{Eine von {count} Portionen aus dem Tiefkühler nehmen?}}",
+  "frozenTaken": "{title}: 1 Portion entnommen",
+  "@frozenTakeQuestion": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@frozenTaken": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
   }
 }

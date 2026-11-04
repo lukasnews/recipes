@@ -58,7 +58,7 @@ void main() {
       ('Wochenplan', 'Heute'),
       ('Einkauf', 'Die Einkaufsliste ist leer'),
       ('Vorrat', 'Der Vorrat ist leer'),
-      ('Rezepte', 'Mit Vorrat kochbar'),
+      ('Rezepte', 'Alle'),
     ]) {
       await tester.tap(find.descendant(of: nav, matching: find.text(tab)));
       await tester.pumpAndSettle();

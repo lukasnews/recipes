@@ -10,7 +10,9 @@ import '../../../core/units/units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/profile_button.dart';
+import '../../pantry/domain/frozen_meal.dart';
 import '../../recipes/domain/recipe.dart';
+import '../data/meal_plan_repository.dart';
 import '../domain/meal_plan_day.dart';
 import '../domain/week_shopping.dart';
 
@@ -25,15 +27,39 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
   DateTime _week = startOfWeek(DateTime.now());
 
   Future<void> _addRecipe(DateTime day) async {
-    final recipes = ref.read(recipesProvider).value ?? const <Recipe>[];
-    final picked = await showModalBottomSheet<Recipe>(
+    // Cookies aren't a meal.
+    final recipes = [
+      for (final r in ref.read(recipesProvider).value ?? const <Recipe>[])
+        if (r.category != RecipeCategories.cookies) r,
+    ];
+    final frozen = ref.read(frozenMealsProvider).value ?? const <FrozenMeal>[];
+    final picked = await showModalBottomSheet<Object>(
       context: context,
       useSafeArea: true,
       isScrollControlled: true,
-      builder: (context) => _RecipePicker(recipes: recipes),
+      builder: (context) => _RecipePicker(recipes: recipes, frozen: frozen),
     );
-    if (picked == null) return;
-    fire(ref.read(mealPlanRepositoryProvider).add(dayKey(day), picked.id));
+    final repo = ref.read(mealPlanRepositoryProvider);
+    switch (picked) {
+      case Recipe(:final id):
+        fire(repo.add(dayKey(day), id));
+      case FrozenMeal(:final id):
+        fire(repo.addFrozen(dayKey(day), id));
+    }
+  }
+
+  /// Takes one portion of a planned freezer dish out of the freezer.
+  Future<void> _takePortion(FrozenMeal meal) async {
+    final l10n = context.l10n;
+    final ok = await confirmDialog(
+      context,
+      title: meal.title,
+      message: l10n.frozenTakeQuestion(meal.portions),
+      confirmLabel: l10n.frozenTake,
+    );
+    if (!ok || !mounted) return;
+    fire(ref.read(frozenMealRepositoryProvider).changePortions(meal, -1));
+    showSnack(context, l10n.frozenTaken(meal.title));
   }
 
   /// Puts what the planned recipes of this week (today onwards) still need
@@ -50,7 +76,8 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
     final planned = [
       for (var i = 0; i < 7; i++)
         for (final id
-            in plan[dayKey(DateTime(_week.year, _week.month, _week.day + i))] ??
+            in plan[dayKey(DateTime(_week.year, _week.month, _week.day + i))]
+                    ?.recipeIds ??
                 const <String>[])
           if (dayKey(DateTime(_week.year, _week.month, _week.day + i))
                       .compareTo(todayKey) >=
@@ -148,6 +175,11 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
       for (final r in ref.watch(recipesProvider).value ?? const <Recipe>[])
         r.id: r,
     };
+    final frozen = {
+      for (final m
+          in ref.watch(frozenMealsProvider).value ?? const <FrozenMeal>[])
+        m.id: m,
+    };
     final today = DateTime.now();
     final dayFormat = DateFormat('EEEE, d. MMMM', 'de');
 
@@ -198,7 +230,8 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
               itemBuilder: (context, i) {
                 final day = DateTime(_week.year, _week.month, _week.day + i);
                 final key = dayKey(day);
-                final ids = plan[key] ?? const [];
+                final dayPlan = plan[key] ?? const MealPlanDay();
+                final ids = dayPlan.recipeIds;
                 final isToday = key == dayKey(today);
                 return Card(
                   margin: const EdgeInsets.symmetric(
@@ -228,7 +261,7 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
                             ),
                           ],
                         ),
-                        if (ids.isEmpty)
+                        if (dayPlan.isEmpty)
                           Text(
                             l10n.nothingPlanned,
                             style: theme.textTheme.bodySmall,
@@ -250,6 +283,31 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
                               icon: const Icon(Icons.close),
                             ),
                           ),
+                        for (final id in dayPlan.frozenMealIds)
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.ac_unit),
+                            title: Text(
+                              frozen[id]?.title ?? l10n.frozenMealGone,
+                            ),
+                            subtitle: frozen[id] == null
+                                ? null
+                                : Text(
+                                    l10n.frozenPortions(frozen[id]!.portions),
+                                  ),
+                            onTap: frozen[id] == null
+                                ? null
+                                : () => _takePortion(frozen[id]!),
+                            trailing: IconButton(
+                              tooltip: l10n.delete,
+                              onPressed: () => fire(
+                                ref
+                                    .read(mealPlanRepositoryProvider)
+                                    .removeFrozen(key, id),
+                              ),
+                              icon: const Icon(Icons.close),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -264,9 +322,10 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
 }
 
 class _RecipePicker extends StatefulWidget {
-  const _RecipePicker({required this.recipes});
+  const _RecipePicker({required this.recipes, required this.frozen});
 
   final List<Recipe> recipes;
+  final List<FrozenMeal> frozen;
 
   @override
   State<_RecipePicker> createState() => _RecipePickerState();
@@ -278,9 +337,19 @@ class _RecipePickerState extends State<_RecipePicker> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final list = widget.recipes
-        .where((r) => r.title.toLowerCase().contains(_q.toLowerCase()))
-        .toList();
+    bool hit(String title) => title.toLowerCase().contains(_q.toLowerCase());
+    final list = widget.recipes.where((r) => hit(r.title)).toList();
+    final frozen = widget.frozen.where((m) => hit(m.title)).toList();
+    final theme = Theme.of(context);
+    Widget header(String text) => Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: Text(
+        text,
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.colorScheme.primary,
+        ),
+      ),
+    );
     return Padding(
       padding: EdgeInsets.only(
         bottom:
@@ -302,10 +371,21 @@ class _RecipePickerState extends State<_RecipePicker> {
               ),
             ),
             Expanded(
-              child: list.isEmpty
+              child: list.isEmpty && frozen.isEmpty
                   ? Center(child: Text(l10n.recipesEmpty))
                   : ListView(
                       children: [
+                        if (frozen.isNotEmpty) ...[
+                          header(l10n.fromFreezer),
+                          for (final m in frozen)
+                            ListTile(
+                              leading: const Icon(Icons.ac_unit),
+                              title: Text(m.title),
+                              subtitle: Text(l10n.frozenPortions(m.portions)),
+                              onTap: () => Navigator.pop(context, m),
+                            ),
+                          if (list.isNotEmpty) header(l10n.navRecipes),
+                        ],
                         for (final r in list)
                           ListTile(
                             title: Text(r.title),
