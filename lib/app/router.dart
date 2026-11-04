@@ -10,6 +10,7 @@ import '../features/ingredients/presentation/ingredient_edit_screen.dart';
 import '../features/ingredients/presentation/ingredients_screen.dart';
 import '../features/mealplan/presentation/meal_plan_screen.dart';
 import '../features/pantry/presentation/pantry_screen.dart';
+import '../features/recipes/presentation/cook_mode_screen.dart';
 import '../features/recipes/presentation/recipe_detail_screen.dart';
 import '../features/recipes/presentation/recipe_edit_screen.dart';
 import '../features/recipes/presentation/recipe_list_screen.dart';
@@ -96,6 +97,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                       recipeId: state.pathParameters['id']!,
                     ),
                     routes: [
+                      GoRoute(
+                        path: 'cook',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) => CookModeScreen(
+                          recipeId: state.pathParameters['id']!,
+                          servings: state.extra is int
+                              ? state.extra! as int
+                              : null,
+                        ),
+                      ),
                       GoRoute(
                         path: 'edit',
                         parentNavigatorKey: _rootNavigatorKey,

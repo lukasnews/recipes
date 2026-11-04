@@ -498,5 +498,30 @@
         "type": "String"
       }
     }
+  },
+  "cookMode": "Kochmodus",
+  "cookStepOf": "Schritt {step} von {total}",
+  "cookStep": "Schritt {step}",
+  "cookNext": "Weiter",
+  "cookBack": "Zurück",
+  "cookNoSteps": "Dieses Rezept hat keine Zubereitungsschritte.",
+  "timerDone": "Timer abgelaufen",
+  "timerPlusOne": "+1 Min.",
+  "@cookStepOf": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@cookStep": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -221,7 +221,8 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] „Was kann ich kochen?“
 - [x] Mindestbestand → Einkaufsliste
 - [x] Abgehakte Einkäufe in den Vorrat übernehmen
-- [ ] Kochmodus (Schritt für Schritt, Wakelock, Timer)
+- [x] Kochmodus (Schritt für Schritt, Wakelock, Timer) – Timer werden aus dem Schritttext erkannt (`parseStepTimers`), laufen parallel über Schritte weiter, Alarm per Vibration/Ton/Dialog solange die App offen ist; am Ende „Gekocht“-Dialog
+- [ ] Timer-Benachrichtigung bei geschlossener App (bräuchte flutter_local_notifications)
 - [x] Link-Import (JSON-LD, Teilen-Menü) mit Prüf-Bildschirm
 - [x] Texterkennung gedruckt (ML Kit) mit Prüf-Bildschirm (Rückfall ohne Internet)
 

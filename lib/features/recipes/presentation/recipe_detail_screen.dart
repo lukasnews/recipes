@@ -266,6 +266,20 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 icon: const Icon(Icons.add_shopping_cart),
                 label: Text(l10n.buyMissing),
               ),
+              if (recipe.steps.isNotEmpty)
+                FilledButton.tonalIcon(
+                  onPressed: () async {
+                    final cooked = await context.push<bool>(
+                      Routes.cookRecipe(recipe.id),
+                      extra: servings,
+                    );
+                    if (cooked == true && context.mounted) {
+                      await showCookedDialog(context, ref, recipe, servings);
+                    }
+                  },
+                  icon: const Icon(Icons.soup_kitchen_outlined),
+                  label: Text(l10n.cookMode),
+                ),
               FilledButton.icon(
                 onPressed: () =>
                     showCookedDialog(context, ref, recipe, servings),

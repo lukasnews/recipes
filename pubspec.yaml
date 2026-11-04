@@ -29,6 +29,7 @@ dependencies:
   image_picker: ^1.2.4
   intl: ^0.20.3
   receive_sharing_intent: ^1.9.0
+  wakelock_plus: ^1.8.2
 
 dev_dependencies:
   flutter_test:
