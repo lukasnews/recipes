@@ -164,7 +164,7 @@ final mealPlanProvider = StreamProvider<Map<String, List<String>>>(
 /// Gemini model name from Remote Config key `ai_model` (never hard coded
 /// in a release; the value here is only the fallback default).
 final aiModelProvider = FutureProvider<String>((ref) async {
-  const fallback = 'gemini-flash-latest';
+  const fallback = 'gemini-3.8-flash';
   try {
     final rc = FirebaseRemoteConfig.instance;
     await rc.setDefaults(const {'ai_model': fallback});

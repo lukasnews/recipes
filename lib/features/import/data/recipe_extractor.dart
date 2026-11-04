@@ -24,9 +24,13 @@ class GeminiRecipeExtractor implements RecipeExtractor {
   /// Tried in order when a model name is unknown or retired, so an old
   /// default never breaks the import. Remote Config stays the first choice.
   static const fallbackModels = [
+    'gemini-3.8-flash',
+    'gemini-3.7-flash',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash',
+    'gemini-3-flash-preview',
     'gemini-flash-latest',
     'gemini-2.5-flash',
-    'gemini-2.0-flash',
   ];
 
   static bool isUnknownModel(Object e) {
@@ -35,7 +39,8 @@ class GeminiRecipeExtractor implements RecipeExtractor {
         m.contains('is not supported') ||
         m.contains('404') ||
         m.contains('unknown model') ||
-        m.contains('deprecated');
+        m.contains('deprecated') ||
+        m.contains('does not have access');
   }
 
   static const _prompt = '''
