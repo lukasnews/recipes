@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:go_router/go_router.dart';
+
 import '../../../app/providers.dart';
+import '../../../app/routes.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../data/household_repository.dart';
 
 class HouseholdSetupScreen extends ConsumerStatefulWidget {
-  const HouseholdSetupScreen({super.key});
+  const HouseholdSetupScreen({super.key, this.additional = false});
+
+  /// Opened from the settings to add another household.
+  final bool additional;
 
   @override
   ConsumerState<HouseholdSetupScreen> createState() =>
@@ -38,6 +44,7 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
       final repo = ref.read(householdRepositoryProvider);
       await repo.ensureUser(user.uid, user.bestName);
       await action(user.uid);
+      if (widget.additional && mounted) context.go(Routes.recipes);
     } on InviteNotFoundException {
       if (mounted) setState(() => _error = l10n.inviteNotFound);
     } catch (e) {
@@ -80,12 +87,15 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.householdSetupTitle),
+        title: Text(
+          widget.additional ? l10n.addHousehold : l10n.householdSetupTitle,
+        ),
         actions: [
-          TextButton(
-            onPressed: () => ref.read(authRepositoryProvider).signOut(),
-            child: Text(l10n.signOut),
-          ),
+          if (!widget.additional)
+            TextButton(
+              onPressed: () => ref.read(authRepositoryProvider).signOut(),
+              child: Text(l10n.signOut),
+            ),
         ],
       ),
       body: ListView(

@@ -152,6 +152,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SettingsScreen(),
         routes: [
           GoRoute(
+            path: 'household/add',
+            builder: (context, state) =>
+                const HouseholdSetupScreen(additional: true),
+          ),
+          GoRoute(
             path: 'allergies',
             builder: (context, state) => const AllergiesScreen(),
           ),

@@ -613,5 +613,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "switchHousehold": "Haushalt wechseln",
+  "addHousehold": "Weiteren Haushalt hinzufügen",
+  "addHouseholdSubtitle": "Neu anlegen oder mit Einladungscode beitreten"
 }

@@ -20,6 +20,10 @@ class _MemberSyncState extends ConsumerState<MemberSync> {
   @override
   void initState() {
     super.initState();
+    _sync();
+  }
+
+  void _sync() {
     final user = ref.read(authUserProvider).value;
     if (user != null) {
       fire(ref.read(memberRepositoryProvider).ensure(user.uid, user.bestName));
@@ -34,5 +38,11 @@ class _MemberSyncState extends ConsumerState<MemberSync> {
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    // Switching households: the new one needs the member entry too.
+    ref.listen(householdIdProvider, (prev, next) {
+      if (next != null && next != prev) _sync();
+    });
+    return widget.child;
+  }
 }

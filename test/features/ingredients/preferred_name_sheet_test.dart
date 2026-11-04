@@ -15,6 +15,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Profil und Einstellungen'));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('Zutaten verwalten'), 200);
     await tester.tap(find.text('Zutaten verwalten'));
     await tester.pumpAndSettle();
 

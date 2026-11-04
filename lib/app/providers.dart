@@ -62,11 +62,16 @@ final appUserProvider = StreamProvider<AppUser?>((ref) {
   return ref.watch(householdRepositoryProvider).watchUser(uid);
 });
 
-/// Active household; the first one the user belongs to.
-final householdIdProvider = Provider<String?>((ref) {
-  final ids = ref.watch(appUserProvider.select((u) => u.value?.householdIds));
-  return (ids == null || ids.isEmpty) ? null : ids.first;
-});
+/// Active household: the one picked in the settings, else the first.
+final householdIdProvider = Provider<String?>(
+  (ref) =>
+      ref.watch(appUserProvider.select((u) => u.value?.currentHouseholdId)),
+);
+
+/// Any household the user belongs to (names for the switcher).
+final householdByIdProvider = StreamProvider.family<Household?, String>(
+  (ref, hid) => ref.watch(householdRepositoryProvider).watchHousehold(hid),
+);
 
 final householdProvider = StreamProvider<Household?>((ref) {
   final hid = ref.watch(householdIdProvider);

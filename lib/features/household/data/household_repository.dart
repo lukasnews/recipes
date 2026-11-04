@@ -75,6 +75,7 @@ class HouseholdRepository {
       ..set(_db.collection('invites').doc(code), {'householdId': household.id})
       ..set(_user(uid), {
         'householdIds': FieldValue.arrayUnion([household.id]),
+        'activeHouseholdId': household.id,
       }, SetOptions(merge: true));
     for (final ing in seed) {
       batch.set(household.collection('ingredients').doc(ing.id), ing.toMap());
@@ -99,10 +100,14 @@ class HouseholdRepository {
       })
       ..set(_user(uid), {
         'householdIds': FieldValue.arrayUnion([hid]),
+        'activeHouseholdId': hid,
       }, SetOptions(merge: true));
     await batch.commit();
     return hid;
   }
+
+  Future<void> setActiveHousehold(String uid, String hid) =>
+      _user(uid).set({'activeHouseholdId': hid}, SetOptions(merge: true));
 
   Future<void> setUnitDisplay(String uid, String mode) =>
       _user(uid).set({'unitDisplay': mode}, SetOptions(merge: true));

@@ -47,12 +47,48 @@ class SettingsScreen extends ConsumerWidget {
     fire(ref.read(householdRepositoryProvider).rename(hid, name));
   }
 
+  Future<void> _switch(
+    BuildContext context,
+    WidgetRef ref,
+    List<String> ids,
+    String current,
+  ) async {
+    final picked = await showDialog<String>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(context.l10n.switchHousehold),
+        children: [
+          for (final id in ids)
+            Consumer(
+              builder: (context, ref, _) {
+                final name = ref.watch(householdByIdProvider(id)).value?.name;
+                return ListTile(
+                  leading: Icon(
+                    id == current
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_unchecked,
+                  ),
+                  title: Text(name ?? '…'),
+                  onTap: () => Navigator.pop(context, id),
+                );
+              },
+            ),
+        ],
+      ),
+    );
+    final uid = ref.read(authUserProvider).value?.uid;
+    if (picked == null || picked == current || uid == null) return;
+    fire(ref.read(householdRepositoryProvider).setActiveHousehold(uid, picked));
+    if (context.mounted) context.go(Routes.recipes);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final user = ref.watch(authUserProvider).value;
     final household = ref.watch(householdProvider).value;
+    final householdIds = ref.watch(appUserProvider).value?.householdIds ?? [];
 
     Widget section(String title) => Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
@@ -90,6 +126,20 @@ class SettingsScreen extends ConsumerWidget {
                 onPressed: () => _rename(context, ref, household.name),
                 icon: const Icon(Icons.edit_outlined),
               ),
+            ),
+            if (householdIds.length > 1)
+              ListTile(
+                leading: const Icon(Icons.swap_horiz),
+                title: Text(l10n.switchHousehold),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _switch(context, ref, householdIds, household.id),
+              ),
+            ListTile(
+              leading: const Icon(Icons.add_home_outlined),
+              title: Text(l10n.addHousehold),
+              subtitle: Text(l10n.addHouseholdSubtitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push(Routes.addHousehold),
             ),
             ListTile(
               leading: const Icon(Icons.group_add_outlined),

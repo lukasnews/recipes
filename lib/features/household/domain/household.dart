@@ -27,6 +27,7 @@ class AppUser {
     required this.displayName,
     required this.householdIds,
     this.unitDisplay,
+    this.activeHouseholdId,
   });
 
   factory AppUser.fromMap(String uid, Map<String, dynamic> m) => AppUser(
@@ -34,6 +35,7 @@ class AppUser {
     displayName: m.str('displayName'),
     householdIds: m.strings('householdIds'),
     unitDisplay: m.strOrNull('unitDisplay'),
+    activeHouseholdId: m.strOrNull('activeHouseholdId'),
   );
 
   final String uid;
@@ -42,4 +44,11 @@ class AppUser {
 
   /// Per-person preference, see UnitDisplay.
   final String? unitDisplay;
+
+  /// Household picked in the settings; falls back to the first one.
+  final String? activeHouseholdId;
+
+  String? get currentHouseholdId => householdIds.contains(activeHouseholdId)
+      ? activeHouseholdId
+      : (householdIds.isEmpty ? null : householdIds.first);
 }
