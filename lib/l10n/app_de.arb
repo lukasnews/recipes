@@ -531,5 +531,16 @@
   "unitDisplayMetric": "Gramm & Milliliter",
   "unitDisplayMetricHint": "25 dag → 250 g, ⅛ l → 125 ml, ab 1000 in kg/l",
   "unitDisplayAustrian": "Dekagramm (österreichisch)",
-  "unitDisplayAustrianHint": "250 g → 25 dag, ab 1 kg in kg"
+  "unitDisplayAustrianHint": "250 g → 25 dag, ab 1 kg in kg",
+  "weekShopTitle": "Woche einkaufen",
+  "weekShopHint": "{count, plural, =1{Für 1 geplantes Rezept fehlt:} other{Für {count} geplante Rezepte fehlt:}}",
+  "weekNothingPlanned": "Für diese Woche ist ab heute nichts geplant.",
+  "weekAllInStock": "Alles für die geplanten Rezepte ist im Vorrat.",
+  "@weekShopHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

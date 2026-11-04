@@ -6,10 +6,13 @@ import 'package:intl/intl.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../core/firebase/fire.dart';
+import '../../../core/units/units.dart';
+import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/profile_button.dart';
 import '../../recipes/domain/recipe.dart';
 import '../domain/meal_plan_day.dart';
+import '../domain/week_shopping.dart';
 
 class MealPlanScreen extends ConsumerStatefulWidget {
   const MealPlanScreen({super.key});
@@ -33,6 +36,109 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
     fire(ref.read(mealPlanRepositoryProvider).add(dayKey(day), picked.id));
   }
 
+  /// Puts what the planned recipes of this week (today onwards) still need
+  /// on the shopping list, after a review with checkboxes.
+  Future<void> _shopWeek() async {
+    final l10n = context.l10n;
+    final plan = ref.read(mealPlanProvider).value ?? const {};
+    final recipes = {
+      for (final r in ref.read(recipesProvider).value ?? const <Recipe>[])
+        r.id: r,
+    };
+    final today = DateTime.now();
+    final todayKey = dayKey(today);
+    final planned = [
+      for (var i = 0; i < 7; i++)
+        for (final id
+            in plan[dayKey(DateTime(_week.year, _week.month, _week.day + i))] ??
+                const <String>[])
+          if (dayKey(DateTime(_week.year, _week.month, _week.day + i))
+                      .compareTo(todayKey) >=
+                  0 &&
+              recipes[id] != null)
+            recipes[id]!,
+    ];
+    final needs = weekShoppingNeeds(
+      planned,
+      ref.read(ingredientsByIdProvider),
+      ref.read(pantryProvider).value ?? const {},
+    );
+    if (needs.isEmpty) {
+      showSnack(
+        context,
+        planned.isEmpty ? l10n.weekNothingPlanned : l10n.weekAllInStock,
+      );
+      return;
+    }
+    final selected = {for (var i = 0; i < needs.length; i++) i};
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(l10n.weekShopTitle),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Text(l10n.weekShopHint(planned.length)),
+                for (final (i, n) in needs.indexed)
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: selected.contains(i),
+                    onChanged: (v) => setState(
+                      () => v == true ? selected.add(i) : selected.remove(i),
+                    ),
+                    title: Text(n.ingredient.name),
+                    subtitle: n.missingBase == null
+                        ? null
+                        : Text(
+                            formatBaseAmount(
+                              n.missingBase!,
+                              n.ingredient.baseUnit,
+                            ),
+                          ),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(l10n.add),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (ok != true || !mounted) return;
+    final repo = ref.read(shoppingRepositoryProvider);
+    final current = ref.read(shoppingProvider).value ?? const [];
+    var count = 0;
+    for (final (i, n) in needs.indexed) {
+      if (!selected.contains(i)) continue;
+      final ing = n.ingredient;
+      fire(
+        repo.add(
+          text: ing.name,
+          current: current,
+          ingredientId: ing.id,
+          amount: n.missingBase,
+          unit: n.missingBase == null
+              ? null
+              : (ing.baseUnit == BaseUnit.pcs ? 'Stk.' : ing.baseUnit.name),
+          aisle: ing.aisle,
+        ),
+      );
+      count++;
+    }
+    showSnack(context, l10n.buyMissingDone(count));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -48,7 +154,14 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.navMealPlan),
-        actions: const [ProfileButton()],
+        actions: [
+          IconButton(
+            tooltip: l10n.weekShopTitle,
+            onPressed: _shopWeek,
+            icon: const Icon(Icons.add_shopping_cart),
+          ),
+          const ProfileButton(),
+        ],
       ),
       body: Column(
         children: [
