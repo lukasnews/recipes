@@ -695,5 +695,14 @@
   "buyMissingAgainTitle": "Schon auf der Einkaufsliste",
   "buyMissingAgainMessage": "Die Zutaten dieses Rezepts stehen schon auf der Einkaufsliste. Nochmal hinzufügen? Die Mengen werden dann addiert.",
   "buyMissingAgain": "Nochmal hinzufügen",
-  "alreadyOnList": "schon auf der Liste"
+  "alreadyOnList": "schon auf der Liste",
+  "deleteAccountTitle": "Konto löschen",
+  "deleteAccountSubtitle": "Konto und Daten endgültig löschen",
+  "deleteAccountMessage": "Dein Konto wird endgültig gelöscht.\n\nHaushalte, in denen du allein bist, werden mit allen Rezepten, Fotos, Vorrat und Listen gelöscht. Aus gemeinsamen Haushalten wirst du entfernt; die Daten bleiben für die anderen.\n\nTipp: vorher „Daten sichern“.",
+  "deleteAccountConfirm": "Endgültig löschen",
+  "deletingAccount": "Konto wird gelöscht …",
+  "accountDeleted": "Konto gelöscht",
+  "deleteAccountFailed": "Löschen hat nicht geklappt. Bitte später nochmal versuchen.",
+  "confirmPasswordTitle": "Passwort bestätigen",
+  "wrongPassword": "Falsches Passwort"
 }

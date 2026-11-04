@@ -10,6 +10,7 @@ import '../../../core/units/display_units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import 'backup_actions.dart';
+import 'delete_account.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -229,6 +230,16 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => showRestoreHelp(context),
             ),
           ],
+          section(l10n.settingsAccount),
+          ListTile(
+            leading: Icon(Icons.delete_forever, color: theme.colorScheme.error),
+            title: Text(
+              l10n.deleteAccountTitle,
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
+            subtitle: Text(l10n.deleteAccountSubtitle),
+            onTap: () => deleteAccount(context, ref),
+          ),
           const SizedBox(height: 24),
           Center(
             child: Text(

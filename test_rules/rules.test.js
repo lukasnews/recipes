@@ -6,7 +6,9 @@ import {
   initializeTestEnvironment,
 } from '@firebase/rules-unit-testing';
 import {
+  arrayRemove,
   arrayUnion,
+  deleteDoc,
   doc,
   getDoc,
   setDoc,
@@ -155,5 +157,35 @@ describe('users', () => {
   test('only own user doc', async () => {
     await assertSucceeds(setDoc(doc(as('bob'), 'users/bob'), { displayName: 'Bob' }));
     await assertFails(getDoc(doc(as('bob'), 'users/alice')));
+  });
+});
+
+describe('deleting the account', () => {
+  beforeEach(reset);
+
+  test('last member deletes data, invite and household', async () => {
+    const db = as('alice');
+    await assertSucceeds(deleteDoc(doc(db, 'households/h1/recipes/r1')));
+    await assertSucceeds(deleteDoc(doc(db, 'invites/ABC234')));
+    await assertSucceeds(deleteDoc(doc(db, 'households/h1')));
+  });
+
+  test('stranger cannot delete a household', async () => {
+    await assertFails(deleteDoc(doc(as('mallory'), 'households/h1')));
+  });
+
+  test('a household with other members cannot be deleted, only left', async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore();
+      await updateDoc(doc(db, 'households/h1'), { memberIds: ['alice', 'bob'] });
+      await setDoc(doc(db, 'households/h1/members/bob'), { displayName: 'Bob' });
+    });
+    const db = as('bob');
+    await assertFails(deleteDoc(doc(db, 'households/h1')));
+    await assertSucceeds(deleteDoc(doc(db, 'households/h1/members/bob')));
+    await assertSucceeds(
+      updateDoc(doc(db, 'households/h1'), { memberIds: arrayRemove('bob') }),
+    );
+    await assertFails(getDoc(doc(db, 'households/h1/recipes/r1')));
   });
 });

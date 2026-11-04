@@ -62,6 +62,25 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async => _set(null);
+
+  @override
+  bool usesPassword = false;
+
+  String? reauthPassword;
+  var reauthenticated = false;
+  var deleted = false;
+
+  @override
+  Future<void> reauthenticate({String? password}) async {
+    reauthenticated = true;
+    reauthPassword = password;
+  }
+
+  @override
+  Future<void> deleteUser() async {
+    deleted = true;
+    _set(null);
+  }
 }
 
 const testSeed = [

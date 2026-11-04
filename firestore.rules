@@ -43,6 +43,10 @@ service cloud.firestore {
       allow create: if signedIn()
         && request.resource.data.memberIds == [request.auth.uid];
 
+      // Deleting the account: the last member deletes the household
+      // (after its subcollections and invite).
+      allow delete: if signedIn() && resource.data.memberIds == [request.auth.uid];
+
       // Members may change the household (name, leaving, ...).
       allow update: if (signedIn() && request.auth.uid in resource.data.memberIds)
         // Joining: only add yourself, proving the invite code.

@@ -24,6 +24,14 @@ abstract class AuthRepository {
   Future<void> registerWithEmail(String name, String email, String password);
   Future<void> sendPasswordReset(String email);
   Future<void> signOut();
+
+  /// Signed in with e-mail and password (re-authentication needs it).
+  bool get usesPassword;
+
+  /// Fresh sign-in, required by Firebase before deleting the account.
+  Future<void> reauthenticate({String? password});
+
+  Future<void> deleteUser();
 }
 
 class FirebaseAuthRepository implements AuthRepository {
@@ -76,4 +84,32 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() => _auth.signOut();
+
+  @override
+  bool get usesPassword =>
+      _auth.currentUser?.providerData.any(
+        (p) => p.providerId == EmailAuthProvider.PROVIDER_ID,
+      ) ??
+      false;
+
+  @override
+  Future<void> reauthenticate({String? password}) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    if (usesPassword) {
+      await user.reauthenticateWithCredential(
+        EmailAuthProvider.credential(
+          email: user.email ?? '',
+          password: password ?? '',
+        ),
+      );
+    } else if (kIsWeb) {
+      await user.reauthenticateWithPopup(GoogleAuthProvider());
+    } else {
+      await user.reauthenticateWithProvider(GoogleAuthProvider());
+    }
+  }
+
+  @override
+  Future<void> deleteUser() async => _auth.currentUser?.delete();
 }
