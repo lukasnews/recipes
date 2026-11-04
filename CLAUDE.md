@@ -182,6 +182,7 @@ flutter test
 flutter run -d web-server --web-port 8080   # Vorschau im Codespace (ohne Kamera/ML Kit)
 flutter build apk --debug
 flutter test tool/screenshots/screenshots_test.dart   # Store-Screenshots (Demo-Daten, echte Schrift) -> assets/branding/screenshots/
+python3 assets/branding/store_frame.py               # daraus Store-Bilder mit Rahmen und Text -> assets/branding/store/
 ```
 
 App-Symbol: Quelle `assets/branding/icon*.svg` (Topf mit Dampf auf Grün). Daraus gerendert (Playwright/Chromium): adaptive Icons `mipmap-*/ic_launcher_{foreground,background,monochrome}.png` + `mipmap-anydpi-v26/ic_launcher.xml`, ältere `ic_launcher.png`, Play-Symbol `play_icon_512.png`, Vorstellungsgrafik `feature_graphic_1024x500.png`.
