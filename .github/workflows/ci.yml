@@ -100,6 +100,7 @@ jobs:
           flutter build apk --release --target-platform android-arm64
           --build-number=${{ github.run_number }}
           --dart-define=BUILD_NUMBER=${{ github.run_number }}
+          --dart-define=APPCHECK_DEBUG_TOKEN=${{ secrets.APPCHECK_DEBUG_TOKEN }}
 
       - name: Build App Bundle
         if: env.BUILD_AAB == 'true'

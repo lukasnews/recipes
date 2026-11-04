@@ -179,7 +179,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - `.github/workflows/ci.yml` (parallele Jobs): `check` = `flutter analyze` + `flutter test`; `rules` = Firestore-Regeln im Emulator; `build` = Release-APK nur für arm64 (spart den Großteil der Dart-AOT-Zeit), AAB nur bei manuellem Lauf (Häkchen) oder Tag `v*`; `publish` (wartet auf alle) legt pro Build ein Release `build-N` „BaCo Android build N“ an (als „Latest“ markiert, die letzten 30 bleiben), mit `BaCo.apk` (+ `BaCo.aab`); fester Link `releases/latest/download/BaCo.apk`. Ohne Keystore-Secrets wird mit dem Debug-Key signiert. Caches: Flutter, Pub, Gradle.
 - Signatur: `android/app/build.gradle.kts` liest `android/key.properties` (gitignored, in CI aus Secrets erzeugt).
 - `.github/workflows/release.yml`: bei Tag `v*` signiertes App-Bundle bauen und in den Play-Track `internal` hochladen.
-- Secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `PLAY_SERVICE_ACCOUNT_JSON`.
+- Secrets: `APPCHECK_DEBUG_TOKEN` (nur APK-Testbuilds), `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `PLAY_SERVICE_ACCOUNT_JSON`.
 - `versionCode` aus der GitHub-Run-Nummer ableiten.
 
 ## Arbeitsweise für Claude Code
@@ -205,7 +205,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Rezept-Fotos (Cloud Storage, Blaze aktiv)
 - [x] Storage-Regeln mit Tests (nur Bilder, max. 5 MB)
 - [ ] Foto-Uploads in eine dauerhafte Offline-Warteschlange (jetzt: Upload im Hintergrund, Hinweis bei Fehler)
-- [ ] App Check (Play Integrity) für AI Logic – erst wenn die App über Play installiert wird, sonst schlagen Sideload-Builds fehl
+- [x] App Check: Play Integrity für Play-Builds; Test-APKs aus der CI nutzen den Debug-Provider mit `APPCHECK_DEBUG_TOKEN` (GitHub-Secret, in Firebase → App Check → Debug-Tokens registriert). Ab 2. 11. 2026 erzwingt AI Logic App Check.
 - [ ] Regeln automatisch deployen (CI mit Service-Account)
 - [ ] Zutaten-Zusammenführen: Duplikat-Hinweis beim Anlegen einer neuen Zutat
 - [x] Suche und Filter
