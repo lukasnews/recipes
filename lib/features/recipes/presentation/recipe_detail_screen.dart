@@ -15,6 +15,7 @@ import '../../../core/widgets/rating_stars.dart';
 import '../../../core/widgets/storage_image.dart';
 import '../../mealplan/domain/meal_plan_day.dart';
 import '../domain/allergen_check.dart';
+import '../domain/cook_history.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_stock.dart';
 import 'cooked_dialog.dart';
@@ -114,6 +115,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     );
     final needs = {for (final n in coverage.needs) n.ingredient.id: n};
     final allergens = recipeAllergens(recipe, ingredients);
+    final stats = ref.watch(cookStatsProvider).value?[recipe.id];
     final frozen = (ref.watch(frozenMealsProvider).value ?? const [])
         .where((m) => m.recipeId == recipe.id)
         .fold<int>(0, (sum, m) => sum + m.portions);
@@ -217,6 +219,14 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
               ),
             ),
           ],
+          const SizedBox(height: 8),
+          Text(
+            stats == null
+                ? l10n.neverCooked
+                : '${l10n.lastCooked(daysBetween(stats.lastCooked, DateTime.now()))}'
+                      ' · ${l10n.cookedTimes(stats.count)}',
+            style: theme.textTheme.bodySmall,
+          ),
           const SizedBox(height: 8),
           RatingStars(
             rating: recipe.rating,

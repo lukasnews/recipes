@@ -542,5 +542,40 @@
         "type": "int"
       }
     }
+  },
+  "lastCookedToday": "Zuletzt heute gekocht",
+  "lastCookedDays": "{days, plural, =1{Zuletzt gestern gekocht} other{Zuletzt vor {days} Tagen gekocht}}",
+  "lastCookedWeeks": "{weeks, plural, =1{Zuletzt vor 1 Woche gekocht} other{Zuletzt vor {weeks} Wochen gekocht}}",
+  "lastCookedMonths": "{months, plural, =1{Zuletzt vor 1 Monat gekocht} other{Zuletzt vor {months} Monaten gekocht}}",
+  "cookedTimes": "{count, plural, =1{1× gekocht} other{{count}× gekocht}}",
+  "neverCooked": "Noch nie gekocht",
+  "sortLongNotCooked": "Lange nicht gekocht",
+  "@lastCookedDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "@lastCookedWeeks": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "@lastCookedMonths": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "@cookedTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

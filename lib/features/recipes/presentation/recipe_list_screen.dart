@@ -13,6 +13,7 @@ import '../../../core/widgets/rating_stars.dart';
 import '../../../core/widgets/storage_image.dart';
 import '../../import/presentation/import_actions.dart';
 import '../domain/allergen_check.dart';
+import '../domain/cook_history.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_stock.dart';
 
@@ -42,6 +43,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
   String? _category;
   bool _cookable = false;
   bool _safeForAll = false;
+  bool _longNotCooked = false;
   String _query = '';
 
   @override
@@ -81,6 +83,13 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
             for (final r in filtered) computeCoverage(r, ingredients, pantry),
           ];
           if (_cookable) coverages = rankByCoverage(coverages);
+          if (_longNotCooked) {
+            final stats = ref.watch(cookStatsProvider).value ?? const {};
+            final byId = {for (final c in coverages) c.recipe.id: c};
+            coverages = [
+              for (final id in longNotCooked(byId.keys, stats)) byId[id]!,
+            ];
+          }
 
           return Column(
             children: [
@@ -105,7 +114,19 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                       avatar: const Icon(Icons.kitchen_outlined),
                       label: Text(l10n.sortCookable),
                       selected: _cookable,
-                      onSelected: (v) => setState(() => _cookable = v),
+                      onSelected: (v) => setState(() {
+                        _cookable = v;
+                        if (v) _longNotCooked = false;
+                      }),
+                    ),
+                    FilterChip(
+                      avatar: const Icon(Icons.history),
+                      label: Text(l10n.sortLongNotCooked),
+                      selected: _longNotCooked,
+                      onSelected: (v) => setState(() {
+                        _longNotCooked = v;
+                        if (v) _cookable = false;
+                      }),
                     ),
                     if (members.any((m) => m.allergens.isNotEmpty))
                       FilterChip(

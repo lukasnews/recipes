@@ -31,6 +31,7 @@ import '../features/pantry/domain/frozen_meal.dart';
 import '../features/pantry/domain/pantry_item.dart';
 import '../features/recipes/data/photo_repository.dart';
 import '../features/recipes/data/recipe_repository.dart';
+import '../features/recipes/domain/cook_history.dart';
 import '../features/recipes/domain/recipe.dart';
 import '../features/shopping/data/shopping_repository.dart';
 import '../features/shopping/domain/shopping_item.dart';
@@ -254,4 +255,9 @@ final unitDisplayProvider = Provider<UnitDisplay>(
   (ref) => UnitDisplay.parse(
     ref.watch(appUserProvider.select((u) => u.value?.unitDisplay)),
   ),
+);
+
+/// Recipe id -> how often / when last cooked.
+final cookStatsProvider = StreamProvider<Map<String, CookStats>>(
+  (ref) => ref.watch(recipeRepositoryProvider).watchCookLog().map(cookStats),
 );

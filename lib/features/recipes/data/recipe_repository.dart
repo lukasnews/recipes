@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../domain/cook_history.dart';
 import '../domain/recipe.dart';
 
 class RecipeRepository {
@@ -19,6 +20,13 @@ class RecipeRepository {
   );
 
   String newId() => _col.doc().id;
+
+  Stream<List<CookLogEntry>> watchCookLog() => _household
+      .collection('cookLog')
+      .snapshots()
+      .map(
+        (s) => s.docs.map((d) => CookLogEntry.fromMap(d.id, d.data())).toList(),
+      );
 
   Future<void> save(Recipe recipe, {required bool isNew}) =>
       _col.doc(recipe.id).set({

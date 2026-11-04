@@ -65,4 +65,12 @@ extension LabelL10n on AppLocalizations {
       (list.toList()..sort((a, b) => a.index - b.index))
           .map(allergen)
           .join(', ');
+
+  /// "Zuletzt vor 3 Wochen gekocht".
+  String lastCooked(int days) {
+    if (days <= 0) return lastCookedToday;
+    if (days < 14) return lastCookedDays(days);
+    if (days < 60) return lastCookedWeeks(days ~/ 7);
+    return lastCookedMonths(days ~/ 30);
+  }
 }
