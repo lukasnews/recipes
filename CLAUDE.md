@@ -131,6 +131,7 @@ households/{hid}/cookLog/{logId}
 - **Mehrere Haushalte:** Einstellungen → „Haushalt wechseln“ (ab 2 Haushalten) setzt `activeHouseholdId`; „Weiteren Haushalt hinzufügen“ öffnet den Setup-Bildschirm (`/settings/household/add`). Anlegen/Beitreten macht den neuen Haushalt aktiv. Alle Repositories hängen an `householdIdProvider` und wechseln mit.
 - **Sicherung:** Einstellungen → Daten → „Daten sichern“ schreibt `BaCo-<Haushalt>-<Datum>.json` (`BackupService.export`, Format `baco-backup` v1, Timestamps als `{"$ts": iso}`; ohne `members`) und öffnet das Teilen-Menü. Wiederherstellen: Datei mit BaCo teilen/öffnen (Intent-Filter `application/json`, `application/octet-stream`) → `SharedFile` → Bestätigung → `restore` (gleiche ids überschreiben, Batches à 450, Fotos fremder Haushalte entfernt).
 - **Barcode:** Vorrat → Scan-Symbol → Kamerafoto → `BarcodeReader` (ML Kit, EAN/UPC) → bekannter Code aus `barcodes/` (offline) oder `ProductLookup` (Open Food Facts v2, neutraler User-Agent `BaCo/1.0`, keine Nutzerdaten) → Zutat per Matcher (ganzer Name oder einzelnes Wort, nur sichere Treffer) oder Auswahl mit vorbefülltem Namen → Hinzufügen-Formular mit Packungsgröße (`parseProductQuantity`). Nach dem Speichern wird der Code gemerkt. Passt die Packungseinheit nicht zur Zutat, wird die Umrechnung einmal erfragt.
+- **Konto löschen** (Einstellungen, ganz unten): Bestätigung → neu anmelden (Google bzw. Passwort) → Haushalte, in denen man allein ist, komplett löschen (Unter-Sammlungen in Batches, Fotos, Einladung, dann Haushalt; Regel erlaubt Löschen nur dem letzten Mitglied) bzw. aus gemeinsamen austreten (erst eigenen `members`-Eintrag, dann `memberIds`) → `users/{uid}` → Auth-Konto. Braucht Netz.
 - **Suche** läuft lokal über die gecachten Rezepte (Firestore hat keine Volltextsuche). Haushalte sind klein, das reicht.
 - **Zutaten zusammenführen:** Doppelte (z. B. „Sahne“ und „Schlagobers“) erkennt `IngredientMatcher.findDuplicates`; die Zutaten-Verwaltung zeigt sie an. Beim Zusammenführen werden Name und Synonyme der aufgelösten Zutat Synonyme der behaltenen; Rezepte, Vorrat (nur bei gleicher Basiseinheit) und Einkaufsliste werden umgehängt.
 - **Bevorzugter Begriff:** `name` ist der angezeigte Begriff. In der Zutaten-Bearbeitung kann ein Synonym zum Namen gemacht werden (`Ingredient.withPreferredName`), der alte Name wird Synonym. Die id bleibt, Erkennung findet weiter alle Begriffe. Verknüpfte Einkaufsposten zeigen immer den aktuellen Namen.
@@ -224,7 +225,8 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Portionen skalieren
 - [x] Einkaufsliste: anlegen, abhaken, nach Abteilung gruppiert, live für alle
 - [x] Vorrat: Liste nach Lagerort, schnelles Plus/Minus
-- [ ] Release-Workflow `release.yml`, erster interner Test
+- [x] Release-Workflow `release.yml` (Tag `v*` → AAB → Play-Track internal, versionCode = 1000 + Laufnummer)
+- [ ] Erster interner Test (erstes AAB von Hand hochladen, siehe `docs/PLAY_STORE.md`)
 
 ### Phase 2 – Verknüpfung (Ziel: geschlossener Test mit ≥ 12 Testern, 14 Tage)
 - [x] Vorrats-Status je Zutat im Rezept-Detail
@@ -249,7 +251,8 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Mehrere Haushalte wechseln
 - [x] Rezept teilen (Text mit Zutaten in gewählter Einheit, `recipeShareText`)
 - [x] Backup/Export und Import (JSON)
-- [ ] Konto- und Datenlöschung in der App, Datenschutzerklärung (GitHub Pages)
+- [x] Konto- und Datenlöschung in der App (`AccountDeletionService`, erst neu anmelden, dann Daten, dann Auth-Konto)
+- [x] Datenschutzerklärung und Lösch-Seite in `docs/` (GitHub Pages); Anleitung `docs/PLAY_STORE.md`
 
 ### Phase 4 – iOS
 - [ ] iOS-Build, Firebase-Konfiguration für iOS
