@@ -260,7 +260,9 @@ jobs:
         env:
           SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          echo "$SA" > "$RUNNER_TEMP/sa.json"
+          # A key pasted on a phone may have real line breaks in
+          # private_key: parse leniently, write clean JSON.
+          python3 -c 'import json,os,sys; json.dump(json.loads(os.environ["SA"].strip(), strict=False), open(sys.argv[1], "w"))' "$RUNNER_TEMP/sa.json"
           export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
           cd ..
           test_rules/node_modules/.bin/firebase deploy \
