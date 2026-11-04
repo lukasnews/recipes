@@ -242,7 +242,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Einkaufsliste: anlegen, abhaken, nach Abteilung gruppiert, live für alle
 - [x] Vorrat: Liste nach Lagerort, schnelles Plus/Minus
 - [x] Release-Workflow `release.yml` (Tag `v*` → AAB → geschlossener Test `alpha`, versionCode = 1000 + Laufnummer, Dienstkonto-JSON wird tolerant geparst)
-- [ ] Erster interner Test (erstes AAB von Hand hochladen, siehe `docs/PLAY_STORE.md`)
+- [x] Erster interner Test (erstes AAB von Hand, danach automatisch per `release.yml`); geschlossener Test eingereicht
 
 ### Phase 2 – Verknüpfung (Ziel: geschlossener Test mit ≥ 12 Testern, 14 Tage)
 - [x] Vorrats-Status je Zutat im Rezept-Detail
