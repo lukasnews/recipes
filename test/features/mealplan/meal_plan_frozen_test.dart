@@ -58,4 +58,42 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('1 Portion'), findsOneWidget);
   });
+
+  testWidgets('suggest the week fills free days after a preview', (
+    tester,
+  ) async {
+    tester.view
+      ..physicalSize = const Size(800, 2400)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final db = FakeFirebaseFirestore();
+    final hid = await seedHousehold(db);
+    final recipes = RecipeRepository(db, hid);
+    await recipes.save(const Recipe(id: 'g', title: 'Gulasch'), isNew: true);
+    await recipes.save(const Recipe(id: 's', title: 'Schnitzel'), isNew: true);
+    await tester.pumpWidget(
+      testApp(
+        db: db,
+        auth: FakeAuthRepository(const AuthUser(uid: 'u1')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Wochenplan'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Woche vorschlagen'));
+    await tester.pumpAndSettle();
+    expect(find.text('Gulasch'), findsOneWidget);
+    expect(find.text('Schnitzel'), findsOneWidget);
+    await tester.tap(find.text('Einplanen'));
+    await tester.pumpAndSettle();
+    final plan = await db
+        .collection('households')
+        .doc(hid)
+        .collection('mealplan')
+        .get();
+    expect(plan.docs.expand((d) => d.data()['recipeIds'] as List).toSet(), {
+      'g',
+      's',
+    });
+  });
 }

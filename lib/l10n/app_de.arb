@@ -738,5 +738,10 @@
   "onboarding2Title": "Vorrat und Einkauf",
   "onboarding2Text": "Einkaufsliste und Vorrat teilst du mit deinem Haushalt. Gekochtes wird vom Vorrat abgezogen, Fehlendes kommt mit einem Tipp auf die Liste.",
   "onboarding3Title": "Was kann ich kochen?",
-  "onboarding3Text": "Im Rezepte-Reiter unter Filter → „Mit Vorrat kochbar“ siehst du, was mit dem Vorrat geht – Bald-Ablaufendes zuerst. Den Einladungscode für deinen Haushalt findest du in den Einstellungen."
+  "onboarding3Text": "Im Rezepte-Reiter unter Filter → „Mit Vorrat kochbar“ siehst du, was mit dem Vorrat geht – Bald-Ablaufendes zuerst. Den Einladungscode für deinen Haushalt findest du in den Einstellungen.",
+  "suggestWeekTitle": "Woche vorschlagen",
+  "suggestWeekHint": "Für die freien Tage – was der Vorrat hergibt, bald Ablaufendes und lange nicht Gekochtes zuerst:",
+  "suggestWeekApply": "Einplanen",
+  "suggestWeekFull": "Diese Woche ist schon verplant.",
+  "suggestWeekNoRecipes": "Keine passenden Rezepte für einen Vorschlag."
 }

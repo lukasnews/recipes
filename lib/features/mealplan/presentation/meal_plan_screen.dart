@@ -16,6 +16,7 @@ import '../../shopping/domain/shopping_item.dart';
 import '../data/meal_plan_repository.dart';
 import '../domain/meal_plan_day.dart';
 import '../domain/week_shopping.dart';
+import '../domain/week_suggestion.dart';
 
 class MealPlanScreen extends ConsumerStatefulWidget {
   const MealPlanScreen({super.key});
@@ -46,6 +47,93 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
         fire(repo.add(dayKey(day), id));
       case FrozenMeal(:final id):
         fire(repo.addFrozen(dayKey(day), id));
+    }
+  }
+
+  /// Fills the free days of the shown week (today onwards) with
+  /// suggestions, after a preview.
+  Future<void> _suggestWeek() async {
+    final l10n = context.l10n;
+    final plan = ref.read(mealPlanProvider).value ?? const {};
+    final today = dayKey(DateTime.now());
+    final days = [
+      for (var i = 0; i < 7; i++)
+        DateTime(_week.year, _week.month, _week.day + i),
+    ].where((d) => dayKey(d).compareTo(today) >= 0).toList();
+    final weekPlans = [for (final d in days) plan[dayKey(d)]];
+    final free = [
+      for (final d in days)
+        if (plan[dayKey(d)]?.isEmpty ?? true) dayKey(d),
+    ];
+    final suggestions = suggestWeek(
+      freeDays: free,
+      recipes: ref.read(recipesProvider).value ?? const <Recipe>[],
+      ingredients: ref.read(ingredientsByIdProvider),
+      pantry: ref.read(pantryProvider).value ?? const {},
+      stats: ref.read(cookStatsProvider).value ?? const {},
+      frozen: ref.read(frozenMealsProvider).value ?? const <FrozenMeal>[],
+      now: DateTime.now(),
+      plannedIds: {for (final p in weekPlans) ...?p?.recipeIds},
+      plannedFrozenIds: {for (final p in weekPlans) ...?p?.frozenMealIds},
+    );
+    if (suggestions.isEmpty) {
+      showSnack(
+        context,
+        free.isEmpty ? l10n.suggestWeekFull : l10n.suggestWeekNoRecipes,
+      );
+      return;
+    }
+    final dayFormat = DateFormat('EEE, d. M.', 'de');
+    final selected = {for (var i = 0; i < suggestions.length; i++) i};
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(l10n.suggestWeekTitle),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Text(l10n.suggestWeekHint),
+                for (final (i, s) in suggestions.indexed)
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: selected.contains(i),
+                    onChanged: (v) => setState(
+                      () => v == true ? selected.add(i) : selected.remove(i),
+                    ),
+                    secondary: s.frozen == null
+                        ? null
+                        : const Icon(Icons.ac_unit),
+                    title: Text(s.title),
+                    subtitle: Text(dayFormat.format(DateTime.parse(s.dayKey))),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(l10n.suggestWeekApply),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (ok != true) return;
+    final repo = ref.read(mealPlanRepositoryProvider);
+    for (final (i, s) in suggestions.indexed) {
+      if (!selected.contains(i)) continue;
+      fire(
+        s.recipe != null
+            ? repo.add(s.dayKey, s.recipe!.id)
+            : repo.addFrozen(s.dayKey, s.frozen!.id),
+      );
     }
   }
 
@@ -200,6 +288,11 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
       appBar: AppBar(
         title: Text(l10n.navMealPlan),
         actions: [
+          IconButton(
+            tooltip: l10n.suggestWeekTitle,
+            onPressed: _suggestWeek,
+            icon: const Icon(Icons.auto_awesome_outlined),
+          ),
           IconButton(
             tooltip: l10n.weekShopTitle,
             onPressed: _shopWeek,

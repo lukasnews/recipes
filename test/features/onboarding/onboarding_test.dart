@@ -10,7 +10,10 @@ void main() {
     await seedHousehold(db);
     await db.collection('users').doc('u1').update({'onboardingDone': false});
     await tester.pumpWidget(
-      testApp(db: db, auth: FakeAuthRepository(const AuthUser(uid: 'u1'))),
+      testApp(
+        db: db,
+        auth: FakeAuthRepository(const AuthUser(uid: 'u1')),
+      ),
     );
     await tester.pumpAndSettle();
 
