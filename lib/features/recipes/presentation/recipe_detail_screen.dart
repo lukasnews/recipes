@@ -18,6 +18,7 @@ import '../../../core/widgets/storage_image.dart';
 import '../../mealplan/domain/meal_plan_day.dart';
 import '../domain/allergen_check.dart';
 import '../domain/cook_history.dart';
+import '../domain/nutrition.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_share.dart';
 import '../domain/recipe_stock.dart';
@@ -281,13 +282,12 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                       ' · ${l10n.cookedTimes(stats.count)}',
             style: theme.textTheme.bodySmall,
           ),
+          _NutritionRow(recipe: recipe),
           const SizedBox(height: 8),
           RatingStars(
             rating: recipe.rating,
             onChanged: (v) => fire(
-              ref
-                  .read(recipeRepositoryProvider)
-                  .save(recipe.copyWith(rating: v), isNew: false),
+              ref.read(recipeRepositoryProvider).setRating(recipe.id, v),
             ),
           ),
           const SizedBox(height: 16),
@@ -442,6 +442,86 @@ class _IngredientRow extends StatelessWidget {
       leading: Icon(icon, color: color),
       title: Text([if (qty.isNotEmpty) qty, name].join(' ')),
       subtitle: Text([?line.note, ?hint].join(' · ')),
+    );
+  }
+}
+
+/// AI estimate per serving; a button to (re)estimate it.
+class _NutritionRow extends ConsumerStatefulWidget {
+  const _NutritionRow({required this.recipe});
+
+  final Recipe recipe;
+
+  @override
+  ConsumerState<_NutritionRow> createState() => _NutritionRowState();
+}
+
+class _NutritionRowState extends ConsumerState<_NutritionRow> {
+  var _busy = false;
+
+  Future<void> _estimate() async {
+    final l10n = context.l10n;
+    final r = widget.recipe;
+    setState(() => _busy = true);
+    try {
+      final extractor = await ref.read(recipeExtractorProvider.future);
+      final n = await extractor.estimateNutrition(
+        nutritionPrompt(
+          title: r.title,
+          servings: r.servings,
+          ingredientLines: [for (final l in r.ingredients) l.rawText],
+        ),
+      );
+      fire(ref.read(recipeRepositoryProvider).setNutrition(r.id, n));
+    } catch (e, st) {
+      reportError(e, st);
+      if (mounted) showSnack(context, l10n.nutritionFailed);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final n = widget.recipe.nutrition;
+    if (widget.recipe.ingredients.isEmpty) return const SizedBox.shrink();
+    if (n == null) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton.icon(
+          onPressed: _busy ? null : _estimate,
+          icon: _busy
+              ? const SizedBox.square(
+                  dimension: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.local_fire_department_outlined),
+          label: Text(l10n.nutritionEstimate),
+        ),
+      );
+    }
+    String g(double v) => v.round().toString();
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            l10n.nutritionPerServing(
+              n.kcal,
+              g(n.protein),
+              g(n.fat),
+              g(n.carbs),
+            ),
+            style: theme.textTheme.bodySmall,
+          ),
+        ),
+        IconButton(
+          tooltip: l10n.nutritionRefresh,
+          onPressed: _busy ? null : _estimate,
+          icon: const Icon(Icons.refresh, size: 20),
+        ),
+      ],
     );
   }
 }

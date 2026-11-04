@@ -1,4 +1,5 @@
 import '../../../core/firebase/map_utils.dart';
+import 'nutrition.dart';
 
 /// Built-in categories; any other string is a custom category.
 abstract final class RecipeCategories {
@@ -86,6 +87,7 @@ class Recipe {
     this.createdBy,
     this.createdAt,
     this.updatedAt,
+    this.nutrition,
   });
 
   factory Recipe.fromMap(String id, Map<String, dynamic> m) {
@@ -110,8 +112,15 @@ class Recipe {
       createdBy: m.strOrNull('createdBy'),
       createdAt: m.date('createdAt'),
       updatedAt: m.date('updatedAt'),
+      nutrition: Nutrition.fromMap(
+        (m['nutrition'] as Map<dynamic, dynamic>?)?.cast<String, dynamic>(),
+      ),
     );
   }
+
+  /// AI estimate per serving. Not part of [toMap]: saving the edited
+  /// recipe drops it, since the ingredients may have changed.
+  final Nutrition? nutrition;
 
   final String id;
   final String title;

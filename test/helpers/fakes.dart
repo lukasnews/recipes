@@ -24,6 +24,7 @@ import 'package:recipes/features/pantry/domain/product.dart';
 import 'package:recipes/features/recipes/data/photo_repository.dart';
 import 'package:recipes/features/recipes/data/photo_upload_queue.dart';
 import 'package:recipes/features/recipes/data/timer_alarms.dart';
+import 'package:recipes/features/recipes/domain/nutrition.dart';
 import 'package:recipes/features/recipes/presentation/cook_timers.dart';
 
 class FakeAuthRepository implements AuthRepository {
@@ -189,7 +190,7 @@ class FakeExtractor implements RecipeExtractor {
     return results;
   }
 
-  NutritionEstimate nutrition = const NutritionEstimate(
+  Nutrition nutrition = const Nutrition(
     kcal: 520,
     protein: 18,
     fat: 21,
@@ -198,7 +199,7 @@ class FakeExtractor implements RecipeExtractor {
   String? lastNutritionText;
 
   @override
-  Future<NutritionEstimate> estimateNutrition(String recipeText) async {
+  Future<Nutrition> estimateNutrition(String recipeText) async {
     lastNutritionText = recipeText;
     if (fail) throw Exception('offline');
     return nutrition;

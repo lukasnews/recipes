@@ -751,5 +751,25 @@
   "ideasGet": "Ideen holen",
   "ideasThinking": "Ideen werden gesucht …",
   "ideasPantryEmpty": "Der Vorrat ist leer – trag zuerst ein paar Zutaten ein.",
-  "ideaNote": "Vorschlag der KI aus dem Vorrat – bitte prüfen."
+  "ideaNote": "Vorschlag der KI aus dem Vorrat – bitte prüfen.",
+  "nutritionEstimate": "Nährwerte schätzen (KI)",
+  "nutritionRefresh": "Nährwerte neu schätzen",
+  "nutritionFailed": "Schätzen hat nicht geklappt. Braucht Internet.",
+  "nutritionPerServing": "Pro Portion ca. {kcal} kcal · {protein} g Eiweiß · {fat} g Fett · {carbs} g Kohlenhydrate (geschätzt)",
+  "@nutritionPerServing": {
+    "placeholders": {
+      "kcal": {
+        "type": "int"
+      },
+      "protein": {
+        "type": "String"
+      },
+      "fat": {
+        "type": "String"
+      },
+      "carbs": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import '../../recipes/domain/nutrition.dart';
 import '../domain/recipe_draft.dart';
 
 /// Reads a recipe from one or more images.
@@ -24,39 +25,7 @@ abstract class RecipeExtractor {
   });
 
   /// Rough nutrition per serving for a recipe given as text.
-  Future<NutritionEstimate> estimateNutrition(String recipeText);
-}
-
-/// Estimated nutrition per serving.
-class NutritionEstimate {
-  const NutritionEstimate({
-    required this.kcal,
-    required this.protein,
-    required this.fat,
-    required this.carbs,
-  });
-
-  factory NutritionEstimate.fromMap(Map<String, dynamic> m) =>
-      NutritionEstimate(
-        kcal: (m['kcal'] as num).round(),
-        protein: (m['protein'] as num).toDouble(),
-        fat: (m['fat'] as num).toDouble(),
-        carbs: (m['carbs'] as num).toDouble(),
-      );
-
-  final int kcal;
-
-  /// Grams per serving.
-  final double protein;
-  final double fat;
-  final double carbs;
-
-  Map<String, dynamic> toMap() => {
-    'kcal': kcal,
-    'protein': protein,
-    'fat': fat,
-    'carbs': carbs,
-  };
+  Future<Nutrition> estimateNutrition(String recipeText);
 }
 
 /// Gemini via Firebase AI Logic. Handles print, handwriting and screenshots.
@@ -176,7 +145,7 @@ ${pantry.map((p) => '- $p').join('\n')}'''),
   );
 
   @override
-  Future<NutritionEstimate> estimateNutrition(String recipeText) =>
+  Future<Nutrition> estimateNutrition(String recipeText) =>
       _run((ai, name) async {
         final model = ai.generativeModel(
           model: name,
@@ -195,9 +164,11 @@ Gib NUR JSON zurück: kcal (Kilokalorien), protein, fat, carbs (jeweils Gramm).
 $recipeText'''),
             ])
             .timeout(const Duration(seconds: 60));
-        return NutritionEstimate.fromMap(
+        final n = Nutrition.fromMap(
           (jsonDecode(response.text ?? '') as Map).cast<String, dynamic>(),
         );
+        if (n == null) throw const FormatException('No nutrition values');
+        return n;
       });
 
   /// Backends in order: Gemini Developer API first, then the Agent Platform

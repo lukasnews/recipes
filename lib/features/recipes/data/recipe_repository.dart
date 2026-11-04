@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../domain/cook_history.dart';
+import '../domain/nutrition.dart';
 import '../domain/recipe.dart';
 
 class RecipeRepository {
@@ -31,11 +32,20 @@ class RecipeRepository {
   Future<void> save(Recipe recipe, {required bool isNew}) =>
       _col.doc(recipe.id).set({
         ...recipe.toMap(),
+        // The ingredients may have changed: the estimate is stale.
+        'nutrition': FieldValue.delete(),
         'updatedAt': FieldValue.serverTimestamp(),
         if (isNew) 'createdAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 
   Future<void> delete(String id) => _col.doc(id).delete();
+
+  Future<void> setRating(String id, int rating) =>
+      _col.doc(id).update({'rating': rating});
+
+  Future<void> setNutrition(String id, Nutrition n) => _col.doc(id).update({
+    'nutrition': {...n.toMap(), 'estimatedAt': FieldValue.serverTimestamp()},
+  });
 
   /// Deducts [deductions] (already clamped) from the pantry and logs it.
   /// Returns the cook log id for undo.
