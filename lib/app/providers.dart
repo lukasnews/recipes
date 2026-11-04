@@ -34,6 +34,7 @@ import '../features/recipes/data/photo_repository.dart';
 import '../features/recipes/data/recipe_repository.dart';
 import '../features/recipes/domain/cook_history.dart';
 import '../features/recipes/domain/recipe.dart';
+import '../features/settings/data/backup_service.dart';
 import '../features/shopping/data/shopping_repository.dart';
 import '../features/shopping/domain/shopping_item.dart';
 
@@ -227,6 +228,10 @@ final photoFileProvider = FutureProvider.family<File, String>((
   final url = await ref.read(photoRepositoryProvider).downloadUrl(path);
   return cache.download(path, url);
 });
+
+final backupServiceProvider = Provider<BackupService>(
+  (ref) => BackupService(ref.watch(firestoreProvider), _requireHousehold(ref)),
+);
 
 final sharerProvider = Provider<Sharer>((ref) => const SystemSharer());
 

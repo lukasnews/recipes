@@ -21,10 +21,7 @@ const _recipe = Recipe(
     ),
     RecipeIngredient(rawText: 'Salz', name: 'Salz', note: 'eine Prise'),
   ],
-  steps: [
-    RecipeStep('Verrühren.'),
-    RecipeStep('Backen.'),
-  ],
+  steps: [RecipeStep('Verrühren.'), RecipeStep('Backen.')],
   sourceType: 'url',
   sourceUrl: 'https://example.org/p',
 );

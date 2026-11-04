@@ -4,23 +4,45 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import '../domain/web_recipe.dart';
 
-/// Links shared into the app ("Teilen" → BaCo) from a browser or other app.
+/// Something shared into the app ("Teilen" → BaCo).
+sealed class SharedItem {
+  const SharedItem();
+}
+
+/// A link from a browser or other app.
+class SharedLink extends SharedItem {
+  const SharedLink(this.url);
+
+  final Uri url;
+}
+
+/// A file (e.g. a backup) shared or opened with BaCo; local path.
+class SharedFile extends SharedItem {
+  const SharedFile(this.path);
+
+  final String path;
+}
+
 abstract class SharedLinkSource {
-  Stream<Uri> links();
+  Stream<SharedItem> items();
 }
 
 class ReceiveSharingIntentLinks implements SharedLinkSource {
   @override
-  Stream<Uri> links() {
+  Stream<SharedItem> items() {
     final intent = ReceiveSharingIntent.instance;
-    final controller = StreamController<Uri>();
+    final controller = StreamController<SharedItem>();
     void emit(List<SharedMediaFile> files) {
       for (final f in files) {
+        if (f.type == SharedMediaType.file) {
+          controller.add(SharedFile(f.path));
+          continue;
+        }
         if (f.type != SharedMediaType.text && f.type != SharedMediaType.url) {
           continue;
         }
         final url = findUrl('${f.path} ${f.message ?? ''}');
-        if (url != null) controller.add(url);
+        if (url != null) controller.add(SharedLink(url));
       }
     }
 

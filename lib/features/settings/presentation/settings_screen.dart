@@ -9,6 +9,7 @@ import '../../../core/firebase/fire.dart';
 import '../../../core/units/display_units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
+import 'backup_actions.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -213,6 +214,21 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
+          if (household != null) ...[
+            section(l10n.settingsData),
+            ListTile(
+              leading: const Icon(Icons.save_alt),
+              title: Text(l10n.backupExport),
+              subtitle: Text(l10n.backupExportSubtitle),
+              onTap: () => exportBackup(context, ref),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings_backup_restore),
+              title: Text(l10n.restoreTitle),
+              subtitle: Text(l10n.restoreSubtitle),
+              onTap: () => showRestoreHelp(context),
+            ),
+          ],
           const SizedBox(height: 24),
           Center(
             child: Text(

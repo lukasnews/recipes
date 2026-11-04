@@ -178,9 +178,9 @@ class FakePhotoCache implements PhotoCache {
 
 class FakeSharedLinks implements SharedLinkSource {
   // ignore: close_sinks
-  final controller = StreamController<Uri>.broadcast();
+  final controller = StreamController<SharedItem>.broadcast();
   @override
-  Stream<Uri> links() => controller.stream;
+  Stream<SharedItem> items() => controller.stream;
 }
 
 class FakeSharer implements Sharer {

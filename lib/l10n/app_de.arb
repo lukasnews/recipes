@@ -625,5 +625,40 @@
         "type": "int"
       }
     }
+  },
+  "settingsData": "Daten",
+  "backupExport": "Daten sichern",
+  "backupExportSubtitle": "Alles als Datei exportieren, z. B. in Google Drive speichern",
+  "backupSubject": "BaCo-Sicherung",
+  "backupFailed": "Sichern hat nicht geklappt",
+  "backupInvalid": "Die Datei ist keine BaCo-Sicherung",
+  "restoreTitle": "Daten wiederherstellen",
+  "restoreSubtitle": "Aus einer BaCo-Sicherungsdatei",
+  "restoreHelp": "Öffne die Sicherungsdatei (BaCo-….json) in der Dateien-App oder in Google Drive und wähle „Teilen“ bzw. „Öffnen mit“ → BaCo. Danach fragt BaCo, ob die Daten eingespielt werden sollen.",
+  "restoreMessage": "Sicherung „{source}“ vom {date} mit {recipes, plural, =1{1 Rezept} other{{recipes} Rezepten}} in den Haushalt „{target}“ einspielen? Einträge mit gleicher Kennung werden überschrieben, alles andere bleibt.",
+  "restoreConfirm": "Einspielen",
+  "restoreDone": "{count} Einträge wiederhergestellt",
+  "@restoreMessage": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      },
+      "recipes": {
+        "type": "int"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "@restoreDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
