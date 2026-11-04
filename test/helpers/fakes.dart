@@ -164,8 +164,10 @@ class FakeExtractor implements RecipeExtractor {
   final List<RecipeDraft> results;
   final bool fail;
   String? lastText;
+  int? lastImageCount;
   @override
   Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages) async {
+    lastImageCount = jpegImages.length;
     if (fail) throw Exception('offline');
     return results;
   }
@@ -238,11 +240,14 @@ RecipeImportService fakeImportService({
   RecipeDraft? aiResult,
   List<RecipeDraft>? aiResults,
   String ocrText = '',
+  FakeExtractor? extractor,
 }) => RecipeImportService(
-  extractor: FakeExtractor(
-    aiResults ?? [?aiResult],
-    fail: aiResult == null && aiResults == null,
-  ),
+  extractor:
+      extractor ??
+      FakeExtractor(
+        aiResults ?? [?aiResult],
+        fail: aiResult == null && aiResults == null,
+      ),
   ocr: FakeOcr(ocrText),
   readBytes: (_) async => Uint8List(0),
 );

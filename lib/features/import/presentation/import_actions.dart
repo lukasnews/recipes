@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -151,12 +152,83 @@ Future<void> suggestRecipesFromPantry(
   }, message: l10n.ideasThinking);
 }
 
+/// Most pages a recipe photo import takes.
+const maxImportPages = 6;
+
+/// Camera: one photo per page; after each one ask whether the recipe goes
+/// on ("Weitere Seite") or is complete.
+Future<List<String>> _capturePages(BuildContext context, WidgetRef ref) async {
+  final picker = ref.read(photoPickerProvider);
+  final pages = <String>[];
+  while (pages.length < maxImportPages) {
+    final shot = await picker.pick(PhotoSource.camera, multiple: false);
+    if (shot.isEmpty) break;
+    pages.addAll(shot);
+    if (pages.length >= maxImportPages || !context.mounted) break;
+    final more = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        final l10n = context.l10n;
+        return AlertDialog(
+          title: Text(l10n.pagesCaptured(pages.length)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final p in pages)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        File(p),
+                        width: 56,
+                        height: 76,
+                        fit: BoxFit.cover,
+                        cacheWidth: 112,
+                        errorBuilder: (_, _, _) => const SizedBox(
+                          width: 56,
+                          height: 76,
+                          child: Icon(Icons.image_outlined),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(l10n.morePagesQuestion),
+            ],
+          ),
+          actions: [
+            TextButton.icon(
+              onPressed: () => Navigator.pop(context, true),
+              icon: const Icon(Icons.add_a_photo_outlined),
+              label: Text(l10n.morePagesYes),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.morePagesDone),
+            ),
+          ],
+        );
+      },
+    );
+    if (more != true) break;
+  }
+  return pages;
+}
+
 Future<void> importFromPhotos(
   BuildContext context,
   WidgetRef ref,
   PhotoSource source,
 ) async {
-  final paths = await ref.read(photoPickerProvider).pick(source);
+  final paths = source == PhotoSource.camera
+      ? await _capturePages(context, ref)
+      : await ref.read(photoPickerProvider).pick(source);
   if (paths.isEmpty || !context.mounted) return;
   await _runImport(context, () async {
     final service = await ref.read(recipeImportServiceProvider.future);

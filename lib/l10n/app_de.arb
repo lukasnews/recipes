@@ -796,5 +796,16 @@
         "type": "int"
       }
     }
+  },
+  "pagesCaptured": "{count, plural, =1{1 Seite fotografiert} other{{count} Seiten fotografiert}}",
+  "morePagesQuestion": "Geht das Rezept auf der nächsten Seite weiter?",
+  "morePagesYes": "Weitere Seite",
+  "morePagesDone": "Fertig – Rezept lesen",
+  "@pagesCaptured": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

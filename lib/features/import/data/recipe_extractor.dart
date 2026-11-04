@@ -65,7 +65,8 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
 - Zwischenüberschriften wie "Für den Teig" weglassen.
 - steps: ein Eintrag pro Arbeitsschritt, ohne Nummerierung.
 - servings: Anzahl Portionen, falls angegeben.
-- Stehen mehrere Rezepte auf den Bildern, jedes als eigenen Eintrag in recipes; Zutaten und Schritte nie zwischen Rezepten vermischen.
+- Die Bilder kommen in Seitenreihenfolge. Geht ein Rezept über mehrere Bilder (z. B. Zutaten auf Seite 1, Zubereitung auf Seite 2, oder "Fortsetzung"), ist das EIN Rezept: Zutaten und Schritte in Reihenfolge zusammenführen, Titel von der ersten Seite.
+- Stehen dagegen mehrere verschiedene Rezepte auf den Bildern, jedes als eigenen Eintrag in recipes; Zutaten und Schritte nie zwischen Rezepten vermischen.
 - Nichts erfinden, was nicht auf den Bildern steht.''';
 
   static final _recipeSchema = Schema.object(
