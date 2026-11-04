@@ -18,6 +18,9 @@ import 'package:recipes/features/import/data/shared_links.dart';
 import 'package:recipes/features/import/data/text_recognizer.dart';
 import 'package:recipes/features/import/domain/recipe_draft.dart';
 import 'package:recipes/features/ingredients/domain/ingredient.dart';
+import 'package:recipes/features/pantry/data/barcode_reader.dart';
+import 'package:recipes/features/pantry/data/product_lookup.dart';
+import 'package:recipes/features/pantry/domain/product.dart';
 import 'package:recipes/features/recipes/data/photo_repository.dart';
 
 class FakeAuthRepository implements AuthRepository {
@@ -85,8 +88,12 @@ Widget testApp({
   RecipeImportService? importService,
   FakePhotoRepository? photos,
   FakeSharer? sharer,
+  BarcodeReader? barcodes,
+  ProductLookup? products,
 }) => ProviderScope(
   overrides: [
+    barcodeReaderProvider.overrideWithValue(barcodes ?? FakeBarcodeReader()),
+    productLookupProvider.overrideWithValue(products ?? FakeProductLookup()),
     sharerProvider.overrideWithValue(sharer ?? FakeSharer()),
     photoPickerProvider.overrideWithValue(FakePhotoPicker()),
     sharedLinkSourceProvider.overrideWithValue(FakeSharedLinks()),
@@ -197,4 +204,24 @@ class FakeSharer implements Sharer {
     String? mimeType,
     String? subject,
   }) async => files.add(path);
+}
+
+class FakeBarcodeReader implements BarcodeReader {
+  FakeBarcodeReader([this.code]);
+  String? code;
+  @override
+  Future<String?> read(String imagePath) async => code;
+}
+
+class FakeProductLookup implements ProductLookup {
+  FakeProductLookup([this.product]);
+  Product? product;
+  int calls = 0;
+  @override
+  Future<Product?> lookup(String code) async {
+    calls++;
+    final p = product;
+    if (p == null) throw Exception('offline');
+    return p;
+  }
 }

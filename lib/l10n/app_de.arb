@@ -660,5 +660,16 @@
         "type": "int"
       }
     }
+  },
+  "scanBarcode": "Barcode scannen",
+  "barcodeNotFound": "Kein Barcode erkannt. Bitte näher und scharf fotografieren.",
+  "productUnknown": "Produkt {code} nicht gefunden. Bitte Zutat wählen.",
+  "productLookupFailed": "Produktsuche braucht Internet. Bitte Zutat wählen.",
+  "@productUnknown": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   }
 }

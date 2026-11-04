@@ -14,6 +14,7 @@ import '../../ingredients/domain/ingredient.dart';
 import '../../ingredients/domain/ingredient_factory.dart';
 import '../../ingredients/presentation/ingredient_picker.dart';
 import '../domain/pantry_item.dart';
+import 'barcode_scan.dart';
 import 'frozen_meals_tab.dart';
 import 'stock_actions.dart';
 
@@ -40,7 +41,14 @@ class PantryScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.navPantry),
-          actions: const [ProfileButton()],
+          actions: [
+            IconButton(
+              tooltip: l10n.scanBarcode,
+              onPressed: () => scanToPantry(context),
+              icon: const Icon(Icons.qr_code_scanner),
+            ),
+            const ProfileButton(),
+          ],
           bottom: TabBar(
             tabs: [
               Tab(text: l10n.pantryTabIngredients),
@@ -342,38 +350,74 @@ class _LocationPicker extends StatelessWidget {
 Future<void> showAddToPantrySheet(BuildContext context) async {
   final choice = await pickIngredient(context);
   if (choice == null || !context.mounted) return;
-  await showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    builder: (context) => _AddSheet(choice: choice),
-  );
+  await showAddSheetFor(context, choice);
 }
 
+/// Amount/unit/location sheet for [choice]; [amount]/[unit] prefill it
+/// (e.g. package size from a barcode). [onSaved] gets what was added.
+Future<void> showAddSheetFor(
+  BuildContext context,
+  IngredientChoice choice, {
+  String? title,
+  double? amount,
+  String? unit,
+  void Function(Ingredient ingredient, double amount, String unit)? onSaved,
+}) => showModalBottomSheet<void>(
+  context: context,
+  isScrollControlled: true,
+  useSafeArea: true,
+  builder: (context) => _AddSheet(
+    choice: choice,
+    title: title,
+    amount: amount,
+    unit: unit,
+    onSaved: onSaved,
+  ),
+);
+
 class _AddSheet extends ConsumerStatefulWidget {
-  const _AddSheet({required this.choice});
+  const _AddSheet({
+    required this.choice,
+    this.title,
+    this.amount,
+    this.unit,
+    this.onSaved,
+  });
 
   final IngredientChoice choice;
+  final String? title;
+  final double? amount;
+  final String? unit;
+  final void Function(Ingredient ingredient, double amount, String unit)?
+  onSaved;
 
   @override
   ConsumerState<_AddSheet> createState() => _AddSheetState();
 }
 
 class _AddSheetState extends ConsumerState<_AddSheet> {
-  final _amount = TextEditingController();
+  late final _amount = TextEditingController(
+    text: widget.amount == null
+        ? ''
+        : formatAmount(widget.amount!, fractions: false),
+  );
   late String _unit;
   StorageLocation _location = StorageLocation.pantry;
   DateTime? _expiresOn;
 
   Ingredient? get _existing => widget.choice.ingredient;
 
-  List<String> get _units =>
-      _existing?.unitChoices ?? const ['g', 'kg', 'ml', 'l', 'Stk.'];
+  /// Includes a prefilled unit the ingredient can't convert yet; saving
+  /// then asks for the conversion once instead of guessing.
+  List<String> get _units => {
+    ...(_existing?.unitChoices ?? const ['g', 'kg', 'ml', 'l', 'Stk.']),
+    ?widget.unit,
+  }.toList();
 
   @override
   void initState() {
     super.initState();
-    _unit = _units.first;
+    _unit = _units.contains(widget.unit) ? widget.unit! : _units.first;
     final existing = _existing;
     if (existing != null) {
       _location =
@@ -409,6 +453,7 @@ class _AddSheetState extends ConsumerState<_AddSheet> {
     }
     final repo = ref.read(pantryRepositoryProvider);
     fire(repo.changeAmount(ing.id, base, location: _location));
+    widget.onSaved?.call(ing, amount, _unit);
     final expiresOn = _expiresOn;
     if (expiresOn != null) {
       fire(repo.update(ing.id, expiresOn: () => expiresOn));
@@ -434,6 +479,8 @@ class _AddSheetState extends ConsumerState<_AddSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(name, style: Theme.of(context).textTheme.titleLarge),
+          if (widget.title != null)
+            Text(widget.title!, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 16),
           Row(
             spacing: 12,

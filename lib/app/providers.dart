@@ -26,8 +26,11 @@ import '../features/import/data/text_recognizer.dart';
 import '../features/ingredients/data/ingredient_repository.dart';
 import '../features/ingredients/domain/ingredient.dart';
 import '../features/mealplan/data/meal_plan_repository.dart';
+import '../features/pantry/data/barcode_reader.dart';
+import '../features/pantry/data/barcode_repository.dart';
 import '../features/pantry/data/frozen_meal_repository.dart';
 import '../features/pantry/data/pantry_repository.dart';
+import '../features/pantry/data/product_lookup.dart';
 import '../features/pantry/domain/frozen_meal.dart';
 import '../features/pantry/domain/pantry_item.dart';
 import '../features/recipes/data/photo_repository.dart';
@@ -231,6 +234,19 @@ final photoFileProvider = FutureProvider.family<File, String>((
 
 final backupServiceProvider = Provider<BackupService>(
   (ref) => BackupService(ref.watch(firestoreProvider), _requireHousehold(ref)),
+);
+
+final barcodeReaderProvider = Provider<BarcodeReader>(
+  (ref) => MlKitBarcodeReader(),
+);
+
+final productLookupProvider = Provider<ProductLookup>(
+  (ref) => OpenFoodFactsLookup(),
+);
+
+final barcodeRepositoryProvider = Provider<BarcodeRepository>(
+  (ref) =>
+      BarcodeRepository(ref.watch(firestoreProvider), _requireHousehold(ref)),
 );
 
 final sharerProvider = Provider<Sharer>((ref) => const SystemSharer());
