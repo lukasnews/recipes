@@ -169,7 +169,11 @@ class _RecipePickerState extends State<_RecipePicker> {
         .where((r) => r.title.toLowerCase().contains(_q.toLowerCase()))
         .toList();
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      padding: EdgeInsets.only(
+        bottom:
+            MediaQuery.viewInsetsOf(context).bottom +
+            MediaQuery.paddingOf(context).bottom,
+      ),
       child: SizedBox(
         height: MediaQuery.sizeOf(context).height * 0.7,
         child: Column(

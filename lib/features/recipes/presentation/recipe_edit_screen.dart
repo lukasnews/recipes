@@ -401,7 +401,13 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
       body: Form(
         key: _form,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          // Room for the system navigation bar (edge-to-edge on Android 15+).
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            16 + MediaQuery.paddingOf(context).bottom,
+          ),
           children: [
             if (widget.draft != null && _original == null)
               Card(

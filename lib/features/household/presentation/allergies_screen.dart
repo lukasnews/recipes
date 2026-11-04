@@ -21,7 +21,12 @@ class AllergiesScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.allergiesTitle)),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          16 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           Text(l10n.allergiesMine, style: theme.textTheme.titleMedium),
           Text(l10n.allergiesMineHint, style: theme.textTheme.bodySmall),

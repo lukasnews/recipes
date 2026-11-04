@@ -155,7 +155,12 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
         actions: [TextButton(onPressed: _save, child: Text(l10n.save))],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          16 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           TextField(
             controller: _name,

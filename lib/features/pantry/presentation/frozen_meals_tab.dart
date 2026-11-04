@@ -187,7 +187,9 @@ class _MealSheetState extends ConsumerState<_MealSheet> {
         16,
         16,
         16,
-        16 + MediaQuery.viewInsetsOf(context).bottom,
+        16 +
+            MediaQuery.viewInsetsOf(context).bottom +
+            MediaQuery.paddingOf(context).bottom,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -112,7 +112,11 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      padding: EdgeInsets.only(
+        bottom:
+            MediaQuery.viewInsetsOf(context).bottom +
+            MediaQuery.paddingOf(context).bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

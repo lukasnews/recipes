@@ -89,7 +89,12 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.fromLTRB(
+          24,
+          24,
+          24,
+          24 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           Text(l10n.householdSetupIntro, style: theme.textTheme.bodyLarge),
           const SizedBox(height: 24),

@@ -228,7 +228,9 @@ class _EditSheetState extends ConsumerState<_EditSheet> {
         16,
         16,
         16,
-        16 + MediaQuery.viewInsetsOf(context).bottom,
+        16 +
+            MediaQuery.viewInsetsOf(context).bottom +
+            MediaQuery.paddingOf(context).bottom,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -385,7 +387,9 @@ class _AddSheetState extends ConsumerState<_AddSheet> {
         16,
         16,
         16,
-        16 + MediaQuery.viewInsetsOf(context).bottom,
+        16 +
+            MediaQuery.viewInsetsOf(context).bottom +
+            MediaQuery.paddingOf(context).bottom,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

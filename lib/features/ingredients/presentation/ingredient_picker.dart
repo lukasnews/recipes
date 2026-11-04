@@ -88,7 +88,11 @@ class _PickerSheetState extends ConsumerState<_PickerSheet> {
     );
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      padding: EdgeInsets.only(
+        bottom:
+            MediaQuery.viewInsetsOf(context).bottom +
+            MediaQuery.paddingOf(context).bottom,
+      ),
       child: SizedBox(
         height: MediaQuery.sizeOf(context).height * 0.8,
         child: Column(

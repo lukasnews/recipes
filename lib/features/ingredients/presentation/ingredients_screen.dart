@@ -73,7 +73,9 @@ class _IngredientsScreenState extends ConsumerState<IngredientsScreen> {
                     )
                     .toList();
           return ListView(
-            padding: const EdgeInsets.only(bottom: 88),
+            padding: EdgeInsets.only(
+              bottom: 88 + MediaQuery.paddingOf(context).bottom,
+            ),
             children: [
               Padding(
                 padding: const EdgeInsets.all(12),
