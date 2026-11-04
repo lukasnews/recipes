@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:firebase_ai/firebase_ai.dart';
@@ -12,6 +13,50 @@ abstract class RecipeExtractor {
 
   /// Same for the text of a web page without recipe metadata.
   Future<List<RecipeDraft>> extractFromText(String pageText);
+
+  /// New recipe ideas that use up the pantry. [pantry] lines like
+  /// "Topfen (250 g, läuft bald ab)"; [avoid] allergens to leave out.
+  Future<List<RecipeDraft>> suggestFromPantry({
+    required List<String> pantry,
+    String wish = '',
+    List<String> avoid = const [],
+    int count = 3,
+  });
+
+  /// Rough nutrition per serving for a recipe given as text.
+  Future<NutritionEstimate> estimateNutrition(String recipeText);
+}
+
+/// Estimated nutrition per serving.
+class NutritionEstimate {
+  const NutritionEstimate({
+    required this.kcal,
+    required this.protein,
+    required this.fat,
+    required this.carbs,
+  });
+
+  factory NutritionEstimate.fromMap(Map<String, dynamic> m) =>
+      NutritionEstimate(
+        kcal: (m['kcal'] as num).round(),
+        protein: (m['protein'] as num).toDouble(),
+        fat: (m['fat'] as num).toDouble(),
+        carbs: (m['carbs'] as num).toDouble(),
+      );
+
+  final int kcal;
+
+  /// Grams per serving.
+  final double protein;
+  final double fat;
+  final double carbs;
+
+  Map<String, dynamic> toMap() => {
+    'kcal': kcal,
+    'protein': protein,
+    'fat': fat,
+    'carbs': carbs,
+  };
 }
 
 /// Gemini via Firebase AI Logic. Handles print, handwriting and screenshots.
@@ -81,19 +126,79 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
   );
 
   @override
-  Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages) => _run([
-    const TextPart(_prompt),
-    for (final img in jpegImages) InlineDataPart('image/jpeg', img),
-  ]);
+  Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages) => _run(
+    (ai, name) => _extractWith(ai, name, [
+      const TextPart(_prompt),
+      for (final img in jpegImages) InlineDataPart('image/jpeg', img),
+    ]),
+  );
 
   @override
-  Future<List<RecipeDraft>> extractFromText(String pageText) => _run([
-    const TextPart(
-      '$_prompt\n- Die Quelle ist der Text einer Webseite; Werbung, '
-      'Kommentare und Nährwerte ignorieren.',
-    ),
-    TextPart(pageText),
-  ]);
+  Future<List<RecipeDraft>> extractFromText(String pageText) => _run(
+    (ai, name) => _extractWith(ai, name, [
+      const TextPart(
+        '$_prompt\n- Die Quelle ist der Text einer Webseite; Werbung, '
+        'Kommentare und Nährwerte ignorieren.',
+      ),
+      TextPart(pageText),
+    ]),
+  );
+
+  @override
+  Future<List<RecipeDraft>> suggestFromPantry({
+    required List<String> pantry,
+    String wish = '',
+    List<String> avoid = const [],
+    int count = 3,
+  }) => _run(
+    (ai, name) => _extractWith(ai, name, [
+      TextPart('''
+Schlage $count unterschiedliche, alltagstaugliche Rezepte vor, die möglichst viel aus diesem Vorrat verbrauchen – was bald abläuft zuerst. Österreichische Hausmannskost ist willkommen, aber kein Muss.
+Gib NUR JSON nach dem Schema zurück. Regeln:
+- Salz, Pfeffer, Öl, Wasser, Zucker und Mehl darf man voraussetzen; sonst möglichst wenig Zutaten, die nicht im Vorrat sind.
+- Mengen für 4 Portionen (servings = 4), amount als Zahl, unit kurz (g, kg, ml, l, EL, TL, Prise, Pkg., Stk.), name ohne Menge, Zusätze in note.
+- Österreichische Begriffe verwenden (Topfen, Schlagobers, Paradeiser, Erdäpfel …).
+- steps: konkrete Arbeitsschritte mit Zeiten (z. B. "10 Minuten köcheln"), ohne Nummerierung.
+- prepMinutes und cookMinutes schätzen.
+${wish.trim().isEmpty ? '' : '- Wunsch: ${wish.trim()}\n'}${avoid.isEmpty ? '' : '- Keine Zutaten mit diesen Allergenen: ${avoid.join(', ')}\n'}
+Vorrat:
+${pantry.map((p) => '- $p').join('\n')}'''),
+    ], temperature: 0.9),
+  );
+
+  static final _nutritionSchema = Schema.object(
+    properties: {
+      'kcal': Schema.number(),
+      'protein': Schema.number(),
+      'fat': Schema.number(),
+      'carbs': Schema.number(),
+    },
+  );
+
+  @override
+  Future<NutritionEstimate> estimateNutrition(String recipeText) =>
+      _run((ai, name) async {
+        final model = ai.generativeModel(
+          model: name,
+          generationConfig: GenerationConfig(
+            responseMimeType: 'application/json',
+            responseSchema: _nutritionSchema,
+            temperature: 0,
+          ),
+        );
+        final response = await model
+            .generateContent([
+              Content.text('''
+Schätze die Nährwerte PRO PORTION für dieses Rezept anhand üblicher Nährwerttabellen. Fehlen Mengen, nimm übliche Mengen an.
+Gib NUR JSON zurück: kcal (Kilokalorien), protein, fat, carbs (jeweils Gramm).
+
+$recipeText'''),
+            ])
+            .timeout(const Duration(seconds: 60));
+        return NutritionEstimate.fromMap(
+          (jsonDecode(response.text ?? '') as Map).cast<String, dynamic>(),
+        );
+      });
 
   /// Backends in order: Gemini Developer API first, then the Agent Platform
   /// (Vertex) Gemini API. If the first one isn't set up in the Firebase
@@ -121,13 +226,16 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
         m.contains('resource exhausted');
   }
 
-  Future<List<RecipeDraft>> _run(List<Part> parts) async {
+  /// Runs [call] with the first backend and model that works.
+  Future<T> _run<T>(
+    Future<T> Function(FirebaseAI ai, String model) call,
+  ) async {
     final candidates = {modelName, ...fallbackModels}.toList();
     final attempts = <String>[];
     for (final (label, backend) in backends) {
       for (final name in candidates) {
         try {
-          return await _extractWith(backend(), name, parts);
+          return await call(backend(), name);
         } catch (e) {
           if (isUnknownModel(e)) {
             attempts.add('$label/$name: ${_short(e)}');
@@ -159,14 +267,15 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
   Future<List<RecipeDraft>> _extractWith(
     FirebaseAI ai,
     String name,
-    List<Part> parts,
-  ) async {
+    List<Part> parts, {
+    double temperature = 0,
+  }) async {
     final model = ai.generativeModel(
       model: name,
       generationConfig: GenerationConfig(
         responseMimeType: 'application/json',
         responseSchema: _schema,
-        temperature: 0,
+        temperature: temperature,
       ),
     );
     final content = Content.multi(parts);

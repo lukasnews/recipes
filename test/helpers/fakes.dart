@@ -117,8 +117,12 @@ Widget testApp({
   BarcodeReader? barcodes,
   ProductLookup? products,
   List<Ingredient>? seed,
+  FakeExtractor? extractor,
 }) => ProviderScope(
   overrides: [
+    recipeExtractorProvider.overrideWith(
+      (ref) async => extractor ?? FakeExtractor(const []),
+    ),
     timerAlarmsProvider.overrideWithValue(const NoTimerAlarms()),
     barcodeReaderProvider.overrideWithValue(barcodes ?? FakeBarcodeReader()),
     productLookupProvider.overrideWithValue(products ?? FakeProductLookup()),
@@ -165,6 +169,39 @@ class FakeExtractor implements RecipeExtractor {
     lastText = pageText;
     if (fail) throw Exception('offline');
     return results;
+  }
+
+  List<String>? lastPantry;
+  String? lastWish;
+  List<String>? lastAvoid;
+
+  @override
+  Future<List<RecipeDraft>> suggestFromPantry({
+    required List<String> pantry,
+    String wish = '',
+    List<String> avoid = const [],
+    int count = 3,
+  }) async {
+    lastPantry = pantry;
+    lastWish = wish;
+    lastAvoid = avoid;
+    if (fail) throw Exception('offline');
+    return results;
+  }
+
+  NutritionEstimate nutrition = const NutritionEstimate(
+    kcal: 520,
+    protein: 18,
+    fat: 21,
+    carbs: 62,
+  );
+  String? lastNutritionText;
+
+  @override
+  Future<NutritionEstimate> estimateNutrition(String recipeText) async {
+    lastNutritionText = recipeText;
+    if (fail) throw Exception('offline');
+    return nutrition;
   }
 }
 

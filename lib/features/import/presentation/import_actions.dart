@@ -8,12 +8,15 @@ import 'package:go_router/go_router.dart';
 import '../../../app/messenger.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
+import '../../../core/units/units.dart';
 import '../../../core/widgets/l10n_ext.dart';
+import '../../household/domain/allergen.dart';
+import '../../pantry/domain/pantry_item.dart';
 import '../data/photo_picker.dart';
 import '../domain/recipe_draft.dart';
 import '../domain/web_recipe.dart';
 
-enum _AddChoice { manual, camera, gallery, link }
+enum _AddChoice { manual, camera, gallery, link, ideas }
 
 /// Bottom sheet behind the "+" button: empty recipe, photo or screenshot.
 Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
@@ -48,6 +51,12 @@ Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
             subtitle: Text(l10n.importLinkSubtitle),
             onTap: () => Navigator.pop(context, _AddChoice.link),
           ),
+          ListTile(
+            leading: const Icon(Icons.auto_awesome_outlined),
+            title: Text(l10n.ideasFromPantry),
+            subtitle: Text(l10n.ideasFromPantrySubtitle),
+            onTap: () => Navigator.pop(context, _AddChoice.ideas),
+          ),
         ],
       ),
     ),
@@ -62,7 +71,84 @@ Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
       await importFromPhotos(context, ref, PhotoSource.gallery);
     case _AddChoice.link:
       await askAndImportLink(context, ref);
+    case _AddChoice.ideas:
+      await suggestRecipesFromPantry(context, ref);
   }
+}
+
+/// Recipe ideas from the AI that use up the pantry (soon-expiring first),
+/// leaving out the household's allergens. Each idea is reviewed like an
+/// import.
+Future<void> suggestRecipesFromPantry(
+  BuildContext context,
+  WidgetRef ref,
+) async {
+  final l10n = context.l10n;
+  final wishController = TextEditingController();
+  final wish = await showDialog<String>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(l10n.ideasFromPantry),
+      content: TextField(
+        controller: wishController,
+        autofocus: true,
+        decoration: InputDecoration(
+          labelText: l10n.ideasWishLabel,
+          hintText: l10n.ideasWishHint,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, wishController.text),
+          child: Text(l10n.ideasGet),
+        ),
+      ],
+    ),
+  );
+  if (wish == null || !context.mounted) return;
+
+  final ingredients = ref.read(ingredientsByIdProvider);
+  final now = DateTime.now();
+  final stock =
+      [
+        for (final p
+            in ref.read(pantryProvider).value?.values ?? <PantryItem>[])
+          if (p.amount > 0 && ingredients[p.ingredientId] != null) p,
+      ]..sort((a, b) {
+        final ea = a.expiry(now) == Expiry.none ? 1 : 0;
+        final eb = b.expiry(now) == Expiry.none ? 1 : 0;
+        return ea.compareTo(eb);
+      });
+  final pantry = [
+    for (final p in stock)
+      [
+        ingredients[p.ingredientId]!.name,
+        ' (${formatBaseAmount(p.amount, ingredients[p.ingredientId]!.baseUnit)}',
+        if (p.expiry(now) != Expiry.none) ', läuft bald ab',
+        ')',
+      ].join(),
+  ];
+  if (pantry.isEmpty) {
+    showGlobalSnack(l10n.ideasPantryEmpty);
+    return;
+  }
+  final avoid = {
+    for (final m in ref.read(membersProvider).value ?? <HouseholdMember>[])
+      ...m.allergens,
+  }.map(l10n.allergen).toList();
+  await _runImport(context, () async {
+    final extractor = await ref.read(recipeExtractorProvider.future);
+    final ideas = await extractor.suggestFromPantry(
+      pantry: pantry,
+      wish: wish,
+      avoid: avoid,
+    );
+    return [for (final d in ideas) d.copyWith(notes: l10n.ideaNote)];
+  }, message: l10n.ideasThinking);
 }
 
 Future<void> importFromPhotos(
@@ -126,8 +212,9 @@ Future<void> importFromLink(BuildContext context, WidgetRef ref, Uri url) =>
 /// found, then the review screen for each one.
 Future<void> _runImport(
   BuildContext context,
-  Future<List<RecipeDraft>> Function() load,
-) async {
+  Future<List<RecipeDraft>> Function() load, {
+  String? message,
+}) async {
   final l10n = context.l10n;
   final navigator = Navigator.of(context, rootNavigator: true);
   unawaited(
@@ -141,7 +228,7 @@ Future<void> _runImport(
             children: [
               const CircularProgressIndicator(),
               const SizedBox(width: 24),
-              Expanded(child: Text(l10n.importReading)),
+              Expanded(child: Text(message ?? l10n.importReading)),
             ],
           ),
         ),

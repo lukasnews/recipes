@@ -743,5 +743,13 @@
   "suggestWeekApply": "Einplanen",
   "suggestWeekFull": "Diese Woche ist schon verplant.",
   "suggestWeekNoRecipes": "Keine passenden Rezepte für einen Vorschlag.",
-  "photoPendingUpload": "wartet auf Upload"
+  "photoPendingUpload": "wartet auf Upload",
+  "ideasFromPantry": "Ideen aus dem Vorrat",
+  "ideasFromPantrySubtitle": "KI schlägt Rezepte vor, die deinen Vorrat verbrauchen",
+  "ideasWishLabel": "Wunsch (optional)",
+  "ideasWishHint": "z. B. schnell, vegetarisch, süß",
+  "ideasGet": "Ideen holen",
+  "ideasThinking": "Ideen werden gesucht …",
+  "ideasPantryEmpty": "Der Vorrat ist leer – trag zuerst ein paar Zutaten ein.",
+  "ideaNote": "Vorschlag der KI aus dem Vorrat – bitte prüfen."
 }
