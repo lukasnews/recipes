@@ -1,6 +1,7 @@
 import '../../../core/units/units.dart';
 import '../../ingredients/domain/ingredient.dart';
 import '../../pantry/domain/pantry_item.dart';
+import '../../shopping/domain/shopping_item.dart';
 import 'recipe.dart';
 
 enum StockStatus { available, partial, missing, unknown }
@@ -141,4 +142,19 @@ double clampDeduction(double requested, double? stock) {
   final have = stock ?? 0;
   if (requested <= 0) return 0;
   return requested > have ? have : requested;
+}
+
+/// True when "Fehlendes einkaufen" was already used for [recipeId]: an open
+/// item came from it, or every missing ingredient is already open on the
+/// list (merged items keep the first recipe id).
+bool alreadyOnList(
+  String recipeId,
+  List<IngredientNeed> missing,
+  List<ShoppingItem> shopping,
+) {
+  final open = shopping.where((i) => !i.checked);
+  if (open.any((i) => i.fromRecipeId == recipeId)) return true;
+  if (missing.isEmpty) return false;
+  final openIds = {for (final i in open) ?i.ingredientId};
+  return missing.every((n) => openIds.contains(n.ingredient.id));
 }

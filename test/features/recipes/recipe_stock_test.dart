@@ -4,6 +4,7 @@ import 'package:recipes/features/ingredients/domain/ingredient.dart';
 import 'package:recipes/features/pantry/domain/pantry_item.dart';
 import 'package:recipes/features/recipes/domain/recipe.dart';
 import 'package:recipes/features/recipes/domain/recipe_stock.dart';
+import 'package:recipes/features/shopping/domain/shopping_item.dart';
 
 void main() {
   const flour = Ingredient(
@@ -162,6 +163,35 @@ void main() {
     expect(expiryOf(DateTime(2026, 11, 4), now), Expiry.soon);
     expect(expiryOf(DateTime(2026, 11, 7), now), Expiry.soon);
     expect(expiryOf(DateTime(2026, 11, 8), now), Expiry.none);
+  });
+
+  test('alreadyOnList: by recipe id or all missing open on the list', () {
+    final cov = computeCoverage(pancakes, ingredients, const {});
+    expect(alreadyOnList(pancakes.id, cov.missing, const []), isFalse);
+    const fromRecipe = ShoppingItem(id: 's', text: 'Milch', fromRecipeId: 'r1');
+    expect(alreadyOnList(pancakes.id, cov.missing, [fromRecipe]), isTrue);
+    final all = [
+      for (final n in cov.missing)
+        ShoppingItem(
+          id: n.ingredient.id,
+          text: '',
+          ingredientId: n.ingredient.id,
+        ),
+    ];
+    expect(alreadyOnList(pancakes.id, cov.missing, all), isTrue);
+    expect(
+      alreadyOnList(pancakes.id, cov.missing, [
+        for (final i in all)
+          ShoppingItem(
+            id: i.id,
+            text: '',
+            ingredientId: i.ingredientId,
+            checked: true,
+          ),
+      ]),
+      isFalse,
+      reason: 'checked items don\'t count',
+    );
   });
 
   test('plannedDeductions skips always-available and unknown amounts', () {

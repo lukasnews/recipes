@@ -691,5 +691,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "buyMissingAgainTitle": "Schon auf der Einkaufsliste",
+  "buyMissingAgainMessage": "Die Zutaten dieses Rezepts stehen schon auf der Einkaufsliste. Nochmal hinzufügen? Die Mengen werden dann addiert.",
+  "buyMissingAgain": "Nochmal hinzufügen",
+  "alreadyOnList": "schon auf der Liste"
 }

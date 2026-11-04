@@ -83,10 +83,20 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     );
   }
 
-  void _buyMissing(RecipeCoverage coverage) {
+  Future<void> _buyMissing(RecipeCoverage coverage) async {
+    final l10n = context.l10n;
     final repo = ref.read(shoppingRepositoryProvider);
     final current = ref.read(shoppingProvider).value ?? const [];
     final missing = coverage.missing;
+    if (alreadyOnList(coverage.recipe.id, missing, current)) {
+      final again = await confirmDialog(
+        context,
+        title: l10n.buyMissingAgainTitle,
+        message: l10n.buyMissingAgainMessage,
+        confirmLabel: l10n.buyMissingAgain,
+      );
+      if (!again || !mounted) return;
+    }
     for (final need in missing) {
       final ing = need.ingredient;
       final knowAmount = need.neededBase > 0 && !need.hasUnconvertible;
@@ -104,7 +114,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
         ),
       );
     }
-    showSnack(context, context.l10n.buyMissingDone(missing.length));
+    showSnack(context, l10n.buyMissingDone(missing.length));
   }
 
   @override

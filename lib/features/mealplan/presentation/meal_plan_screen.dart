@@ -12,6 +12,7 @@ import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/profile_button.dart';
 import '../../pantry/domain/frozen_meal.dart';
 import '../../recipes/domain/recipe.dart';
+import '../../shopping/domain/shopping_item.dart';
 import '../data/meal_plan_repository.dart';
 import '../domain/meal_plan_day.dart';
 import '../domain/week_shopping.dart';
@@ -97,7 +98,16 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
       );
       return;
     }
-    final selected = {for (var i = 0; i < needs.length; i++) i};
+    // Already open on the list: offered, but not ticked.
+    final onList = {
+      for (final i
+          in ref.read(shoppingProvider).value ?? const <ShoppingItem>[])
+        if (!i.checked) ?i.ingredientId,
+    };
+    final selected = {
+      for (final (i, n) in needs.indexed)
+        if (!onList.contains(n.ingredient.id)) i,
+    };
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -117,14 +127,17 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
                       () => v == true ? selected.add(i) : selected.remove(i),
                     ),
                     title: Text(n.ingredient.name),
-                    subtitle: n.missingBase == null
-                        ? null
-                        : Text(
-                            formatBaseAmount(
-                              n.missingBase!,
-                              n.ingredient.baseUnit,
-                            ),
+                    subtitle: Text(
+                      [
+                        if (n.missingBase != null)
+                          formatBaseAmount(
+                            n.missingBase!,
+                            n.ingredient.baseUnit,
                           ),
+                        if (onList.contains(n.ingredient.id))
+                          l10n.alreadyOnList,
+                      ].join(' · '),
+                    ),
                   ),
               ],
             ),
