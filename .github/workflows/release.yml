@@ -101,10 +101,25 @@ jobs:
           --build-name=${{ steps.version.outputs.name }}
           --dart-define=BUILD_NUMBER=${{ steps.version.outputs.name }}
 
+      # Copying the key on a phone often turns the "\n" in private_key into
+      # real line breaks; parse leniently and write clean JSON.
+      - name: Prepare service account
+        env:
+          PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          data = json.loads(os.environ['PLAY_JSON'].strip(), strict=False)
+          path = os.path.join(os.environ['RUNNER_TEMP'], 'play.json')
+          with open(path, 'w') as f:
+              json.dump(data, f)
+          print('service account:', data.get('client_email'))
+          PY
+
       - name: Upload to Google Play
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          serviceAccountJson: ${{ runner.temp }}/play.json
           packageName: ${{ env.PACKAGE_NAME }}
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           releaseName: ${{ steps.version.outputs.name }} (${{ steps.version.outputs.code }})
@@ -119,4 +134,4 @@ jobs:
 
       - name: Remove signing key
         if: always()
-        run: rm -f "$RUNNER_TEMP/upload.jks" android/key.properties
+        run: rm -f "$RUNNER_TEMP/upload.jks" "$RUNNER_TEMP/play.json" android/key.properties
