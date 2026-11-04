@@ -98,6 +98,30 @@ class IngredientMatcher {
     return MatchResult.none;
   }
 
+  /// Existing ingredients that look like [name], best first: a match of any
+  /// kind plus fuzzy neighbours above [minScore]. Used to warn before a
+  /// duplicate is created ("Meintest du Schlagobers?").
+  List<String> similar(String name, {int max = 3, double minScore = 0.6}) {
+    final key = normalizeKey(name);
+    final direct = match(name).id;
+    final scores = <String, double>{};
+    if (key.isNotEmpty) {
+      final tokens = key.split(' ').toSet();
+      for (final (k, id) in _keys) {
+        var score = similarity(key, k);
+        final other = k.split(' ').toSet();
+        if (score < 0.8 &&
+            (other.containsAll(tokens) || tokens.containsAll(other))) {
+          score = 0.8;
+        }
+        if (score >= minScore && score > (scores[id] ?? 0)) scores[id] = score;
+      }
+    }
+    final ids = scores.keys.toList()
+      ..sort((a, b) => scores[b]!.compareTo(scores[a]!));
+    return [?direct, ...ids.where((id) => id != direct)].take(max).toList();
+  }
+
   /// Pairs of candidates that are probably the same product.
   static List<(String, String, double)> findDuplicates(
     List<MatchCandidate> candidates, {

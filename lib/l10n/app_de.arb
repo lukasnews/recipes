@@ -704,5 +704,30 @@
   "accountDeleted": "Konto gelöscht",
   "deleteAccountFailed": "Löschen hat nicht geklappt. Bitte später nochmal versuchen.",
   "confirmPasswordTitle": "Passwort bestätigen",
-  "wrongPassword": "Falsches Passwort"
+  "wrongPassword": "Falsches Passwort",
+  "similarIngredientsTitle": "Gibt es schon?",
+  "similarIngredientsHint": "Ähnlich wie „{name}“:",
+  "useExisting": "{name} verwenden",
+  "createAnyway": "„{name}“ trotzdem neu anlegen",
+  "@similarIngredientsHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@useExisting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@createAnyway": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

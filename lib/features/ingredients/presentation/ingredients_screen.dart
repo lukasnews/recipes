@@ -11,6 +11,7 @@ import '../../../core/widgets/async_view.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../domain/ingredient.dart';
 import '../domain/ingredient_factory.dart';
+import 'ingredient_picker.dart';
 import 'merge.dart';
 import 'preferred_name_sheet.dart';
 
@@ -35,12 +36,21 @@ class IngredientsScreen extends ConsumerStatefulWidget {
 class _IngredientsScreenState extends ConsumerState<IngredientsScreen> {
   String _q = '';
 
-  void _create() {
+  Future<void> _create() async {
     final repo = ref.read(ingredientRepositoryProvider);
     final name = _q.trim();
+    if (name.isNotEmpty) {
+      final choice = await confirmNewIngredient(context, ref, name);
+      if (choice == null || !mounted) return;
+      final existing = choice.ingredient;
+      if (existing != null) {
+        await context.push(Routes.ingredient(existing.id));
+        return;
+      }
+    }
     final ing = newIngredient(repo.newId(), name.isEmpty ? '?' : name);
     fire(repo.save(ing));
-    context.push(Routes.ingredient(ing.id));
+    if (mounted) await context.push(Routes.ingredient(ing.id));
   }
 
   @override

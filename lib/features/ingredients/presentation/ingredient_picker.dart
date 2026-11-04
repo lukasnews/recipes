@@ -65,6 +65,16 @@ class _PickerSheetState extends ConsumerState<_PickerSheet> {
     super.dispose();
   }
 
+  Future<void> _create(String name) async {
+    final choice = await confirmNewIngredient(
+      context,
+      ref,
+      name,
+      excludeIds: widget.excludeIds,
+    );
+    if (choice != null && mounted) Navigator.pop(context, choice);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -118,10 +128,7 @@ class _PickerSheetState extends ConsumerState<_PickerSheet> {
                       title: Text(
                         l10n.createIngredientNamed(_query.text.trim()),
                       ),
-                      onTap: () => Navigator.pop(
-                        context,
-                        IngredientChoice.create(_query.text.trim()),
-                      ),
+                      onTap: () => _create(_query.text.trim()),
                     ),
                   if (widget.allowUnlink)
                     ListTile(
@@ -152,4 +159,54 @@ class _PickerSheetState extends ConsumerState<_PickerSheet> {
       ),
     );
   }
+}
+
+/// Before creating "[name]": if similar ingredients exist ("Sahne" vs
+/// "Schlagobers"), offers them. Returns the existing one, a create choice,
+/// or null when cancelled.
+Future<IngredientChoice?> confirmNewIngredient(
+  BuildContext context,
+  WidgetRef ref,
+  String name, {
+  Set<String> excludeIds = const {},
+}) async {
+  final byId = ref.read(ingredientsByIdProvider);
+  final similar = [
+    for (final id in ref.read(ingredientMatcherProvider).similar(name))
+      if (byId[id] != null && !excludeIds.contains(id)) byId[id]!,
+  ];
+  if (similar.isEmpty) return IngredientChoice.create(name);
+  final l10n = context.l10n;
+  return showDialog<IngredientChoice>(
+    context: context,
+    builder: (context) => SimpleDialog(
+      title: Text(l10n.similarIngredientsTitle),
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+          child: Text(l10n.similarIngredientsHint(name)),
+        ),
+        for (final i in similar)
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+            leading: const Icon(Icons.check_circle_outline),
+            title: Text(l10n.useExisting(i.name)),
+            subtitle: i.synonyms.isEmpty
+                ? null
+                : Text(
+                    i.synonyms.join(', '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+            onTap: () => Navigator.pop(context, IngredientChoice.existing(i)),
+          ),
+        ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+          leading: const Icon(Icons.add),
+          title: Text(l10n.createAnyway(name)),
+          onTap: () => Navigator.pop(context, IngredientChoice.create(name)),
+        ),
+      ],
+    ),
+  );
 }

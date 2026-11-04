@@ -224,7 +224,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [ ] Foto-Uploads in eine dauerhafte Offline-Warteschlange (jetzt: Upload im Hintergrund, Hinweis bei Fehler)
 - [x] App Check: Play Integrity für Play-Builds; Test-APKs aus der CI nutzen den Debug-Provider mit `APPCHECK_DEBUG_TOKEN` (GitHub-Secret, in Firebase → App Check → Debug-Tokens registriert). Ab 2. 11. 2026 erzwingt AI Logic App Check.
 - [ ] Regeln automatisch deployen (CI mit Service-Account)
-- [ ] Zutaten-Zusammenführen: Duplikat-Hinweis beim Anlegen einer neuen Zutat
+- [x] Zutaten-Zusammenführen: Duplikat-Hinweis beim Anlegen einer neuen Zutat (`IngredientMatcher.similar` → `confirmNewIngredient`: „Gibt es schon?“)
 - [x] Suche und Filter
 - [x] Portionen skalieren
 - [x] Einkaufsliste: anlegen, abhaken, nach Abteilung gruppiert, live für alle

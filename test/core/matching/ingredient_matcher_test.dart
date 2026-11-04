@@ -22,6 +22,13 @@ void main() {
     MatchCandidate(id: 'butter', name: 'Butter'),
   ]);
 
+  test('similar: offers existing ingredients before creating duplicates', () {
+    expect(matcher.similar('Schlagsahne').first, 'schlagobers');
+    expect(matcher.similar('Sahne flüssig'), contains('schlagobers'));
+    expect(matcher.similar('Topfn'), contains('topfen'));
+    expect(matcher.similar('Zucchini'), isEmpty);
+  });
+
   test('exact name, case insensitive', () {
     final r = matcher.match('schlagobers');
     expect(r.kind, MatchKind.exact);
