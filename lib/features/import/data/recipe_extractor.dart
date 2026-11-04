@@ -105,7 +105,15 @@ Gib NUR JSON nach dem Schema zurück. Regeln:
         m.contains('api_key') ||
         m.contains('not been used in project') ||
         m.contains('is disabled') ||
-        m.contains('servicedisabled');
+        m.contains('servicedisabled') ||
+        // Billing/quota of one backend (e.g. empty AI Studio prepay credits
+        // for the Developer API) doesn't affect the other one (Blaze).
+        m.contains('prepayment') ||
+        m.contains('credits') ||
+        m.contains('billing') ||
+        m.contains('quota') ||
+        m.contains('resource_exhausted') ||
+        m.contains('resource exhausted');
   }
 
   Future<List<RecipeDraft>> _run(List<Part> parts) async {

@@ -48,7 +48,15 @@ void main() {
       isTrue,
     );
     expect(
-      GeminiRecipeExtractor.isBackendSetupError(Exception('quota exceeded')),
+      GeminiRecipeExtractor.isBackendSetupError(
+        Exception(
+          'Your prepayment credits are depleted. Please go to AI Studio',
+        ),
+      ),
+      isTrue,
+    );
+    expect(
+      GeminiRecipeExtractor.isBackendSetupError(Exception('Request timed out')),
       isFalse,
     );
   });
