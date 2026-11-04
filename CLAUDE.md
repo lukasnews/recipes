@@ -120,6 +120,9 @@ households/{hid}/cookLog/{logId}
 - **„Was kann ich kochen?“** wird lokal berechnet: pro Rezept Anteil der Zutaten, die der Vorrat abdeckt (alwaysAvailable zählt als vorhanden), plus Liste der fehlenden. Sortierung: abgedeckt absteigend, dann fehlende Anzahl.
 - **Fehlendes einkaufen:** fehlende Differenz je Zutat auf die Einkaufsliste; existiert die Zutat schon unabgehakt, Menge addieren statt doppelt anlegen.
 - **Mindestbestand:** fällt `amount` unter `minAmount`, Eintrag auf die Einkaufsliste (einmalig, kein Duplikat).
+- **Woche einkaufen** (Wochenplan): Bedarf aller ab heute geplanten Rezepte der angezeigten Woche summiert, Vorrat einmal abgezogen (`weekShoppingNeeds`), Auswahl per Häkchen, dann auf die Einkaufsliste.
+- **Kochverlauf:** aus `cookLog` (ohne `undone`) → `cookStats` (Anzahl, zuletzt). Rezept-Detail „Zuletzt vor … gekocht · n×“, Liste mit Chip „Lange nicht gekocht“ (`longNotCooked`).
+- **Ablaufdatum:** `pantry.expiresOn` optional in beiden Vorrat-Formularen. ≤ 3 Tage = „bald ablaufend“, davor „abgelaufen“; solche Einträge stehen oben im Abschnitt „Bald ablaufend“. „Was kann ich kochen?“ reiht bei gleicher Abdeckung Rezepte vor, die bald Ablaufendes verbrauchen.
 - **Suche** läuft lokal über die gecachten Rezepte (Firestore hat keine Volltextsuche). Haushalte sind klein, das reicht.
 - **Zutaten zusammenführen:** Doppelte (z. B. „Sahne“ und „Schlagobers“) erkennt `IngredientMatcher.findDuplicates`; die Zutaten-Verwaltung zeigt sie an. Beim Zusammenführen werden Name und Synonyme der aufgelösten Zutat Synonyme der behaltenen; Rezepte, Vorrat (nur bei gleicher Basiseinheit) und Einkaufsliste werden umgehängt.
 - **Bevorzugter Begriff:** `name` ist der angezeigte Begriff. In der Zutaten-Bearbeitung kann ein Synonym zum Namen gemacht werden (`Ingredient.withPreferredName`), der alte Name wird Synonym. Die id bleibt, Erkennung findet weiter alle Begriffe. Verknüpfte Einkaufsposten zeigen immer den aktuellen Namen.
@@ -230,10 +233,11 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 ### Phase 3 – Komfort (Ziel: Produktionszugang im Play Store)
 - [x] Foto-/Screenshot-/Handschrift-Import per Firebase AI Logic (Gemini, Modell aus Remote Config `ai_model`, Standard `gemini-3.8-flash`)
 - [ ] Import-Offline-Warteschlange (jetzt: ML-Kit-Rückfall)
-- [ ] Ablaufdatum im Vorrat, Hinweis „bald ablaufend“
+- [x] Ablaufdatum im Vorrat, Hinweis „bald ablaufend“
 - [ ] Barcode-Scan + Open Food Facts
 - [ ] Aktionen der Märkte (Spar, Billa, Hofer …) – zurückgestellt: keine offizielle Schnittstelle; Optionen: Flugblatt-Links oder inoffizielles Aktions-Portal
-- [ ] Wochenplaner → Einkaufsliste
+- [x] Wochenplaner → Einkaufsliste
+- [x] Kochverlauf (zuletzt gekocht, Sortierung „Lange nicht gekocht“)
 - [ ] Backup/Export und Import (JSON)
 - [ ] Konto- und Datenlöschung in der App, Datenschutzerklärung (GitHub Pages)
 

@@ -38,4 +38,27 @@ class PantryItem {
   final DateTime? expiresOn;
 
   bool get isBelowMin => minAmount != null && amount < minAmount!;
+
+  Expiry expiry(DateTime now) => expiryOf(expiresOn, now);
 }
+
+enum Expiry { none, soon, expired }
+
+/// Items expiring within this many days count as "bald ablaufend".
+const expirySoonDays = 3;
+
+Expiry expiryOf(DateTime? expiresOn, DateTime now) {
+  if (expiresOn == null) return Expiry.none;
+  final today = DateTime(now.year, now.month, now.day);
+  final day = DateTime(expiresOn.year, expiresOn.month, expiresOn.day);
+  final days = day.difference(today).inDays;
+  if (days < 0) return Expiry.expired;
+  if (days <= expirySoonDays) return Expiry.soon;
+  return Expiry.none;
+}
+
+/// Ingredient ids in stock that expire soon or already expired.
+Set<String> expiringIds(Map<String, PantryItem> pantry, DateTime now) => {
+  for (final p in pantry.values)
+    if (p.amount > 0 && p.expiry(now) != Expiry.none) p.ingredientId,
+};

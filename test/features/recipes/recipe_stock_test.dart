@@ -120,6 +120,50 @@ void main() {
     expect(ranked.map((r) => r.recipe.id), ['b', 'a', 'c']);
   });
 
+  test('rankByCoverage prefers recipes using expiring items on ties', () {
+    const a = Recipe(
+      id: 'a',
+      title: 'A',
+      ingredients: [
+        RecipeIngredient(rawText: 'x', ingredientId: 'egg', amount: 1),
+      ],
+    );
+    const b = Recipe(
+      id: 'b',
+      title: 'B',
+      ingredients: [
+        RecipeIngredient(
+          rawText: 'x',
+          ingredientId: 'flour',
+          amount: 100,
+          unit: 'g',
+        ),
+      ],
+    );
+    final now = DateTime(2026, 11, 4);
+    final pantry = {
+      'egg': const PantryItem(ingredientId: 'egg', amount: 6),
+      'flour': PantryItem(
+        ingredientId: 'flour',
+        amount: 500,
+        expiresOn: now.add(const Duration(days: 2)),
+      ),
+    };
+    final ranked = rankByCoverage([
+      for (final r in [a, b]) computeCoverage(r, ingredients, pantry),
+    ], expiring: expiringIds(pantry, now));
+    expect(ranked.map((r) => r.recipe.id), ['b', 'a']);
+  });
+
+  test('expiryOf: soon within 3 days, expired before today', () {
+    final now = DateTime(2026, 11, 4, 20);
+    expect(expiryOf(null, now), Expiry.none);
+    expect(expiryOf(DateTime(2026, 11, 3), now), Expiry.expired);
+    expect(expiryOf(DateTime(2026, 11, 4), now), Expiry.soon);
+    expect(expiryOf(DateTime(2026, 11, 7), now), Expiry.soon);
+    expect(expiryOf(DateTime(2026, 11, 8), now), Expiry.none);
+  });
+
   test('plannedDeductions skips always-available and unknown amounts', () {
     final d = plannedDeductions(pancakes, ingredients);
     expect(

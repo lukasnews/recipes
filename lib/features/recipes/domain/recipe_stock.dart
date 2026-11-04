@@ -50,6 +50,10 @@ class RecipeCoverage {
 
   /// Share of covered ingredients, 1.0 for recipes without linked ingredients.
   double get ratio => total == 0 ? 1 : coveredCount / total;
+
+  /// How many of [expiring] ingredient ids this recipe uses.
+  int usesExpiring(Set<String> expiring) =>
+      needs.where((n) => expiring.contains(n.ingredient.id)).length;
 }
 
 /// Aggregates the needs of a recipe scaled to [servings].
@@ -90,13 +94,19 @@ RecipeCoverage computeCoverage(
   ]);
 }
 
-/// "Was kann ich kochen?": covered share descending, then fewest missing.
-List<RecipeCoverage> rankByCoverage(Iterable<RecipeCoverage> list) =>
-    list.toList()..sort((a, b) {
-      final r = b.ratio.compareTo(a.ratio);
-      if (r != 0) return r;
-      return a.missing.length.compareTo(b.missing.length);
-    });
+/// "Was kann ich kochen?": covered share descending, then most soon-expiring
+/// ingredients used up ([expiring] ids), then fewest missing.
+List<RecipeCoverage> rankByCoverage(
+  Iterable<RecipeCoverage> list, {
+  Set<String> expiring = const {},
+}) => list.toList()
+  ..sort((a, b) {
+    final r = b.ratio.compareTo(a.ratio);
+    if (r != 0) return r;
+    final e = b.usesExpiring(expiring).compareTo(a.usesExpiring(expiring));
+    if (e != 0) return e;
+    return a.missing.length.compareTo(b.missing.length);
+  });
 
 /// One planned pantry deduction for the "cooked" dialog.
 class Deduction {

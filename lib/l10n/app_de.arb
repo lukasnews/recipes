@@ -577,5 +577,41 @@
         "type": "int"
       }
     }
+  },
+  "expiresOnLabel": "Ablaufdatum",
+  "expiresOnNone": "Kein Ablaufdatum",
+  "expiresOn": "läuft ab am {date}",
+  "expiresSoon": "läuft bald ab ({date})",
+  "expiredOn": "abgelaufen ({date})",
+  "pantryExpiringSection": "Bald ablaufend",
+  "usesExpiring": "{count, plural, =1{verbraucht 1 bald Ablaufendes} other{verbraucht {count} bald Ablaufende}}",
+  "clearDate": "Datum entfernen",
+  "@expiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@expiresSoon": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@expiredOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@usesExpiring": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

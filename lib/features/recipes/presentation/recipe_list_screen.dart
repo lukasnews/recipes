@@ -12,6 +12,7 @@ import '../../../core/widgets/profile_button.dart';
 import '../../../core/widgets/rating_stars.dart';
 import '../../../core/widgets/storage_image.dart';
 import '../../import/presentation/import_actions.dart';
+import '../../pantry/domain/pantry_item.dart';
 import '../domain/allergen_check.dart';
 import '../domain/cook_history.dart';
 import '../domain/recipe.dart';
@@ -82,7 +83,10 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
           var coverages = [
             for (final r in filtered) computeCoverage(r, ingredients, pantry),
           ];
-          if (_cookable) coverages = rankByCoverage(coverages);
+          final expiring = expiringIds(pantry, DateTime.now());
+          if (_cookable) {
+            coverages = rankByCoverage(coverages, expiring: expiring);
+          }
           if (_longNotCooked) {
             final stats = ref.watch(cookStatsProvider).value ?? const {};
             final byId = {for (final c in coverages) c.recipe.id: c};
@@ -167,6 +171,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                         itemBuilder: (context, i) => _RecipeTile(
                           coverage: coverages[i],
                           showCoverage: _cookable,
+                          expiringUsed: coverages[i].usesExpiring(expiring),
                           warn: !isSafe(coverages[i].recipe),
                         ),
                       ),
@@ -184,7 +189,11 @@ class _RecipeTile extends StatelessWidget {
     required this.coverage,
     required this.showCoverage,
     this.warn = false,
+    this.expiringUsed = 0,
   });
+
+  /// Number of soon-expiring pantry items this recipe would use up.
+  final int expiringUsed;
 
   final RecipeCoverage coverage;
   final bool showCoverage;
@@ -202,6 +211,7 @@ class _RecipeTile extends StatelessWidget {
       if (minutes != null) l10n.minutesShort(minutes),
       if (showCoverage && coverage.total > 0)
         l10n.coverageLabel(coverage.coveredCount, coverage.total),
+      if (showCoverage && expiringUsed > 0) l10n.usesExpiring(expiringUsed),
     ].join(' · ');
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),

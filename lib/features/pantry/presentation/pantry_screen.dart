@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/firebase/fire.dart';
@@ -15,6 +16,8 @@ import '../../ingredients/presentation/ingredient_picker.dart';
 import '../domain/pantry_item.dart';
 import 'frozen_meals_tab.dart';
 import 'stock_actions.dart';
+
+final _dateFormat = DateFormat('d. M. yyyy', 'de');
 
 String baseLabel(BaseUnit u) => u == BaseUnit.pcs ? 'Stk.' : u.name;
 
@@ -87,21 +90,37 @@ class _IngredientsTab extends ConsumerWidget {
               message: '${l10n.pantryEmpty}\n${l10n.pantryEmptyHint}',
             );
           }
+          final now = DateTime.now();
+          final expiring =
+              items.where((i) => i.expiry(now) != Expiry.none).toList()
+                ..sort((a, b) => a.expiresOn!.compareTo(b.expiresOn!));
+          final rest = items.where((i) => !expiring.contains(i)).toList();
+          Widget header(String text) => Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+            child: Text(
+              text,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          );
           return ListView(
-            padding: const EdgeInsets.only(bottom: 96),
+            padding: EdgeInsets.only(
+              bottom: 96 + MediaQuery.paddingOf(context).bottom,
+            ),
             children: [
-              for (final loc in StorageLocation.values)
-                if (items.any((i) => i.location == loc)) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-                    child: Text(
-                      l10n.location(loc),
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
+              if (expiring.isNotEmpty) ...[
+                header(l10n.pantryExpiringSection),
+                for (final item in expiring)
+                  _PantryTile(
+                    item: item,
+                    ingredient: ingredients[item.ingredientId]!,
                   ),
-                  for (final item in items.where((i) => i.location == loc))
+              ],
+              for (final loc in StorageLocation.values)
+                if (rest.any((i) => i.location == loc)) ...[
+                  header(l10n.location(loc)),
+                  for (final item in rest.where((i) => i.location == loc))
                     _PantryTile(
                       item: item,
                       ingredient: ingredients[item.ingredientId]!,
@@ -125,14 +144,25 @@ class _PantryTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final step = stockStep(ingredient.baseUnit, item.amount);
+    final expiry = item.expiry(DateTime.now());
+    final date = item.expiresOn == null
+        ? null
+        : _dateFormat.format(item.expiresOn!);
+    final warn = item.isBelowMin || expiry != Expiry.none;
     return ListTile(
       title: Text(ingredient.name),
       subtitle: Text(
         [
           formatBaseAmount(item.amount, ingredient.baseUnit),
           if (item.isBelowMin) l10n.belowMin,
+          if (date != null)
+            switch (expiry) {
+              Expiry.expired => l10n.expiredOn(date),
+              Expiry.soon => l10n.expiresSoon(date),
+              Expiry.none => l10n.expiresOn(date),
+            },
         ].join(' · '),
-        style: item.isBelowMin
+        style: warn
             ? TextStyle(color: Theme.of(context).colorScheme.error)
             : null,
       ),
@@ -188,6 +218,7 @@ class _EditSheetState extends ConsumerState<_EditSheet> {
         : formatAmount(widget.item.minAmount!, fractions: false),
   );
   late StorageLocation _location = widget.item.location;
+  late DateTime? _expiresOn = widget.item.expiresOn;
 
   @override
   void dispose() {
@@ -211,6 +242,7 @@ class _EditSheetState extends ConsumerState<_EditSheet> {
         widget.item.ingredientId,
         location: _location,
         minAmount: () => min,
+        expiresOn: () => _expiresOn,
       ),
     );
     if (newAmount != null) {
@@ -264,7 +296,11 @@ class _EditSheetState extends ConsumerState<_EditSheet> {
             value: _location,
             onChanged: (v) => setState(() => _location = v),
           ),
-          const SizedBox(height: 16),
+          _ExpiryField(
+            value: _expiresOn,
+            onChanged: (v) => setState(() => _expiresOn = v),
+          ),
+          const SizedBox(height: 8),
           FilledButton(onPressed: _save, child: Text(l10n.save)),
           TextButton(
             onPressed: () {
@@ -327,6 +363,7 @@ class _AddSheetState extends ConsumerState<_AddSheet> {
   final _amount = TextEditingController();
   late String _unit;
   StorageLocation _location = StorageLocation.pantry;
+  DateTime? _expiresOn;
 
   Ingredient? get _existing => widget.choice.ingredient;
 
@@ -370,11 +407,12 @@ class _AddSheetState extends ConsumerState<_AddSheet> {
       if (factor == null) return;
       base = amount * factor;
     }
-    fire(
-      ref
-          .read(pantryRepositoryProvider)
-          .changeAmount(ing.id, base, location: _location),
-    );
+    final repo = ref.read(pantryRepositoryProvider);
+    fire(repo.changeAmount(ing.id, base, location: _location));
+    final expiresOn = _expiresOn;
+    if (expiresOn != null) {
+      fire(repo.update(ing.id, expiresOn: () => expiresOn));
+    }
     if (mounted) Navigator.pop(context);
   }
 
@@ -429,10 +467,51 @@ class _AddSheetState extends ConsumerState<_AddSheet> {
             value: _location,
             onChanged: (v) => setState(() => _location = v),
           ),
-          const SizedBox(height: 16),
+          _ExpiryField(
+            value: _expiresOn,
+            onChanged: (v) => setState(() => _expiresOn = v),
+          ),
+          const SizedBox(height: 8),
           FilledButton(onPressed: _save, child: Text(l10n.addToPantry)),
         ],
       ),
+    );
+  }
+}
+
+/// Optional best-before date: tap to pick, x to clear.
+class _ExpiryField extends StatelessWidget {
+  const _ExpiryField({required this.value, required this.onChanged});
+
+  final DateTime? value;
+  final ValueChanged<DateTime?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final v = value;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: const Icon(Icons.event_outlined),
+      title: Text(l10n.expiresOnLabel),
+      subtitle: Text(v == null ? l10n.expiresOnNone : _dateFormat.format(v)),
+      trailing: v == null
+          ? null
+          : IconButton(
+              tooltip: l10n.clearDate,
+              onPressed: () => onChanged(null),
+              icon: const Icon(Icons.clear),
+            ),
+      onTap: () async {
+        final now = DateTime.now();
+        final d = await showDatePicker(
+          context: context,
+          initialDate: v ?? now.add(const Duration(days: 7)),
+          firstDate: DateTime(now.year - 1),
+          lastDate: DateTime(now.year + 5),
+        );
+        if (d != null) onChanged(d);
+      },
     );
   }
 }

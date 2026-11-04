@@ -31,9 +31,15 @@ class PantryRepository {
     String ingredientId, {
     StorageLocation? location,
     double? Function()? minAmount,
+    DateTime? Function()? expiresOn,
   }) => _col.doc(ingredientId).set({
     'location': ?location?.name,
     if (minAmount != null) 'minAmount': minAmount() ?? FieldValue.delete(),
+    if (expiresOn != null)
+      'expiresOn': switch (expiresOn()) {
+        final d? => Timestamp.fromDate(d),
+        null => FieldValue.delete(),
+      },
     'updatedAt': FieldValue.serverTimestamp(),
   }, SetOptions(merge: true));
 
