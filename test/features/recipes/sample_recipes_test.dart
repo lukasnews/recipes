@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:recipes/features/auth/data/auth_repository.dart';
 import 'package:recipes/core/matching/ingredient_matcher.dart';
+import 'package:recipes/features/auth/data/auth_repository.dart';
 import 'package:recipes/features/ingredients/domain/ingredient.dart';
 import 'package:recipes/features/recipes/domain/sample_recipes.dart';
 
