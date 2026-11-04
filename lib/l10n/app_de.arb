@@ -730,5 +730,13 @@
       }
     }
   },
-  "addSampleRecipes": "Beispielrezepte hinzufügen"
+  "addSampleRecipes": "Beispielrezepte hinzufügen",
+  "onboardingSkip": "Überspringen",
+  "onboardingStart": "Los geht's",
+  "onboarding1Title": "Rezepte sammeln",
+  "onboarding1Text": "Abtippen, abfotografieren – auch Handschrift und Screenshots – oder per Link aus dem Browser an BaCo teilen. Du prüfst alles, bevor es gespeichert wird.",
+  "onboarding2Title": "Vorrat und Einkauf",
+  "onboarding2Text": "Einkaufsliste und Vorrat teilst du mit deinem Haushalt. Gekochtes wird vom Vorrat abgezogen, Fehlendes kommt mit einem Tipp auf die Liste.",
+  "onboarding3Title": "Was kann ich kochen?",
+  "onboarding3Text": "Im Rezepte-Reiter unter Filter → „Mit Vorrat kochbar“ siehst du, was mit dem Vorrat geht – Bald-Ablaufendes zuerst. Den Einladungscode für deinen Haushalt findest du in den Einstellungen."
 }

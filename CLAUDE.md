@@ -61,6 +61,7 @@ Alle Haushaltsdaten liegen unter `households/{householdId}`. Außerhalb gibt es 
 users/{uid}
   displayName, householdIds: [string], createdAt, unitDisplay?   # original|metric|austrian
   activeHouseholdId?   # picked in settings; falls back to householdIds.first
+  onboardingDone?      # saw the 3-page introduction (OnboardingGate in the shell)
 
 invites/{code}         # 6 chars, no 0/O/1/I/L; get only, never list
   householdId

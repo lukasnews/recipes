@@ -28,6 +28,7 @@ class AppUser {
     required this.householdIds,
     this.unitDisplay,
     this.activeHouseholdId,
+    this.onboardingDone = false,
   });
 
   factory AppUser.fromMap(String uid, Map<String, dynamic> m) => AppUser(
@@ -36,6 +37,7 @@ class AppUser {
     householdIds: m.strings('householdIds'),
     unitDisplay: m.strOrNull('unitDisplay'),
     activeHouseholdId: m.strOrNull('activeHouseholdId'),
+    onboardingDone: m.flag('onboardingDone'),
   );
 
   final String uid;
@@ -47,6 +49,9 @@ class AppUser {
 
   /// Household picked in the settings; falls back to the first one.
   final String? activeHouseholdId;
+
+  /// Saw the introduction (once per person, on any phone).
+  final bool onboardingDone;
 
   String? get currentHouseholdId => householdIds.contains(activeHouseholdId)
       ? activeHouseholdId

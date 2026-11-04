@@ -104,6 +104,7 @@ void main() {
       name: 'Zuhause',
       seed: seed,
     );
+    await repo.setOnboardingDone('u1');
     final recipes = RecipeRepository(db, hid);
     final all = [
       recipe(

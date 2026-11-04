@@ -116,6 +116,9 @@ class HouseholdRepository {
     return hid;
   }
 
+  Future<void> setOnboardingDone(String uid) =>
+      _user(uid).set({'onboardingDone': true}, SetOptions(merge: true));
+
   Future<void> setActiveHousehold(String uid, String hid) =>
       _user(uid).set({'activeHouseholdId': hid}, SetOptions(merge: true));
 

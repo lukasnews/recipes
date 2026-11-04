@@ -100,7 +100,11 @@ Future<String> seedHousehold(FakeFirebaseFirestore db, {String uid = 'u1'}) {
       .ensureUser(uid, 'Lukas')
       .then(
         (_) => repo.createHousehold(uid: uid, name: 'Zuhause', seed: testSeed),
-      );
+      )
+      .then((hid) async {
+        await db.collection('users').doc(uid).update({'onboardingDone': true});
+        return hid;
+      });
 }
 
 Widget testApp({
