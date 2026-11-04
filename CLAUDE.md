@@ -18,7 +18,7 @@ Diese Datei gibt Claude Code den Kontext für dieses Repository. Sprache im Gesp
 | KI | firebase_ai (Firebase AI Logic, Gemini Developer API) |
 | Texterkennung | google_mlkit_text_recognition (on-device) |
 | Barcode | google_mlkit_barcode_scanning + Open Food Facts API |
-| Sonstiges | share_plus (Teilen, hinter `Sharer`), path_provider, flutter_cache_manager (Foto-Cache, Schlüssel = Storage-Pfad, 1 Jahr), image_picker, wakelock_plus (Kochmodus), http, html (JSON-LD-Parsing), receive_sharing_intent (Links teilen) |
+| Sonstiges | flutter_local_notifications + timezone (Timer-Alarme, Core-Library-Desugaring in Gradle), share_plus (Teilen, hinter `Sharer`), path_provider, flutter_cache_manager (Foto-Cache, Schlüssel = Storage-Pfad, 1 Jahr), image_picker, wakelock_plus (Kochmodus), http, html (JSON-LD-Parsing), receive_sharing_intent (Links teilen) |
 
 Neue Pakete nur nach Rückfrage hinzufügen. Vor dem Hinzufügen prüfen, ob das Paket gepflegt wird und Android + iOS unterstützt.
 
@@ -233,7 +233,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Mindestbestand → Einkaufsliste
 - [x] Abgehakte Einkäufe in den Vorrat übernehmen
 - [x] Kochmodus (Schritt für Schritt, Wakelock, Timer) – Timer werden aus dem Schritttext erkannt (`parseStepTimers`), laufen parallel über Schritte weiter, Alarm per Vibration/Ton/Dialog solange die App offen ist; am Ende „Gekocht“-Dialog
-- [ ] Timer-Benachrichtigung bei geschlossener App (bräuchte flutter_local_notifications)
+- [x] Timer-Benachrichtigung bei geschlossener App (flutter_local_notifications, `TimerAlarms`; exakt, wenn Android es erlaubt, sonst ungefähr)
 - [x] Link-Import (JSON-LD, Teilen-Menü) mit Prüf-Bildschirm
 - [x] Texterkennung gedruckt (ML Kit) mit Prüf-Bildschirm (Rückfall ohne Internet)
 

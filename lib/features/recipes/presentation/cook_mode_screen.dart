@@ -234,6 +234,7 @@ class _CookModeScreenState extends ConsumerState<CookModeScreen> {
                                             '${l10n.cookStep(i + 1)}: '
                                             '${timerLabel(d)}',
                                             d,
+                                            alarmTitle: l10n.timerDone,
                                           ),
                                       icon: const Icon(Icons.timer_outlined),
                                       label: Text(timerLabel(d)),

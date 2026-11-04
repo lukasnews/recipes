@@ -22,6 +22,8 @@ import 'package:recipes/features/pantry/data/barcode_reader.dart';
 import 'package:recipes/features/pantry/data/product_lookup.dart';
 import 'package:recipes/features/pantry/domain/product.dart';
 import 'package:recipes/features/recipes/data/photo_repository.dart';
+import 'package:recipes/features/recipes/data/timer_alarms.dart';
+import 'package:recipes/features/recipes/presentation/cook_timers.dart';
 
 class FakeAuthRepository implements AuthRepository {
   FakeAuthRepository([this._user]);
@@ -92,6 +94,7 @@ Widget testApp({
   ProductLookup? products,
 }) => ProviderScope(
   overrides: [
+    timerAlarmsProvider.overrideWithValue(const NoTimerAlarms()),
     barcodeReaderProvider.overrideWithValue(barcodes ?? FakeBarcodeReader()),
     productLookupProvider.overrideWithValue(products ?? FakeProductLookup()),
     sharerProvider.overrideWithValue(sharer ?? FakeSharer()),
