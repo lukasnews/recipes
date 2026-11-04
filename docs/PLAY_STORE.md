@@ -97,3 +97,15 @@ Play Console → **Dashboard** führt durch alles. Die Antworten:
 ## 7. Danach: geschlossener Test → Produktion
 
 Für neue private Entwicklerkonten verlangt Google vor der Veröffentlichung einen **geschlossenen Test mit mindestens 12 Testern über 14 Tage**. Dann Play Console → „Produktionszugriff beantragen“.
+
+## Anhang: Firebase-Regeln automatisch einspielen
+
+Dann muss `firestore.rules` / `storage.rules` nie mehr von Hand in die Konsole kopiert werden.
+
+1. Google Cloud Console (Projekt `recipes-f1584`) → **IAM und Verwaltung → Dienstkonten** → **Dienstkonto erstellen** → Name `rules-deploy`.
+2. Rollen zuweisen: **Firebase Rules Admin** und **Firebase Viewer** → Fertig.
+3. Dienstkonto öffnen → **Schlüssel → Schlüssel hinzufügen → JSON** → Datei wird heruntergeladen.
+4. GitHub → Settings → Secrets → Actions → **FIREBASE_SERVICE_ACCOUNT** = kompletter Inhalt der JSON-Datei. Datei danach löschen.
+5. Einmal jetzt einspielen: Actions → **CI** → Run workflow → Häkchen „Firestore- und Storage-Regeln einspielen“.
+
+Ab dann spielt die CI die Regeln automatisch ein, sobald ein Push sie ändert – aber nur, wenn die Regel-Tests grün sind.

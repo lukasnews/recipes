@@ -158,7 +158,7 @@ households/{hid}/cookLog/{logId}
 ## Sicherheit
 
 - Firestore- und Storage-Regeln in `firestore.rules` / `storage.rules` im Repo pflegen. Lesen/Schreiben unter `households/{hid}` nur, wenn `request.auth.uid in memberIds`. Unterpfade mit `match /{collection}/{document=**}` matchen (ein nacktes `{document=**}` matcht in v2 auch das Haushalt-Dokument selbst). Jede Regeländerung braucht einen Test in `test_rules/`.
-- Regeln sind (noch) nicht automatisch deployed: in der Firebase-Konsole einfügen oder `firebase deploy --only firestore:rules`.
+- Regeln deployed der CI-Job `deploy-rules` (nach grünen Regel-Tests), wenn ein Push `firestore.rules`/`storage.rules` ändert oder bei manuellem Lauf mit Häkchen. Braucht das Secret `FIREBASE_SERVICE_ACCOUNT` (Rollen Firebase Rules Admin + Firebase Viewer); ohne Secret wird übersprungen.
 - App Check für Firebase AI Logic aktivieren.
 - Keine Secrets committen (Keystore, Service-Account-JSON). `firebase_options.dart` und `google-services.json` dürfen ins Repo, der Schutz läuft über Regeln und App Check.
 - KI-Modellname nicht hart codieren: Remote-Config-Schlüssel `ai_model`.
@@ -204,7 +204,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - `.github/workflows/ci.yml` (parallele Jobs): `check` = `flutter analyze` + `flutter test`; `rules` = Firestore-Regeln im Emulator; `build` = Release-APK nur für arm64 (spart den Großteil der Dart-AOT-Zeit), AAB nur bei manuellem Lauf (Häkchen) oder Tag `v*`; `publish` (wartet auf alle) legt pro Build ein Release `build-N` „BaCo Android build N“ an (als „Latest“ markiert, die letzten 30 bleiben), mit `BaCo.apk` (+ `BaCo.aab`); fester Link `releases/latest/download/BaCo.apk`. Ohne Keystore-Secrets wird mit dem Debug-Key signiert. Caches: Flutter, Pub, Gradle.
 - Signatur: `android/app/build.gradle.kts` liest `android/key.properties` (gitignored, in CI aus Secrets erzeugt).
 - `.github/workflows/release.yml`: bei Tag `v*` signiertes App-Bundle bauen und in den Play-Track `internal` hochladen.
-- Secrets: `APPCHECK_DEBUG_TOKEN` (nur APK-Testbuilds), `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `PLAY_SERVICE_ACCOUNT_JSON`.
+- Secrets: `FIREBASE_SERVICE_ACCOUNT` (Regeln), `APPCHECK_DEBUG_TOKEN` (nur APK-Testbuilds), `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `PLAY_SERVICE_ACCOUNT_JSON`.
 - `versionCode` aus der GitHub-Run-Nummer ableiten.
 
 ## Arbeitsweise für Claude Code
@@ -231,7 +231,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Storage-Regeln mit Tests (nur Bilder, max. 5 MB)
 - [x] Foto-Uploads in eine dauerhafte Offline-Warteschlange (`PhotoUploadQueue`)
 - [x] App Check: Play Integrity für Play-Builds; Test-APKs aus der CI nutzen den Debug-Provider mit `APPCHECK_DEBUG_TOKEN` (GitHub-Secret, in Firebase → App Check → Debug-Tokens registriert). Ab 2. 11. 2026 erzwingt AI Logic App Check.
-- [ ] Regeln automatisch deployen (CI mit Service-Account)
+- [x] Regeln automatisch deployen (CI-Job `deploy-rules` nach grünen Regel-Tests, Secret `FIREBASE_SERVICE_ACCOUNT`)
 - [x] Zutaten-Zusammenführen: Duplikat-Hinweis beim Anlegen einer neuen Zutat (`IngredientMatcher.similar` → `confirmNewIngredient`: „Gibt es schon?“)
 - [x] Suche und Filter
 - [x] Portionen skalieren

@@ -9,6 +9,10 @@ on:
         description: Auch App-Bundle (AAB) für Google Play bauen
         type: boolean
         default: true
+      deploy_rules:
+        description: Firestore- und Storage-Regeln einspielen
+        type: boolean
+        default: false
 
 # Pushes cancel older pushes; manual runs (App Bundle for Play) never get
 # cancelled by a push.
@@ -197,3 +201,73 @@ jobs:
 
       - name: Firestore rules tests (emulator)
         run: npm test
+
+  # After green rules tests: deploy the rules when a push changed them (or
+  # on a manual run with the checkbox). Needs the FIREBASE_SERVICE_ACCOUNT
+  # secret (see docs/PLAY_STORE.md); skipped without it.
+  deploy-rules:
+    needs: rules
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: test_rules
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Decide
+        id: decide
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          MANUAL: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_rules }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ -z "$SA" ]; then
+            echo "::notice::FIREBASE_SERVICE_ACCOUNT not set – rules are not deployed."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if [ "$MANUAL" = "true" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if [ -n "$BEFORE" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
+            CHANGED=$(git diff --name-only "$BEFORE" "$GITHUB_SHA" -- ../firestore.rules ../storage.rules)
+          else
+            CHANGED=$(git diff --name-only HEAD~1 HEAD -- ../firestore.rules ../storage.rules)
+          fi
+          if [ -n "$CHANGED" ]; then
+            echo "Changed: $CHANGED"
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v5
+        if: steps.decide.outputs.deploy == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: test_rules/package-lock.json
+
+      - name: Install
+        if: steps.decide.outputs.deploy == 'true'
+        run: npm ci
+
+      - name: Deploy rules
+        if: steps.decide.outputs.deploy == 'true'
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$SA" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          cd ..
+          test_rules/node_modules/.bin/firebase deploy \
+            --only firestore:rules,storage \
+            --project recipes-f1584 --non-interactive
+          echo "Firestore- und Storage-Regeln eingespielt." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"
