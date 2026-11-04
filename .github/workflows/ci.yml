@@ -150,6 +150,8 @@ jobs:
         run: |
           N=${{ github.run_number }}
           SUBJECT=$(printf '%s' "$COMMIT_MSG" | head -n1)
+          # A re-run after a GitHub hiccup may find a half-created release.
+          gh release delete "build-$N" --yes --cleanup-tag 2>/dev/null || true
           gh release create "build-$N" dist/* \
             --latest \
             --target "$GITHUB_SHA" \
