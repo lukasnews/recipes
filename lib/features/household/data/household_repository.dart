@@ -104,6 +104,9 @@ class HouseholdRepository {
     return hid;
   }
 
+  Future<void> setUnitDisplay(String uid, String mode) =>
+      _user(uid).set({'unitDisplay': mode}, SetOptions(merge: true));
+
   Future<void> rename(String hid, String name) =>
       _db.collection('households').doc(hid).update({'name': name});
 

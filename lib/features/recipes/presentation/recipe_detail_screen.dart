@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../core/firebase/fire.dart';
+import '../../../core/units/display_units.dart';
 import '../../../core/units/units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -255,6 +256,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                   ? null
                   : scaleAmount(line.amount!, recipe.servings, servings),
               need: needs[line.ingredientId],
+              display: ref.watch(unitDisplayProvider),
             ),
           const SizedBox(height: 12),
           Wrap(
@@ -334,7 +336,10 @@ class _IngredientRow extends StatelessWidget {
     required this.line,
     required this.scaledAmount,
     required this.need,
+    required this.display,
   });
+
+  final UnitDisplay display;
 
   final RecipeIngredient line;
   final double? scaledAmount;
@@ -345,7 +350,7 @@ class _IngredientRow extends StatelessWidget {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     final name = need?.ingredient.name ?? line.name ?? line.rawText;
-    final qty = formatWithUnit(scaledAmount, line.unit);
+    final qty = displayQuantity(scaledAmount, line.unit, display);
     final (IconData icon, Color color, String? hint) = switch (need?.status) {
       StockStatus.available => (
         Icons.check_circle,

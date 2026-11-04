@@ -26,15 +26,20 @@ class AppUser {
     required this.uid,
     required this.displayName,
     required this.householdIds,
+    this.unitDisplay,
   });
 
   factory AppUser.fromMap(String uid, Map<String, dynamic> m) => AppUser(
     uid: uid,
     displayName: m.str('displayName'),
     householdIds: m.strings('householdIds'),
+    unitDisplay: m.strOrNull('unitDisplay'),
   );
 
   final String uid;
   final String displayName;
   final List<String> householdIds;
+
+  /// Per-person preference, see UnitDisplay.
+  final String? unitDisplay;
 }

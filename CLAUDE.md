@@ -58,7 +58,7 @@ Alle Haushaltsdaten liegen unter `households/{householdId}`. Außerhalb gibt es 
 
 ```
 users/{uid}
-  displayName, householdIds: [string], createdAt
+  displayName, householdIds: [string], createdAt, unitDisplay?   # original|metric|austrian
 
 invites/{code}         # 6 chars, no 0/O/1/I/L; get only, never list
   householdId
@@ -127,6 +127,7 @@ households/{hid}/cookLog/{logId}
 - **Gerichte im Tiefkühler:** Vorrat-Reiter → „Gerichte“; Portionen mit +/− (Increment, letzte Portion löscht den Eintrag), Hinweis „bald essen“ nach 90 Tagen. Im „Gekocht“-Dialog „Reste einfrieren (Portionen)“; Rezept-Detail zeigt Portionen im Tiefkühler.
 - **Einkauf → Vorrat:** Übernahme-Bildschirm (`planTransfer`) mit Menge/Einheit/Lagerort je abgehaktem Eintrag; Freitext-Einträge werden nachträglich zugeordnet, fehlende Umrechnung einmal erfragt; Einträge ohne Menge werden nur von der Liste genommen.
 - **Allergien:** pro Person in `members/{uid}` (Einstellungen → Allergien & Unverträglichkeiten). Rezept-Allergene = Vereinigung der Zutaten-Allergene; Rezept-Detail zeigt Warnung mit betroffenen Personen, Liste ein Warnsymbol und den Filter „Für alle verträglich“. Seed-Daten tragen Allergene; ältere Haushalte bekommen sie einmalig per `backfillSeed` (`households.seedVersion`).
+- **Mengen anzeigen** (pro Person, `users/{uid}.unitDisplay`): Wie im Rezept | Gramm & Milliliter | Dekagramm (österreichisch). `core/units/display_units.dart` rechnet nur reine Masse/Volumen (mg/g/dag/kg, ml/cl/dl/l) um; EL, TL, Stk., Pkg. bleiben. Gilt in Rezept-Detail, Kochmodus und Einkaufsliste.
 - **Österreichische Begriffe** sind gleichwertig: Topfen/Quark, Schlagobers/Sahne, Paradeiser/Tomaten, Erdäpfel/Kartoffeln, Karfiol/Blumenkohl, Marillen/Aprikosen, Faschiertes/Hackfleisch, Mehl glatt/griffig.
 
 ## Offline & Sync

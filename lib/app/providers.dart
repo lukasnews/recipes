@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/firebase/photo_cache.dart';
 import '../core/matching/ingredient_matcher.dart';
+import '../core/units/display_units.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/household/data/household_repository.dart';
 import '../features/household/data/member_repository.dart';
@@ -246,4 +247,11 @@ final frozenMealRepositoryProvider = Provider<FrozenMealRepository>(
 
 final frozenMealsProvider = StreamProvider<List<FrozenMeal>>(
   (ref) => ref.watch(frozenMealRepositoryProvider).watchAll(),
+);
+
+/// How amounts are shown (per person, stored on users/{uid}).
+final unitDisplayProvider = Provider<UnitDisplay>(
+  (ref) => UnitDisplay.parse(
+    ref.watch(appUserProvider.select((u) => u.value?.unitDisplay)),
+  ),
 );

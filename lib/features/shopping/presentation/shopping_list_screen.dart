@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/firebase/fire.dart';
+import '../../../core/units/display_units.dart';
 import '../../../core/units/ingredient_line_parser.dart';
 import '../../../core/units/units.dart';
 import '../../../core/widgets/async_view.dart';
@@ -14,9 +15,15 @@ import '../domain/shopping_item.dart';
 import 'pantry_transfer_sheet.dart';
 
 /// "1500 g" -> "1,5 kg", "2 Stk." -> "2", "½ TL" stays.
-String shoppingQuantity(ShoppingItem item) {
+String shoppingQuantity(
+  ShoppingItem item, [
+  UnitDisplay display = UnitDisplay.original,
+]) {
   final a = item.amount;
   if (a == null) return '';
+  if (display != UnitDisplay.original && item.unit != 'Stk.') {
+    return displayQuantity(a, item.unit, display);
+  }
   switch (item.unit) {
     case 'g':
       return formatBaseAmount(a, BaseUnit.g);
@@ -207,7 +214,7 @@ class _ItemTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.watch(shoppingRepositoryProvider);
-    final qty = shoppingQuantity(item);
+    final qty = shoppingQuantity(item, ref.watch(unitDisplayProvider));
     // Linked items follow renames of the ingredient (e.g. preferred name).
     final name =
         ref.watch(ingredientsByIdProvider)[item.ingredientId]?.name ??

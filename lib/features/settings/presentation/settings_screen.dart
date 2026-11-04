@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../core/firebase/fire.dart';
+import '../../../core/units/display_units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 
@@ -123,6 +124,45 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => context.push(Routes.ingredients),
             ),
           ],
+          section(l10n.settingsDisplay),
+          ListTile(title: Text(l10n.unitDisplayTitle)),
+          RadioGroup<UnitDisplay>(
+            groupValue: ref.watch(unitDisplayProvider),
+            onChanged: (v) {
+              if (v == null || user == null) return;
+              fire(
+                ref
+                    .read(householdRepositoryProvider)
+                    .setUnitDisplay(user.uid, v.name),
+              );
+            },
+            child: Column(
+              children: [
+                for (final (mode, title, hint) in [
+                  (
+                    UnitDisplay.original,
+                    l10n.unitDisplayOriginal,
+                    l10n.unitDisplayOriginalHint,
+                  ),
+                  (
+                    UnitDisplay.metric,
+                    l10n.unitDisplayMetric,
+                    l10n.unitDisplayMetricHint,
+                  ),
+                  (
+                    UnitDisplay.austrian,
+                    l10n.unitDisplayAustrian,
+                    l10n.unitDisplayAustrianHint,
+                  ),
+                ])
+                  RadioListTile<UnitDisplay>(
+                    value: mode,
+                    title: Text(title),
+                    subtitle: Text(hint),
+                  ),
+              ],
+            ),
+          ),
           const SizedBox(height: 24),
           Center(
             child: Text(

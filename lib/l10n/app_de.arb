@@ -523,5 +523,13 @@
         "type": "int"
       }
     }
-  }
+  },
+  "settingsDisplay": "Anzeige",
+  "unitDisplayTitle": "Mengen anzeigen",
+  "unitDisplayOriginal": "Wie im Rezept",
+  "unitDisplayOriginalHint": "So, wie es geschrieben wurde",
+  "unitDisplayMetric": "Gramm & Milliliter",
+  "unitDisplayMetricHint": "25 dag → 250 g, ⅛ l → 125 ml, ab 1000 in kg/l",
+  "unitDisplayAustrian": "Dekagramm (österreichisch)",
+  "unitDisplayAustrianHint": "250 g → 25 dag, ab 1 kg in kg"
 }

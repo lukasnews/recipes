@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../app/providers.dart';
+import '../../../core/units/display_units.dart';
 import '../../../core/units/units.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../domain/recipe.dart';
@@ -110,6 +111,7 @@ class _CookModeScreenState extends ConsumerState<CookModeScreen> {
   void _showIngredients(Recipe recipe, int servings) {
     final l10n = context.l10n;
     final byId = ref.read(ingredientsByIdProvider);
+    final display = ref.read(unitDisplayProvider);
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
@@ -133,11 +135,12 @@ class _CookModeScreenState extends ConsumerState<CookModeScreen> {
               contentPadding: EdgeInsets.zero,
               title: Text(
                 [
-                  formatWithUnit(
+                  displayQuantity(
                     line.amount == null
                         ? null
                         : scaleAmount(line.amount!, recipe.servings, servings),
                     line.unit,
+                    display,
                   ),
                   byId[line.ingredientId]?.name ?? line.name ?? line.rawText,
                 ].where((s) => s.isNotEmpty).join(' '),
