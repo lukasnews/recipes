@@ -16,36 +16,68 @@ class AccountDeletionService {
   /// Deletes recipe photos in Storage.
   final Future<void> Function(List<String> paths) _deleteFiles;
 
-  Future<void> deleteData(String uid) async {
-    final userRef = _db.collection('users').doc(uid);
-    final DocumentSnapshot<Map<String, dynamic>> user;
+  Future<DocumentSnapshot<Map<String, dynamic>>> _serverUser(String uid) async {
     try {
       // Server read: fails fast offline instead of hanging on writes.
-      user = await userRef.get(const GetOptions(source: Source.server));
+      return await _db
+          .collection('users')
+          .doc(uid)
+          .get(const GetOptions(source: Source.server));
     } on FirebaseException {
       throw NeedsOnlineException();
     }
+  }
+
+  Future<void> deleteData(String uid) async {
+    final user = await _serverUser(uid);
     final ids = ((user.data()?['householdIds'] as List<dynamic>?) ?? const [])
         .whereType<String>();
     for (final hid in ids) {
-      final ref = _db.collection('households').doc(hid);
-      final snap = await ref.get();
-      final data = snap.data();
-      if (data == null) continue;
-      final members = ((data['memberIds'] as List<dynamic>?) ?? const [])
-          .whereType<String>()
-          .toList();
-      // Own member entry first: the rules need us to still be a member.
-      await ref.collection('members').doc(uid).delete();
-      if (members.length > 1 || !members.contains(uid)) {
-        await ref.update({
-          'memberIds': FieldValue.arrayRemove([uid]),
-        });
-      } else {
-        await _deleteHousehold(ref, data['inviteCode'] as String?);
-      }
+      await _leave(uid, hid);
     }
-    await userRef.delete();
+    await user.reference.delete();
+  }
+
+  /// Leaves [hid]; as the last member the household is deleted with all its
+  /// data. Returns true when it was deleted.
+  Future<bool> leaveHousehold(String uid, String hid) async {
+    final user = await _serverUser(uid);
+    final deleted = await _leave(uid, hid);
+    final data = user.data() ?? const <String, dynamic>{};
+    await user.reference.update({
+      'householdIds': FieldValue.arrayRemove([hid]),
+      if (data['activeHouseholdId'] == hid)
+        'activeHouseholdId': FieldValue.delete(),
+    });
+    return deleted;
+  }
+
+  /// True when [uid] is the only member, so leaving deletes the household.
+  Future<bool> isLastMember(String uid, String hid) async {
+    final data = (await _db.collection('households').doc(hid).get()).data();
+    final members = ((data?['memberIds'] as List<dynamic>?) ?? const [])
+        .whereType<String>()
+        .toList();
+    return members.length <= 1 && members.contains(uid);
+  }
+
+  Future<bool> _leave(String uid, String hid) async {
+    final ref = _db.collection('households').doc(hid);
+    final data = (await ref.get()).data();
+    if (data == null) return false;
+    final members = ((data['memberIds'] as List<dynamic>?) ?? const [])
+        .whereType<String>()
+        .toList();
+    // Own member entry first: the rules need us to still be a member.
+    await ref.collection('members').doc(uid).delete();
+    if (members.length > 1 || !members.contains(uid)) {
+      await ref.update({
+        'memberIds': FieldValue.arrayRemove([uid]),
+      });
+      return false;
+    }
+    await _deleteHousehold(ref, data['inviteCode'] as String?);
+    return true;
   }
 
   Future<void> _deleteHousehold(

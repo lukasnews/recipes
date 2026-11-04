@@ -189,3 +189,25 @@ describe('deleting the account', () => {
     await assertFails(getDoc(doc(db, 'households/h1/recipes/r1')));
   });
 });
+
+describe('invite code', () => {
+  beforeEach(reset);
+
+  test('member renews the code: old invite gone, new one points here', async () => {
+    const db = as('alice');
+    const batch = writeBatch(db);
+    batch.update(doc(db, 'households/h1'), { inviteCode: 'NEW234' });
+    batch.set(doc(db, 'invites/NEW234'), { householdId: 'h1' });
+    batch.delete(doc(db, 'invites/ABC234'));
+    await assertSucceeds(batch.commit());
+  });
+
+  test('stranger cannot renew or delete the code', async () => {
+    const db = as('mallory');
+    await assertFails(deleteDoc(doc(db, 'invites/ABC234')));
+    const batch = writeBatch(db);
+    batch.update(doc(db, 'households/h1'), { inviteCode: 'BAD234' });
+    batch.set(doc(db, 'invites/BAD234'), { householdId: 'h1' });
+    await assertFails(batch.commit());
+  });
+});

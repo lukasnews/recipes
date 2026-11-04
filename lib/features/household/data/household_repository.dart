@@ -52,6 +52,33 @@ class HouseholdRepository {
     (_) => _alphabet[_random.nextInt(_alphabet.length)],
   ).join();
 
+  /// A code no other household uses (checked a few times).
+  Future<String> _freeCode() async {
+    var code = _newCode();
+    for (var i = 0; i < 5; i++) {
+      final existing = await _db.collection('invites').doc(code).get();
+      if (!existing.exists) break;
+      code = _newCode();
+    }
+    return code;
+  }
+
+  /// Replaces the invite code; the old one stops working. Needs a
+  /// connection. Returns the new code.
+  Future<String> renewInviteCode(String hid, String oldCode) async {
+    final code = await _freeCode();
+    final household = _db.collection('households').doc(hid);
+    final batch = _db.batch()
+      ..update(household, {'inviteCode': code})
+      ..set(_db.collection('invites').doc(code), {'householdId': hid})
+      ..delete(_db.collection('invites').doc(oldCode));
+    await batch.commit();
+    return code;
+  }
+
+  Future<void> setDisplayName(String uid, String name) =>
+      _user(uid).set({'displayName': name}, SetOptions(merge: true));
+
   /// Creates a household, copies the seed ingredients and links the user.
   Future<String> createHousehold({
     required String uid,
@@ -59,12 +86,7 @@ class HouseholdRepository {
     required List<Ingredient> seed,
     List<Recipe> recipes = const [],
   }) async {
-    var code = _newCode();
-    for (var i = 0; i < 5; i++) {
-      final existing = await _db.collection('invites').doc(code).get();
-      if (!existing.exists) break;
-      code = _newCode();
-    }
+    final code = await _freeCode();
     final household = _db.collection('households').doc();
     final batch = _db.batch()
       ..set(household, {

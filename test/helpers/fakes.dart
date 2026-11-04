@@ -9,6 +9,7 @@ import 'package:recipes/app/app.dart';
 import 'package:recipes/app/providers.dart';
 import 'package:recipes/core/firebase/photo_cache.dart';
 import 'package:recipes/core/share/sharer.dart';
+import 'package:recipes/core/widgets/url_opener.dart';
 import 'package:recipes/features/auth/data/auth_repository.dart';
 import 'package:recipes/features/household/data/household_repository.dart';
 import 'package:recipes/features/import/data/photo_picker.dart';
@@ -84,6 +85,13 @@ class FakeAuthRepository implements AuthRepository {
     deleted = true;
     _set(null);
   }
+
+  @override
+  Future<void> updateDisplayName(String name) async {
+    final u = _user;
+    if (u == null) return;
+    _set(AuthUser(uid: u.uid, email: u.email, displayName: name));
+  }
 }
 
 const testSeed = [
@@ -121,8 +129,10 @@ Widget testApp({
   List<Ingredient>? seed,
   FakeExtractor? extractor,
   FakeHomeScreenWidget? homeWidget,
+  FakeUrlOpener? urlOpener,
 }) => ProviderScope(
   overrides: [
+    urlOpenerProvider.overrideWithValue(urlOpener ?? FakeUrlOpener()),
     homeScreenWidgetProvider.overrideWithValue(
       homeWidget ?? FakeHomeScreenWidget(),
     ),
@@ -332,4 +342,13 @@ class FakeHomeScreenWidget implements HomeScreenWidget {
 
   @override
   Stream<Uri?> clicks() => clickController.stream;
+}
+
+class FakeUrlOpener implements UrlOpener {
+  final opened = <Uri>[];
+  @override
+  Future<bool> open(Uri url) async {
+    opened.add(url);
+    return true;
+  }
 }

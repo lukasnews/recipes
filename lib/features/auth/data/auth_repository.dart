@@ -33,6 +33,8 @@ abstract class AuthRepository {
   Future<void> reauthenticate({String? password});
 
   Future<void> deleteUser();
+
+  Future<void> updateDisplayName(String name);
 }
 
 class FirebaseAuthRepository implements AuthRepository {
@@ -159,6 +161,14 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<void> deleteUser() async => _auth.currentUser?.delete();
+
+  @override
+  Future<void> updateDisplayName(String name) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    await user.updateDisplayName(name);
+    await user.reload();
+  }
 }
 
 /// The person closed the Google account picker.

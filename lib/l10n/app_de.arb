@@ -807,5 +807,50 @@
         "type": "int"
       }
     }
+  },
+  "editNameTitle": "Name ändern",
+  "editNameHint": "So sehen dich die anderen im Haushalt, z. B. bei Allergie-Hinweisen.",
+  "nameChanged": "Name geändert",
+  "renewInviteTitle": "Neuen Einladungscode erzeugen?",
+  "renewInviteMessage": "Der bisherige Code {code} funktioniert danach nicht mehr. Wer schon im Haushalt ist, bleibt drin.",
+  "renewInviteConfirm": "Neuen Code erzeugen",
+  "renewInviteDone": "Neuer Code: {code}",
+  "renewInvite": "Neuen Code erzeugen",
+  "leaveHousehold": "Haushalt verlassen",
+  "leaveHouseholdTitle": "„{name}“ verlassen?",
+  "leaveHouseholdMessage": "Du siehst die Rezepte, Listen und den Vorrat dieses Haushalts danach nicht mehr. Für die anderen bleibt alles erhalten. Mit dem Einladungscode kannst du wieder beitreten.",
+  "leaveHouseholdLastMessage": "Du bist die letzte Person in diesem Haushalt. Er wird mit allen Rezepten, Fotos, Listen und dem Vorrat endgültig gelöscht.\\n\\nTipp: vorher „Daten sichern“.",
+  "leaveHouseholdConfirm": "Verlassen",
+  "leaveHouseholdDelete": "Verlassen und löschen",
+  "leftHousehold": "Du hast „{name}“ verlassen",
+  "settingsInfo": "Info",
+  "privacyPolicy": "Datenschutzerklärung",
+  "@renewInviteMessage": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "@renewInviteDone": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "@leaveHouseholdTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@leftHousehold": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

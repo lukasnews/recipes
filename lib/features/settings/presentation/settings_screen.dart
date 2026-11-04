@@ -9,8 +9,10 @@ import '../../../core/firebase/fire.dart';
 import '../../../core/units/display_units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
+import '../../../core/widgets/url_opener.dart';
 import 'backup_actions.dart';
 import 'delete_account.dart';
+import 'household_actions.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -111,6 +113,12 @@ class SettingsScreen extends ConsumerWidget {
             leading: const CircleAvatar(child: Icon(Icons.person)),
             title: Text(user?.bestName ?? ''),
             subtitle: Text(user?.email ?? ''),
+            trailing: IconButton(
+              tooltip: l10n.editNameTitle,
+              onPressed: () =>
+                  editDisplayName(context, ref, user?.bestName ?? ''),
+              icon: const Icon(Icons.edit_outlined),
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.logout),
@@ -161,6 +169,17 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: TextButton.icon(
+                  onPressed: () => renewInviteCode(context, ref, household),
+                  icon: const Icon(Icons.autorenew),
+                  label: Text(l10n.renewInvite),
+                ),
+              ),
+            ),
             ListTile(
               leading: const Icon(Icons.health_and_safety_outlined),
               title: Text(l10n.allergiesTitle),
@@ -174,6 +193,11 @@ class SettingsScreen extends ConsumerWidget {
               subtitle: Text(l10n.ingredientsManageSubtitle),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push(Routes.ingredients),
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: Text(l10n.leaveHousehold),
+              onTap: () => leaveHousehold(context, ref, household),
             ),
           ],
           section(l10n.settingsDisplay),
@@ -230,6 +254,13 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => showRestoreHelp(context),
             ),
           ],
+          section(l10n.settingsInfo),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip_outlined),
+            title: Text(l10n.privacyPolicy),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () => fire(ref.read(urlOpenerProvider).open(Links.privacy)),
+          ),
           section(l10n.settingsAccount),
           ListTile(
             leading: Icon(Icons.delete_forever, color: theme.colorScheme.error),

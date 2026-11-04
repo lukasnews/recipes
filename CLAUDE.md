@@ -18,7 +18,7 @@ Diese Datei gibt Claude Code den Kontext für dieses Repository. Sprache im Gesp
 | KI | firebase_ai (Firebase AI Logic, Gemini Developer API) |
 | Texterkennung | google_mlkit_text_recognition (on-device) |
 | Barcode | google_mlkit_barcode_scanning + Open Food Facts API |
-| Sonstiges | google_sign_in (native Google-Anmeldung), home_widget (Startbildschirm-Widget), flutter_local_notifications + timezone (Timer-Alarme, Core-Library-Desugaring in Gradle), share_plus (Teilen, hinter `Sharer`), path_provider, flutter_cache_manager (Foto-Cache, Schlüssel = Storage-Pfad, 1 Jahr), image_picker, wakelock_plus (Kochmodus), http, html (JSON-LD-Parsing), receive_sharing_intent (Links teilen) |
+| Sonstiges | url_launcher (Datenschutz-Link, hinter `UrlOpener`), google_sign_in (native Google-Anmeldung), home_widget (Startbildschirm-Widget), flutter_local_notifications + timezone (Timer-Alarme, Core-Library-Desugaring in Gradle), share_plus (Teilen, hinter `Sharer`), path_provider, flutter_cache_manager (Foto-Cache, Schlüssel = Storage-Pfad, 1 Jahr), image_picker, wakelock_plus (Kochmodus), http, html (JSON-LD-Parsing), receive_sharing_intent (Links teilen) |
 
 Neue Pakete nur nach Rückfrage hinzufügen. Vor dem Hinzufügen prüfen, ob das Paket gepflegt wird und Android + iOS unterstützt.
 
@@ -139,6 +139,7 @@ households/{hid}/cookLog/{logId}
 - **Beispielrezepte:** Neue Haushalte bekommen Kaiserschmarrn, Rindsgulasch, Erdäpfelsalat und Vanillekipferl (`sampleRecipes`, nur sichere Zutaten-Treffer verknüpft) im selben Batch wie die Zutaten. Leere Rezeptliste zeigt „Beispielrezepte hinzufügen“.
 - **Nährwerte:** Rezept-Detail → „Nährwerte schätzen (KI)“ → `RecipeExtractor.estimateNutrition` (Titel, Portionen, Zutatenzeilen) → `recipes.nutrition` pro Portion, angezeigt als „ca. … (geschätzt)“. Jedes Speichern des Rezepts löscht die Schätzung (Zutaten könnten sich geändert haben); Bewertung ändert nur `rating` (`setRating`).
 - **Widget „BaCo Einkauf“** (Android-Startbildschirm): heutiges Gericht + offene Einkaufsliste (nach Abteilung, max. 10 Zeilen, aktueller Zutatenname). `WidgetSync` in der Shell schreibt die fertig übersetzten Texte per `home_widget`, sobald sich Liste/Plan ändern (nur während die App läuft); `ShoppingWidgetProvider.kt` zeichnet sie. Tippen öffnet `baco://shopping` → Einkauf-Reiter.
+- **Einstellungen – Konto & Haushalt:** Name ändern (Auth-`displayName`, `users.displayName`, eigener `members`-Eintrag; andere Haushalte via `MemberSync` beim Wechsel). „Neuen Code erzeugen“ (`renewInviteCode`: Batch aus neuem `invites`-Dokument, Löschen des alten, `inviteCode` am Haushalt; alter Code ungültig). „Haushalt verlassen“ (`AccountDeletionService.leaveHousehold`: als letztes Mitglied wird der Haushalt samt Daten gelöscht, sonst nur austreten; `householdIds`/`activeHouseholdId` am User bereinigt; braucht Netz). „Info → Datenschutzerklärung“ öffnet die GitHub-Pages-Seite (`Links.privacy`).
 - **Suche** läuft lokal über die gecachten Rezepte (Firestore hat keine Volltextsuche). Haushalte sind klein, das reicht.
 - **Zutaten zusammenführen:** Doppelte (z. B. „Sahne“ und „Schlagobers“) erkennt `IngredientMatcher.findDuplicates`; die Zutaten-Verwaltung zeigt sie an. Beim Zusammenführen werden Name und Synonyme der aufgelösten Zutat Synonyme der behaltenen; Rezepte, Vorrat (nur bei gleicher Basiseinheit) und Einkaufsliste werden umgehängt.
 - **Bevorzugter Begriff:** `name` ist der angezeigte Begriff. In der Zutaten-Bearbeitung kann ein Synonym zum Namen gemacht werden (`Ingredient.withPreferredName`), der alte Name wird Synonym. Die id bleibt, Erkennung findet weiter alle Begriffe. Verknüpfte Einkaufsposten zeigen immer den aktuellen Namen.
@@ -216,6 +217,8 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - Vor jedem Commit: `flutter analyze` ohne Warnungen, `flutter test` grün.
 - Commits im Format Conventional Commits (`feat:`, `fix:`, `chore:` …).
 - Diese Datei aktualisieren, wenn sich Architektur oder Regeln ändern. Erledigte Roadmap-Punkte abhaken.
+- **iOS nicht von sich aus vorschlagen.** Der Nutzer meldet sich, wenn er iOS will.
+- Gearbeitet wird auf dem Session-Branch; jeder fertige Stand wird zusätzlich nach `main` gepusht (Standard-Branch, GitHub Pages, Release-Builds).
 
 ## Roadmap
 

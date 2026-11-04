@@ -13,6 +13,7 @@ import '../core/firebase/photo_cache.dart';
 import '../core/matching/ingredient_matcher.dart';
 import '../core/share/sharer.dart';
 import '../core/units/display_units.dart';
+import '../core/widgets/url_opener.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/household/data/household_repository.dart';
 import '../features/household/data/member_repository.dart';
@@ -309,6 +310,10 @@ final barcodeRepositoryProvider = Provider<BarcodeRepository>(
 
 final homeScreenWidgetProvider = Provider<HomeScreenWidget>(
   (ref) => platformHomeScreenWidget(),
+);
+
+final urlOpenerProvider = Provider<UrlOpener>(
+  (ref) => const BrowserUrlOpener(),
 );
 
 final sharerProvider = Provider<Sharer>((ref) => const SystemSharer());
