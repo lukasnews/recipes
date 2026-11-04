@@ -204,7 +204,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - Firebase-Konfiguration: `android/app/google-services.json` (darf ins Repo). Die Gradle-Plugins google-services und Crashlytics werden nur angewendet, wenn die Datei existiert; ohne sie startet die App mit einem Hinweis-Bildschirm. Login mit Google läuft nativ über `google_sign_in` (Credential Manager, Kontoauswahl ohne Browser) → `signInWithCredential`; braucht die Web-Client-ID (`default_web_client_id` aus `google-services.json`, also nach dem Eintragen der SHA-Fingerabdrücke neu herunterladen; Override `--dart-define=GOOGLE_WEB_CLIENT_ID`). Fehlt sie, Rückfall auf `signInWithProvider` (Browser; scheitert mit Samsung Internet an „missing initial state“). SHA-1/256 von Upload- und Play-Signaturschlüssel müssen in Firebase stehen; die CI schreibt die Upload-Fingerabdrücke in die Job-Zusammenfassung. Login-Felder in `AutofillGroup` mit Autofill-Hints + `finishAutofillContext` → Samsung Pass / Google Passwortmanager füllen aus und speichern.
 - `.github/workflows/ci.yml` (parallele Jobs): `check` = `flutter analyze` + `flutter test`; `rules` = Firestore-Regeln im Emulator; `build` = Release-APK nur für arm64 (spart den Großteil der Dart-AOT-Zeit), AAB nur bei manuellem Lauf (Häkchen) oder Tag `v*`; `publish` (wartet auf alle) legt pro Build ein Release `build-N` „BaCo Android build N“ an (als „Latest“ markiert, die letzten 30 bleiben), mit `BaCo.apk` (+ `BaCo.aab`); fester Link `releases/latest/download/BaCo.apk`. Ohne Keystore-Secrets wird mit dem Debug-Key signiert. Caches: Flutter, Pub, Gradle.
 - Signatur: `android/app/build.gradle.kts` liest `android/key.properties` (gitignored, in CI aus Secrets erzeugt).
-- `.github/workflows/release.yml`: bei Tag `v*` signiertes App-Bundle bauen und in den Play-Track `internal` hochladen.
+- `.github/workflows/release.yml`: bei Tag `v*` oder manuell signiertes App-Bundle bauen und in den **geschlossenen Test** (Play-Track `alpha`) hochladen; per Auswahl auch internal/beta/production.
 - Secrets: `FIREBASE_SERVICE_ACCOUNT` (Regeln), `APPCHECK_DEBUG_TOKEN` (nur APK-Testbuilds), `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `PLAY_SERVICE_ACCOUNT_JSON`.
 - `versionCode` aus der GitHub-Run-Nummer ableiten.
 
@@ -238,7 +238,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Portionen skalieren
 - [x] Einkaufsliste: anlegen, abhaken, nach Abteilung gruppiert, live für alle
 - [x] Vorrat: Liste nach Lagerort, schnelles Plus/Minus
-- [x] Release-Workflow `release.yml` (Tag `v*` → AAB → Play-Track internal, versionCode = 1000 + Laufnummer)
+- [x] Release-Workflow `release.yml` (Tag `v*` → AAB → geschlossener Test `alpha`, versionCode = 1000 + Laufnummer, Dienstkonto-JSON wird tolerant geparst)
 - [ ] Erster interner Test (erstes AAB von Hand hochladen, siehe `docs/PLAY_STORE.md`)
 
 ### Phase 2 – Verknüpfung (Ziel: geschlossener Test mit ≥ 12 Testern, 14 Tage)

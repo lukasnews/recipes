@@ -47,7 +47,7 @@ Damit künftige Versionen per Versionsmarke hochgeladen werden:
 2. Dienstkonto öffnen → **Schlüssel → Schlüssel hinzufügen → JSON** → Datei wird heruntergeladen.
 3. Play Console (Startseite, nicht in der App) → **Nutzer und Berechtigungen** → **Neue Nutzer einladen** → E-Mail des Dienstkontos (`play-upload@recipes-f1584.iam.gserviceaccount.com`) → App-Berechtigung für BaCo: **Releases verwalten** (Test-Tracks) → Einladen.
 4. GitHub → Settings → Secrets → Actions → **PLAY_SERVICE_ACCOUNT_JSON** = kompletter Inhalt der JSON-Datei. Datei danach am Handy löschen.
-5. Ab dann: neue Version = Tag `v1.0.1` usw. (oder Actions → „Release to Google Play“ → Run workflow). Landet automatisch im internen Test.
+5. Ab dann: neue Version = Tag `v1.0.1` usw. (oder Actions → „Release to Google Play“ → Run workflow). Landet automatisch im **geschlossenen Test** (Track `alpha`).
 
 ## 6. Store-Eintrag und Pflichtangaben
 

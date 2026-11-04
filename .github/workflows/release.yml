@@ -1,6 +1,6 @@
 name: Release to Google Play
 
-# Tag v1.2.3 -> signed App Bundle -> Play track "internal".
+# Tag v1.2.3 -> signed App Bundle -> Play closed testing (track "alpha").
 # The very first upload must be done by hand in the Play Console (see
 # docs/PLAY_STORE.md); after that this workflow takes over.
 on:
@@ -11,8 +11,9 @@ on:
       track:
         description: Play-Track
         type: choice
-        options: [internal, alpha, beta, production]
-        default: internal
+        # alpha = geschlossener Test
+        options: [alpha, internal, beta, production]
+        default: alpha
       status:
         description: "Status (draft, solange die App noch nie veröffentlicht war)"
         type: choice
@@ -123,7 +124,7 @@ jobs:
           packageName: ${{ env.PACKAGE_NAME }}
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           releaseName: ${{ steps.version.outputs.name }} (${{ steps.version.outputs.code }})
-          track: ${{ inputs.track || 'internal' }}
+          track: ${{ inputs.track || 'alpha' }}
           status: ${{ inputs.status || 'completed' }}
 
       - uses: actions/upload-artifact@v5
