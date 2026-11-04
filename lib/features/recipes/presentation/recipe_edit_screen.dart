@@ -270,7 +270,6 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
   /// failures with a global snack bar.
   void _syncPhotos(String recipeId) {
     final repo = ref.read(photoRepositoryProvider);
-    final cache = ref.read(photoCacheProvider);
     final l10n = context.l10n;
     for (final path in _removedPhotos) {
       fire(repo.remove(recipeId, path));
@@ -280,18 +279,12 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
       if (_keepSourcePhotos) ...?widget.draft?.imagePaths,
     ];
     if (uploads.isEmpty) return;
+    final hid = ref.read(householdIdProvider);
+    if (hid == null) return;
     showGlobalSnack(l10n.photosUploading);
+    final queue = ref.read(photoUploadQueueProvider.notifier);
     for (final file in uploads) {
-      unawaited(
-        repo
-            .upload(recipeId, file)
-            // Keep the local file so this phone never downloads it again.
-            .then<void>((path) => cache.put(path, file).catchError(reportError))
-            .catchError((Object e, StackTrace s) {
-              reportError(e, s);
-              showGlobalSnack(l10n.photoUploadFailed);
-            }),
-      );
+      fire(queue.enqueue(hid, recipeId, file));
     }
   }
 

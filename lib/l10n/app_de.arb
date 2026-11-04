@@ -336,8 +336,7 @@
   "addPhotoCamera": "Kamera",
   "addPhotoGallery": "Galerie",
   "keepSourcePhoto": "Ausgangsbild auch als Rezeptfoto speichern",
-  "photoUploadFailed": "Foto konnte nicht hochgeladen werden. Bitte mit Internet erneut hinzufügen.",
-  "photosUploading": "Fotos werden hochgeladen …",
+  "photosUploading": "Fotos werden hochgeladen – ohne Internet später automatisch",
   "removePhoto": "Foto entfernen",
   "@importFailed": {
     "placeholders": {
@@ -743,5 +742,6 @@
   "suggestWeekHint": "Für die freien Tage – was der Vorrat hergibt, bald Ablaufendes und lange nicht Gekochtes zuerst:",
   "suggestWeekApply": "Einplanen",
   "suggestWeekFull": "Diese Woche ist schon verplant.",
-  "suggestWeekNoRecipes": "Keine passenden Rezepte für einen Vorschlag."
+  "suggestWeekNoRecipes": "Keine passenden Rezepte für einen Vorschlag.",
+  "photoPendingUpload": "wartet auf Upload"
 }

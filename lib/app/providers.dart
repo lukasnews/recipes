@@ -8,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/firebase/fire.dart';
 import '../core/firebase/photo_cache.dart';
 import '../core/matching/ingredient_matcher.dart';
 import '../core/share/sharer.dart';
@@ -34,6 +35,7 @@ import '../features/pantry/data/product_lookup.dart';
 import '../features/pantry/domain/frozen_meal.dart';
 import '../features/pantry/domain/pantry_item.dart';
 import '../features/recipes/data/photo_repository.dart';
+import '../features/recipes/data/photo_upload_queue.dart';
 import '../features/recipes/data/recipe_repository.dart';
 import '../features/recipes/domain/cook_history.dart';
 import '../features/recipes/domain/recipe.dart';
@@ -225,6 +227,35 @@ final recipeImportServiceProvider = FutureProvider<RecipeImportService>(
     ocr: MlKitTextRecognizer(),
   ),
 );
+
+final pendingUploadStoreProvider = Provider<PendingUploadStore>(
+  (ref) => FilePendingUploadStore(),
+);
+
+/// Uploads one photo for any household (queued items may belong to a
+/// household other than the active one).
+final photoUploaderProvider = Provider<PhotoUploader>(
+  (ref) =>
+      (hid, rid, file) => FirebasePhotoRepository(
+        FirebaseStorage.instance,
+        ref.read(firestoreProvider),
+        hid,
+      ).upload(rid, file),
+);
+
+/// Recipe photos waiting for their upload (kept across restarts).
+final photoUploadQueueProvider =
+    NotifierProvider<PhotoUploadQueue, List<PendingUpload>>(
+      () => PhotoUploadQueue(
+        store: (ref) => ref.read(pendingUploadStoreProvider),
+        uploader: (ref) => ref.read(photoUploaderProvider),
+        // Keep the local file so this phone never downloads it again.
+        onUploaded: (ref, path, file) => ref
+            .read(photoCacheProvider)
+            .put(path, file)
+            .catchError(reportError),
+      ),
+    );
 
 final photoRepositoryProvider = Provider<PhotoRepository>(
   (ref) => FirebasePhotoRepository(

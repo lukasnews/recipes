@@ -22,6 +22,7 @@ import 'package:recipes/features/pantry/data/barcode_reader.dart';
 import 'package:recipes/features/pantry/data/product_lookup.dart';
 import 'package:recipes/features/pantry/domain/product.dart';
 import 'package:recipes/features/recipes/data/photo_repository.dart';
+import 'package:recipes/features/recipes/data/photo_upload_queue.dart';
 import 'package:recipes/features/recipes/data/timer_alarms.dart';
 import 'package:recipes/features/recipes/presentation/cook_timers.dart';
 
@@ -126,6 +127,10 @@ Widget testApp({
     sharedLinkSourceProvider.overrideWithValue(FakeSharedLinks()),
     photoCacheProvider.overrideWithValue(FakePhotoCache()),
     photoRepositoryProvider.overrideWithValue(photos ?? FakePhotoRepository()),
+    pendingUploadStoreProvider.overrideWithValue(MemoryPendingUploadStore()),
+    photoUploaderProvider.overrideWithValue(
+      (hid, rid, file) => (photos ?? FakePhotoRepository()).upload(rid, file),
+    ),
     recipeImportServiceProvider.overrideWith(
       (ref) async => importService ?? fakeImportService(),
     ),
@@ -251,4 +256,16 @@ class FakeProductLookup implements ProductLookup {
     if (p == null) throw Exception('offline');
     return p;
   }
+}
+
+class MemoryPendingUploadStore implements PendingUploadStore {
+  var items = <PendingUpload>[];
+  @override
+  Future<List<PendingUpload>> load() async => items;
+  @override
+  Future<void> save(List<PendingUpload> list) async => items = list;
+  @override
+  Future<String> keep(String file) async => file;
+  @override
+  Future<void> discard(String file) async {}
 }

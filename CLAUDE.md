@@ -151,6 +151,7 @@ households/{hid}/cookLog/{logId}
 - Firestore-Offline-Persistenz ist an. Jede Schreiboperation muss offline funktionieren und darf nicht auf ein Server-Ergebnis warten (kein `await` auf Writes, das die UI blockiert).
 - Online-pflichtig sind nur: KI-Erkennung, Link-Import, Barcode-Produktsuche, Foto-Upload. Ohne Netz: Auftrag in eine lokale Warteschlange, beim nächsten Online-Sein verarbeiten, Status in der UI zeigen.
 - Fotos vor dem Upload auf max. 1600 px Kante und JPEG ~80 % verkleinern (macht `image_picker`). Pfad: `households/{hid}/recipes/{rid}/{ms}.jpg`; der Upload hängt den Pfad per `arrayUnion` an `photoPaths`. Anzeige nur über `StorageImage` → `photoFileProvider`: zuerst Disk-Cache, sonst einmal Download-URL holen und laden. Eigene Uploads kommen direkt in den Cache.
+- Foto-Warteschlange: `PhotoUploadQueue` kopiert jedes neue Foto nach `<app-docs>/pending_uploads/` und merkt es in `queue.json` (übersteht Neustarts). Uploads der Reihe nach; Fehler → später erneut (15 s … 10 min, beim Start, bei Rückkehr in die App via `PhotoQueueRunner`); Rezept weg/kein Mitglied → verwerfen. Storage-Upload-Retry auf 1 min begrenzt. Rezept-Detail zeigt wartende Fotos lokal mit „wartet auf Upload“.
 
 ## Sicherheit
 
@@ -225,7 +226,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Rezepte: Liste, Detail, Anlegen/Bearbeiten, Kategorien-Chips, Tags, Bewertung
 - [x] Rezept-Fotos (Cloud Storage, Blaze aktiv)
 - [x] Storage-Regeln mit Tests (nur Bilder, max. 5 MB)
-- [ ] Foto-Uploads in eine dauerhafte Offline-Warteschlange (jetzt: Upload im Hintergrund, Hinweis bei Fehler)
+- [x] Foto-Uploads in eine dauerhafte Offline-Warteschlange (`PhotoUploadQueue`)
 - [x] App Check: Play Integrity für Play-Builds; Test-APKs aus der CI nutzen den Debug-Provider mit `APPCHECK_DEBUG_TOKEN` (GitHub-Secret, in Firebase → App Check → Debug-Tokens registriert). Ab 2. 11. 2026 erzwingt AI Logic App Check.
 - [ ] Regeln automatisch deployen (CI mit Service-Account)
 - [x] Zutaten-Zusammenführen: Duplikat-Hinweis beim Anlegen einer neuen Zutat (`IngredientMatcher.similar` → `confirmNewIngredient`: „Gibt es schon?“)

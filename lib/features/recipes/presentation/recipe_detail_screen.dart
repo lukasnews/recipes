@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -143,6 +145,10 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     final needs = {for (final n in coverage.needs) n.ingredient.id: n};
     final allergens = recipeAllergens(recipe, ingredients);
     final stats = ref.watch(cookStatsProvider).value?[recipe.id];
+    final pendingPhotos = [
+      for (final p in ref.watch(photoUploadQueueProvider))
+        if (p.recipeId == recipe.id) p,
+    ];
     final frozen = (ref.watch(frozenMealsProvider).value ?? const [])
         .where((m) => m.recipeId == recipe.id)
         .fold<int>(0, (sum, m) => sum + m.portions);
@@ -183,7 +189,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          if (recipe.photoPaths.isNotEmpty) ...[
+          if (recipe.photoPaths.isNotEmpty || pendingPhotos.isNotEmpty) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: SizedBox(
@@ -191,6 +197,22 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 child: PageView(
                   children: [
                     for (final p in recipe.photoPaths) StorageImage(path: p),
+                    // Not uploaded yet (offline): shown from the phone.
+                    for (final p in pendingPhotos)
+                      Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.file(File(p.file), fit: BoxFit.cover),
+                          Positioned(
+                            left: 8,
+                            bottom: 8,
+                            child: Chip(
+                              avatar: const Icon(Icons.cloud_upload_outlined),
+                              label: Text(l10n.photoPendingUpload),
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
