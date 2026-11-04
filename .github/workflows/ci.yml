@@ -10,9 +10,11 @@ on:
         type: boolean
         default: true
 
+# Pushes cancel older pushes; manual runs (App Bundle for Play) never get
+# cancelled by a push.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 env:
   FLUTTER_VERSION: 3.47.9
