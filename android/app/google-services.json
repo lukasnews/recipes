@@ -12,7 +12,28 @@
           "package_name": "com.javuno.recipes"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "651037863938-k1fvl30oatd3mhbnu1qmj730okjfabfc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.javuno.recipes",
+            "certificate_hash": "9630dfe00f4cf50271912c3f1426d80e58af8755"
+          }
+        },
+        {
+          "client_id": "651037863938-l3ch0q054uiraa30qpn4vne05vg30vaa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.javuno.recipes",
+            "certificate_hash": "9ff6ec7e9e408b82615971f64412bea0ca939483"
+          }
+        },
+        {
+          "client_id": "651037863938-sprltain503mmi35lg0sftu4oic3us50.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCR9F01XxVOi2dNiD3xLc_4uBWLJq5HIg8"
@@ -20,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "651037863938-sprltain503mmi35lg0sftu4oic3us50.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
