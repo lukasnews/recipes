@@ -2,6 +2,12 @@
 
 Schritt für Schritt, alles am Handy oder im Browser machbar. Reihenfolge einhalten.
 
+## 0. Webseiten (Datenschutz, Konto löschen)
+
+GitHub → Repo → **Settings → Pages** → Source: **Deploy from a branch** → **`main`**, Ordner **`/docs`** → Save. Nach 1–2 Minuten:
+- `https://lukasnews.github.io/recipes/datenschutz.html`
+- `https://lukasnews.github.io/recipes/konto-loeschen.html`
+
 ## 1. App in der Play Console anlegen
 
 Play Console → **App erstellen**
@@ -12,7 +18,7 @@ Play Console → **App erstellen**
 
 ## 2. Erstes App-Bundle hochladen (einmalig von Hand)
 
-1. GitHub → Actions → **CI** → **Run workflow** → Branch `ccr-9742725b-3t2jqk`, Häkchen „Auch App-Bundle (AAB)“ → Run.
+1. GitHub → Actions → **CI** → **Run workflow** → Branch `main`, Häkchen „Auch App-Bundle (AAB)“ → Run.
 2. Nach ca. 10 Minuten: Releases → neuestes „BaCo Android build N“ → **BaCo.aab** herunterladen.
 3. Play Console → **Testen → Interner Test** → **Neuen Release erstellen**.
 4. Bei „App-Signatur“: **Google Play App Signing** verwenden (Standard) → Weiter.
