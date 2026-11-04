@@ -34,6 +34,7 @@ class RecipesApp extends ConsumerWidget {
       );
     }
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: rootMessengerKey,
       onGenerateTitle: (context) => context.l10n.appTitle,
       theme: AppTheme.light(),

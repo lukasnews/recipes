@@ -111,6 +111,7 @@ Widget testApp({
   FakeSharer? sharer,
   BarcodeReader? barcodes,
   ProductLookup? products,
+  List<Ingredient>? seed,
 }) => ProviderScope(
   overrides: [
     timerAlarmsProvider.overrideWithValue(const NoTimerAlarms()),
@@ -126,7 +127,7 @@ Widget testApp({
     ),
     firestoreProvider.overrideWithValue(db),
     authRepositoryProvider.overrideWithValue(auth),
-    seedIngredientsProvider.overrideWith((ref) async => testSeed),
+    seedIngredientsProvider.overrideWith((ref) async => seed ?? testSeed),
   ],
   child: const RecipesApp(),
 );
