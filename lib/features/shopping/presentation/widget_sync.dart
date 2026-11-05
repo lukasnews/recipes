@@ -21,10 +21,11 @@ import 'shopping_list_screen.dart';
 List<String> widgetLines(
   List<ShoppingItem> shopping,
   Map<String, Ingredient> ingredients,
-  UnitDisplay display,
-) {
+  UnitDisplay display, [
+  List<Aisle> order = Aisle.values,
+]) {
   final open = shopping.where((i) => !i.checked).toList()
-    ..sort((a, b) => a.aisle.index.compareTo(b.aisle.index));
+    ..sort((a, b) => order.indexOf(a.aisle).compareTo(order.indexOf(b.aisle)));
   return [
     for (final i in open)
       [
@@ -94,6 +95,7 @@ class _WidgetSyncState extends ConsumerState<WidgetSync> {
         shopping,
         ref.watch(ingredientsByIdProvider),
         ref.watch(unitDisplayProvider),
+        ref.watch(aisleOrderProvider),
       );
       final content = WidgetContent(
         title: l10n.widgetTitle(lines.length),

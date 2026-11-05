@@ -138,6 +138,11 @@ class HouseholdRepository {
     return hid;
   }
 
+  /// Null resets to the default order.
+  Future<void> setAisleOrder(String uid, List<String>? order) => _user(
+    uid,
+  ).set({'aisleOrder': order ?? FieldValue.delete()}, SetOptions(merge: true));
+
   Future<void> setOnboardingDone(String uid) =>
       _user(uid).set({'onboardingDone': true}, SetOptions(merge: true));
 

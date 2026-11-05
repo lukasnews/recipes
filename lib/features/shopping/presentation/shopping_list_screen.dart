@@ -173,7 +173,7 @@ class _ShoppingList extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: 32),
       children: [
-        for (final aisle in Aisle.values)
+        for (final aisle in ref.watch(aisleOrderProvider))
           if (byAisle[aisle] != null) ...[
             header(l10n.aisle(aisle)),
             for (final item in byAisle[aisle]!) _ItemTile(item: item),

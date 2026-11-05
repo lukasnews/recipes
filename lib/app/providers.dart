@@ -46,6 +46,7 @@ import '../features/settings/data/account_deletion.dart';
 import '../features/settings/data/backup_service.dart';
 import '../features/shopping/data/home_screen_widget.dart';
 import '../features/shopping/data/shopping_repository.dart';
+import '../features/shopping/domain/aisle_order.dart';
 import '../features/shopping/domain/shopping_item.dart';
 
 // --- Firebase -------------------------------------------------------------
@@ -362,6 +363,12 @@ final frozenMealsProvider = StreamProvider<List<FrozenMeal>>(
 );
 
 /// How amounts are shown (per person, stored on users/{uid}).
+/// Shopping list sections in this person's order.
+final aisleOrderProvider = Provider<List<Aisle>>(
+  (ref) =>
+      aisleOrder(ref.watch(appUserProvider.select((u) => u.value?.aisleOrder))),
+);
+
 final unitDisplayProvider = Provider<UnitDisplay>(
   (ref) => UnitDisplay.parse(
     ref.watch(appUserProvider.select((u) => u.value?.unitDisplay)),

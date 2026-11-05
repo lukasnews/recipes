@@ -14,6 +14,7 @@ import '../features/recipes/presentation/cook_mode_screen.dart';
 import '../features/recipes/presentation/recipe_detail_screen.dart';
 import '../features/recipes/presentation/recipe_edit_screen.dart';
 import '../features/recipes/presentation/recipe_list_screen.dart';
+import '../features/settings/presentation/aisle_order_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/shopping/presentation/shopping_list_screen.dart';
 import 'home_shell.dart';
@@ -155,6 +156,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'household/add',
             builder: (context, state) =>
                 const HouseholdSetupScreen(additional: true),
+          ),
+          GoRoute(
+            path: 'aisles',
+            builder: (context, state) => const AisleOrderScreen(),
           ),
           GoRoute(
             path: 'allergies',

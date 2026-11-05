@@ -62,6 +62,7 @@ users/{uid}
   displayName, householdIds: [string], createdAt, unitDisplay?   # original|metric|austrian
   activeHouseholdId?   # picked in settings; falls back to householdIds.first
   onboardingDone?      # saw the 3-page introduction (OnboardingGate in the shell)
+  aisleOrder?: [aisle] # own order of shopping sections (Einstellungen → Reihenfolge im Einkauf)
 
 invites/{code}         # 6 chars, no 0/O/1/I/L; get only, never list
   householdId
@@ -148,6 +149,7 @@ households/{hid}/cookLog/{logId}
 - **Neue Zutat beim Speichern:** Zeilen ohne Treffer legen eine Zutat an (Basiseinheit aus der Einheit geraten, Abteilung `other`). Unsichere Treffer werden im Rezept-Editor markiert und können per Tippen geändert werden.
 - **Vorrat +/−:** Tippen = ein Schritt (`stockStep`), **gedrückt halten** = Menge mit Einheit eingeben („5 Stk. entnehmen“, „600 g hinzufügen“; `adjustStockBy`, Umrechnung über Dichte/Stückgewicht, sonst einmal fragen). Nie unter 0.
 - **Gerichte im Tiefkühler:** Vorrat-Reiter → „Gerichte“; Portionen mit +/− (Increment, letzte Portion löscht den Eintrag), Hinweis „bald essen“ nach 90 Tagen. Im „Gekocht“-Dialog „Reste einfrieren (Portionen)“; Rezept-Detail zeigt Portionen im Tiefkühler.
+- **Reihenfolge im Einkauf** (pro Person, `users.aisleOrder`): Einstellungen → Anzeige → Abteilungen per Ziehen sortieren, „Zurücksetzen“ = Standard. `aisleOrder()` ergänzt fehlende Abteilungen; gilt für Einkaufsliste und Widget.
 - **Einkauf → Vorrat:** Übernahme-Bildschirm (`planTransfer`) mit Menge/Einheit/Lagerort je abgehaktem Eintrag; die Einheit der Liste bleibt (5 kg Bananen bei Stück-Zutat), Auswahl = Zutaten-Einheiten + g/kg/ml/l/Stk. (`transferUnits`); Freitext-Einträge werden nachträglich zugeordnet, fehlende Umrechnung einmal erfragt; Einträge ohne Menge werden nur von der Liste genommen.
 - **Allergien:** pro Person in `members/{uid}` (Einstellungen → Allergien & Unverträglichkeiten). Rezept-Allergene = Vereinigung der Zutaten-Allergene; Rezept-Detail zeigt Warnung mit betroffenen Personen, Liste ein Warnsymbol und den Filter „Für alle verträglich“. Seed-Daten tragen Allergene; ältere Haushalte bekommen sie einmalig per `backfillSeed` (`households.seedVersion`; v3 ergänzt auch fehlende Synonyme und Umrechnungen gleicher Basiseinheit, v4 Dichte und Stückgewicht; überschreibt nichts – z. B. „Schlag“ und g→ml für Schlagobers).
 - **Mengen anzeigen** (pro Person, `users/{uid}.unitDisplay`): Wie im Rezept | Gramm & Milliliter | Dekagramm (österreichisch). `core/units/display_units.dart` rechnet nur reine Masse/Volumen (mg/g/dag/kg, ml/cl/dl/l) um; EL, TL, Stk., Pkg. bleiben. Gilt in Rezept-Detail, Kochmodus und Einkaufsliste.

@@ -29,6 +29,7 @@ class AppUser {
     this.unitDisplay,
     this.activeHouseholdId,
     this.onboardingDone = false,
+    this.aisleOrder,
   });
 
   factory AppUser.fromMap(String uid, Map<String, dynamic> m) => AppUser(
@@ -38,6 +39,7 @@ class AppUser {
     unitDisplay: m.strOrNull('unitDisplay'),
     activeHouseholdId: m.strOrNull('activeHouseholdId'),
     onboardingDone: m.flag('onboardingDone'),
+    aisleOrder: m['aisleOrder'] == null ? null : m.strings('aisleOrder'),
   );
 
   final String uid;
@@ -52,6 +54,9 @@ class AppUser {
 
   /// Saw the introduction (once per person, on any phone).
   final bool onboardingDone;
+
+  /// Own order of the shopping list sections (aisle names); null = default.
+  final List<String>? aisleOrder;
 
   String? get currentHouseholdId => householdIds.contains(activeHouseholdId)
       ? activeHouseholdId

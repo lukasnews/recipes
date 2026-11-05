@@ -185,6 +185,13 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ],
           section(l10n.settingsDisplay),
+          ListTile(
+            leading: const Icon(Icons.format_list_numbered),
+            title: Text(l10n.aisleOrderTitle),
+            subtitle: Text(l10n.aisleOrderSubtitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(Routes.aisleOrder),
+          ),
           ListTile(title: Text(l10n.unitDisplayTitle)),
           RadioGroup<UnitDisplay>(
             groupValue: ref.watch(unitDisplayProvider),

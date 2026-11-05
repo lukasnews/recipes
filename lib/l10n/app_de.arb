@@ -893,5 +893,10 @@
         "type": "int"
       }
     }
-  }
+  },
+  "aisleOrderTitle": "Reihenfolge im Einkauf",
+  "aisleOrderSubtitle": "Abteilungen so sortieren, wie du durch deinen Markt gehst",
+  "aisleOrderHint": "Zum Verschieben am Griff rechts ziehen. Gilt nur für dich – die anderen im Haushalt können ihre eigene Reihenfolge haben.",
+  "aisleOrderReset": "Zurücksetzen",
+  "aisleOrderDrag": "Verschieben"
 }
