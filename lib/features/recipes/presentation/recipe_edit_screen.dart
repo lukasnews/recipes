@@ -12,6 +12,7 @@ import '../../../core/firebase/fire.dart';
 import '../../../core/matching/ingredient_matcher.dart';
 import '../../../core/units/ingredient_line_parser.dart';
 import '../../../core/units/units.dart';
+import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/rating_stars.dart';
 import '../../../core/widgets/storage_image.dart';
@@ -156,30 +157,12 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
 
   Future<void> _chooseCategory() async {
     final l10n = context.l10n;
-    final controller = TextEditingController();
-    final value = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.customCategory),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          textCapitalization: TextCapitalization.sentences,
-          decoration: InputDecoration(labelText: l10n.customCategoryLabel),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: Text(l10n.ok),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
+    final value = (await showTextInputDialog(
+      context,
+      title: l10n.customCategory,
+      label: l10n.customCategoryLabel,
+      capitalization: TextCapitalization.sentences,
+    ))?.trim();
     if (value != null && value.isNotEmpty) setState(() => _category = value);
   }
 

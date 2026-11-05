@@ -25,7 +25,8 @@ class OpenFoodFactsLookup implements ProductLookup {
       '/api/v2/product/$code.json',
       {
         'fields':
-            'product_name,product_name_de,generic_name_de,brands,quantity',
+            'product_name,product_name_de,generic_name_de,brands,quantity,'
+            'product_quantity,product_quantity_unit',
       },
     );
     final res = await _client
@@ -53,7 +54,14 @@ Product? parseOpenFoodFacts(String code, Map<String, dynamic> json) {
   final name =
       s('product_name_de') ?? s('product_name') ?? s('generic_name_de');
   if (name == null) return null;
-  final q = parseProductQuantity(s('quantity'));
+  // "quantity" is free text; product_quantity(+_unit) is the parsed number.
+  final pq = p['product_quantity'];
+  final q =
+      parseProductQuantity(s('quantity')) ??
+      parseProductQuantity(
+        pq == null ? null : '$pq ${s('product_quantity_unit') ?? 'g'}',
+      ) ??
+      parseProductQuantity(name);
   return Product(
     code: code,
     name: name,

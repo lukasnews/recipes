@@ -65,42 +65,18 @@ Future<double?> askConversion(
   String unit,
 ) async {
   final l10n = context.l10n;
-  final controller = TextEditingController();
-  final value = await showDialog<double>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(l10n.conversionAskTitle),
-      content: TextField(
-        controller: controller,
-        autofocus: true,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: InputDecoration(
-          labelText: l10n.conversionAsk(
-            ingredient.baseUnit == BaseUnit.pcs
-                ? 'Stk.'
-                : ingredient.baseUnit.name,
-            unit,
-            ingredient.name,
-          ),
-          suffixText: ingredient.baseUnit == BaseUnit.pcs
-              ? 'Stk.'
-              : ingredient.baseUnit.name,
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(
-          onPressed: () =>
-              Navigator.pop(context, parseUserNumber(controller.text)),
-          child: Text(l10n.save),
-        ),
-      ],
-    ),
+  final base = ingredient.baseUnit == BaseUnit.pcs
+      ? 'Stk.'
+      : ingredient.baseUnit.name;
+  final text = await showTextInputDialog(
+    context,
+    title: l10n.conversionAskTitle,
+    label: l10n.conversionAsk(base, ingredient.name, unit),
+    suffix: base,
+    confirmLabel: l10n.save,
+    keyboardType: const TextInputType.numberWithOptions(decimal: true),
   );
-  controller.dispose();
+  final value = text == null ? null : parseUserNumber(text);
   if (value == null || value <= 0) return null;
   fire(
     ref

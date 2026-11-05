@@ -17,8 +17,9 @@ class Product {
   final String? unit;
 }
 
+// Anywhere in the text ("8.4 fl oz (250 ml)", "Dose 250ml ℮").
 final _quantity = RegExp(
-  r'^(?:(\d+)\s*[x×]\s*)?(\d+(?:[.,]\d+)?)\s*(kg|g|mg|l|ml|cl|dl|stk\.?|stück)\b',
+  r'(?:(\d+)\s*[x×]\s*)?(\d+(?:[.,]\d+)?)\s*(kg|g|mg|l|ml|cl|dl|stk\.?|stück)(?![a-zäöü])',
   caseSensitive: false,
 );
 

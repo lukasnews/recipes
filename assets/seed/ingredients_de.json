@@ -1197,7 +1197,8 @@
   "aisle": "dairy",
   "baseUnit": "ml",
   "conversions": {
-   "Tasse": 250.0
+   "Tasse": 250.0,
+   "g": 0.97
   },
   "alwaysAvailable": false,
   "allergens": [
@@ -1212,12 +1213,14 @@
    "Schlagsahne",
    "Obers",
    "Rahm süß",
-   "flüssige Sahne"
+   "flüssige Sahne",
+   "Schlag"
   ],
   "aisle": "dairy",
   "baseUnit": "ml",
   "conversions": {
-   "Becher": 250.0
+   "Becher": 250.0,
+   "g": 1.0
   },
   "alwaysAvailable": false,
   "allergens": [
@@ -4425,7 +4428,8 @@
   "conversions": {
    "Tasse": 250.0,
    "EL": 15.0,
-   "TL": 5.0
+   "TL": 5.0,
+   "g": 1.0
   },
   "alwaysAvailable": true,
   "allergens": []

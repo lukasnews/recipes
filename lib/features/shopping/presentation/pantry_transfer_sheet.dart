@@ -66,12 +66,11 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
       fire(repo.save(ing));
     }
     if (ing == null) return;
+    final linked = ing;
     setState(() {
-      line.ingredient = ing;
-      if (!ing!.unitChoices.contains(line.unit)) {
-        line.unit = ing.unitChoices.first;
-      }
-      line.location = defaultLocation(ing.aisle);
+      line.ingredient = linked;
+      line.unit ??= linked.unitChoices.first;
+      line.location = defaultLocation(linked.aisle);
     });
   }
 
@@ -185,12 +184,12 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
               SizedBox(
                 width: 96,
                 child: DropdownButtonFormField<String>(
-                  initialValue: ing.unitChoices.contains(line.unit)
-                      ? line.unit
-                      : ing.unitChoices.first,
+                  key: ValueKey('unit-$i-${ing.id}'),
+                  isExpanded: true,
+                  initialValue: line.unit ?? ing.unitChoices.first,
                   decoration: InputDecoration(labelText: l10n.unitLabel),
                   items: [
-                    for (final u in ing.unitChoices)
+                    for (final u in transferUnits(ing, line.unit))
                       DropdownMenuItem(value: u, child: Text(u)),
                   ],
                   onChanged: (v) => setState(() => line.unit = v),
@@ -200,12 +199,16 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
                 width: 132,
                 child: DropdownButtonFormField<StorageLocation>(
                   initialValue: line.location,
+                  isExpanded: true,
                   decoration: InputDecoration(labelText: l10n.locationLabel),
                   items: [
                     for (final loc in StorageLocation.values)
                       DropdownMenuItem(
                         value: loc,
-                        child: Text(l10n.location(loc)),
+                        child: Text(
+                          l10n.location(loc),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                   ],
                   onChanged: (v) =>

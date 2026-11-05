@@ -10,6 +10,7 @@ import '../../../app/messenger.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../core/units/units.dart';
+import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../household/domain/allergen.dart';
 import '../../pantry/domain/pantry_item.dart';
@@ -241,35 +242,16 @@ Future<void> askAndImportLink(BuildContext context, WidgetRef ref) async {
   final l10n = context.l10n;
   final clip = (await Clipboard.getData(Clipboard.kTextPlain))?.text ?? '';
   if (!context.mounted) return;
-  final controller = TextEditingController(
-    text: findUrl(clip)?.toString() ?? '',
+  final text = await showTextInputDialog(
+    context,
+    title: l10n.importLink,
+    label: l10n.importLinkLabel,
+    initial: findUrl(clip)?.toString() ?? '',
+    hint: 'https://…',
+    confirmLabel: l10n.importLinkConfirm,
+    keyboardType: TextInputType.url,
   );
-  final url = await showDialog<Uri>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(l10n.importLink),
-      content: TextField(
-        controller: controller,
-        autofocus: true,
-        keyboardType: TextInputType.url,
-        decoration: InputDecoration(
-          labelText: l10n.importLinkLabel,
-          hintText: 'https://…',
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, findUrl(controller.text)),
-          child: Text(l10n.importLinkConfirm),
-        ),
-      ],
-    ),
-  );
-  controller.dispose();
+  final url = text == null ? null : findUrl(text);
   if (url == null || !context.mounted) return;
   await importFromLink(context, ref, url);
 }

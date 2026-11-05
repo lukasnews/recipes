@@ -21,9 +21,36 @@ Future<void> showCookedDialog(
   int servings,
 ) async {
   final l10n = context.l10n;
-  final ingredients = ref.read(ingredientsByIdProvider);
+  final ingredients = {...ref.read(ingredientsByIdProvider)};
   final pantry = ref.read(pantryProvider).value ?? const {};
-  final planned = plannedDeductions(recipe, ingredients, servings: servings);
+  // Never skip silently: ask once for each missing conversion (stored on
+  // the ingredient); cancelled ones stay in the dialog with 0 to fill in.
+  final stillUnknown = <String>{};
+  for (final MapEntry(key: id, value: units) in unconvertibleUnits(
+    recipe,
+    ingredients,
+  ).entries) {
+    for (final unit in units) {
+      if (!context.mounted) return;
+      final ing = ingredients[id]!;
+      final factor = await askConversion(context, ref, ing, unit);
+      if (factor == null) {
+        stillUnknown.add(id);
+      } else {
+        ingredients[id] = ing.copyWith(
+          conversions: {...ing.conversions, unit: factor},
+        );
+      }
+    }
+  }
+  if (!context.mounted) return;
+  final computed = plannedDeductions(recipe, ingredients, servings: servings);
+  final planned = [
+    ...computed,
+    for (final id in stillUnknown)
+      if (!computed.any((d) => d.ingredient.id == id))
+        Deduction(ingredient: ingredients[id]!, amountBase: 0),
+  ];
   final controllers = {
     for (final d in planned)
       d.ingredient.id: TextEditingController(
@@ -93,10 +120,8 @@ Future<void> showCookedDialog(
       e.key: parseUserNumber(e.value.text) ?? 0,
   };
   final frozenPortions = int.tryParse(leftovers.text.trim()) ?? 0;
-  for (final c in controllers.values) {
-    c.dispose();
-  }
-  leftovers.dispose();
+  // Not disposed here: the dialog may still be animating out and use them;
+  // they hold no resources and are garbage collected.
   if (confirmed != true || !context.mounted) return;
 
   if (frozenPortions > 0) {

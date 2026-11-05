@@ -11,6 +11,10 @@ void main() {
     expect(parseProductQuantity('6 x 0,5 L'), (3.0, 'l'));
     expect(parseProductQuantity('10 Stück'), (10.0, 'Stk.'));
     expect(parseProductQuantity('ca. eine Packung'), isNull);
+    expect(parseProductQuantity('8.4 fl oz (250 ml)'), (250.0, 'ml'));
+    expect(parseProductQuantity('Red Bull Energy Drink 250ml'), (250.0, 'ml'));
+    expect(parseProductQuantity('Dose 0,25 l ℮'), (0.25, 'l'));
+    expect(parseProductQuantity('Gläser'), isNull);
   });
 
   test('parseOpenFoodFacts prefers the German name', () {
@@ -28,6 +32,17 @@ void main() {
     expect(p.amount, 1);
     expect(p.unit, 'l');
     expect(parseOpenFoodFacts('1', {'status': 0}), isNull);
+
+    // No free-text quantity: the parsed fields are used.
+    final rb = parseOpenFoodFacts('9002490100070', {
+      'status': 1,
+      'product': {
+        'product_name': 'Red Bull Energy Drink',
+        'product_quantity': 250,
+        'product_quantity_unit': 'ml',
+      },
+    })!;
+    expect((rb.amount, rb.unit), (250.0, 'ml'));
   });
 
   test('known barcodes are remembered', () async {

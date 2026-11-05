@@ -23,29 +23,13 @@ class SettingsScreen extends ConsumerWidget {
     String current,
   ) async {
     final l10n = context.l10n;
-    final controller = TextEditingController(text: current);
-    final name = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.renameHousehold),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(labelText: l10n.householdNameLabel),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: Text(l10n.save),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
+    final name = (await showTextInputDialog(
+      context,
+      title: l10n.renameHousehold,
+      label: l10n.householdNameLabel,
+      initial: current,
+      confirmLabel: l10n.save,
+    ))?.trim();
     final hid = ref.read(householdIdProvider);
     if (name == null || name.isEmpty || hid == null) return;
     fire(ref.read(householdRepositoryProvider).rename(hid, name));

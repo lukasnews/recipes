@@ -73,8 +73,9 @@ void main() {
     // Eggs without amount: 1 piece.
     expect(lines[1].amount, 1);
     expect(lines[1].baseAmount, 1);
-    // Unknown unit falls back to the base unit for the user to fix.
-    expect(lines[2].unit, 'g');
+    // A unit without conversion stays; confirming asks for the factor.
+    expect(lines[2].unit, 'Stk.');
+    expect(lines[2].baseAmount, isNull);
     expect(lines[3].ingredient?.id, 'erbsen');
     expect(lines[3].location, StorageLocation.freezer);
     expect(lines[3].baseAmount, isNull); // no amount yet

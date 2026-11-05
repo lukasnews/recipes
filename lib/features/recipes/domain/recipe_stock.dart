@@ -137,6 +137,23 @@ List<Deduction> plannedDeductions(
   ];
 }
 
+/// Units in [recipe] that a linked ingredient can't convert yet
+/// (e.g. "g" for Schlagobers kept in ml): ingredient id -> units.
+Map<String, Set<String>> unconvertibleUnits(
+  Recipe recipe,
+  Map<String, Ingredient> ingredients,
+) {
+  final result = <String, Set<String>>{};
+  for (final line in recipe.ingredients) {
+    final ing = ingredients[line.ingredientId];
+    final unit = line.unit;
+    if (ing == null || ing.alwaysAvailable || line.amount == null) continue;
+    if (unit == null || ing.toBase(line.amount!, unit) != null) continue;
+    result.putIfAbsent(ing.id, () => {}).add(unit);
+  }
+  return result;
+}
+
 /// Clamps a deduction so stock never drops below zero.
 double clampDeduction(double requested, double? stock) {
   final have = stock ?? 0;

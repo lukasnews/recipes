@@ -407,11 +407,17 @@ class _AddSheetState extends ConsumerState<_AddSheet> {
 
   Ingredient? get _existing => widget.choice.ingredient;
 
-  /// Includes a prefilled unit the ingredient can't convert yet; saving
-  /// then asks for the conversion once instead of guessing.
+  /// The ingredient's own units first, then the common ones (a can of
+  /// Red Bull in ml for an ingredient kept in g). Units the ingredient
+  /// can't convert yet ask for the conversion once on saving.
   List<String> get _units => {
-    ...(_existing?.unitChoices ?? const ['g', 'kg', 'ml', 'l', 'Stk.']),
+    ...?_existing?.unitChoices,
     ?widget.unit,
+    'g',
+    'kg',
+    'ml',
+    'l',
+    'Stk.',
   }.toList();
 
   @override

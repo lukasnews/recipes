@@ -57,15 +57,9 @@ List<TransferLine> planTransfer(
         var amount = item.amount;
         var unit = item.unit;
         if (ing != null) {
-          final choices = ing.unitChoices;
-          if (unit == null || !choices.contains(unit)) {
-            // Keep a convertible unit; otherwise fall back to the base unit.
-            final convertible =
-                unit != null &&
-                amount != null &&
-                ing.toBase(amount, unit) != null;
-            if (!convertible) unit = choices.first;
-          }
+          // Keep the list's unit ("5 kg" bananas counted in pieces): a
+          // missing conversion is asked once on confirm, never guessed.
+          if (unit == null || amount == null) unit = ing.unitChoices.first;
           // "Eier" without amount: one piece is the obvious guess for pcs,
           // anything else the user fills in.
           if (amount == null && ing.baseUnit == BaseUnit.pcs) amount = 1;
@@ -82,3 +76,8 @@ List<TransferLine> planTransfer(
       }(),
   ];
 }
+
+/// Unit choices for a transfer line: the ingredient's own units, the
+/// list's unit and the common ones; missing conversions are asked once.
+List<String> transferUnits(Ingredient ing, String? current) =>
+    {...ing.unitChoices, ?current, 'g', 'kg', 'ml', 'l', 'Stk.'}.toList();
