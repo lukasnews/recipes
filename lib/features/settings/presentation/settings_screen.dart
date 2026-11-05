@@ -197,6 +197,13 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push(Routes.aisleOrder),
           ),
+          ListTile(
+            leading: const Icon(Icons.storefront_outlined),
+            title: Text(l10n.storesTitle),
+            subtitle: Text(ref.watch(storesProvider).join(', ')),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(Routes.stores),
+          ),
           ListTile(title: Text(l10n.unitDisplayTitle)),
           RadioGroup<UnitDisplay>(
             groupValue: ref.watch(unitDisplayProvider),

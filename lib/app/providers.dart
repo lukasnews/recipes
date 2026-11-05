@@ -393,6 +393,20 @@ final collectionsProvider = Provider<List<String>>((ref) {
 });
 
 /// Shopping list sections in this person's order.
+/// The household's shops (Hofer, Billa, …) in its order.
+final storesProvider = Provider<List<String>>(
+  (ref) =>
+      ref.watch(householdProvider.select((h) => h.value?.stores)) ??
+      Household.defaultStores,
+);
+
+/// Shopping list grouped by shop instead of aisle (per person).
+final shoppingByStoreProvider = Provider<bool>(
+  (ref) =>
+      ref.watch(appUserProvider.select((u) => u.value?.shoppingByStore)) ??
+      false,
+);
+
 final aisleOrderProvider = Provider<List<Aisle>>(
   (ref) =>
       aisleOrder(ref.watch(appUserProvider.select((u) => u.value?.aisleOrder))),

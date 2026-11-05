@@ -18,6 +18,7 @@ abstract final class Routes {
   static const aisleOrder = '/settings/aisles';
   static const addHousehold = '/settings/household/add';
   static const sentRecipes = '/settings/sent';
+  static const stores = '/settings/stores';
   static String sharedRecipe(String code) => '/shared/$code';
   static String ingredient(String id) => '/settings/ingredients/$id';
 }

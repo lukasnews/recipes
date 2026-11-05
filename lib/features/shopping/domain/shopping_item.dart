@@ -13,6 +13,7 @@ class ShoppingItem {
     this.fromRecipeId,
     this.addedBy,
     this.createdAt,
+    this.store,
   });
 
   factory ShoppingItem.fromMap(String id, Map<String, dynamic> m) =>
@@ -27,6 +28,7 @@ class ShoppingItem {
         fromRecipeId: m.strOrNull('fromRecipeId'),
         addedBy: m.strOrNull('addedBy'),
         createdAt: m.date('createdAt'),
+        store: m.strOrNull('store'),
       );
 
   final String id;
@@ -40,6 +42,9 @@ class ShoppingItem {
   final String? addedBy;
   final DateTime? createdAt;
 
+  /// Fixed shop for this purchase (e.g. an offer); else the ingredient's.
+  final String? store;
+
   Map<String, dynamic> toMap() => {
     'text': text,
     'ingredientId': ?ingredientId,
@@ -49,5 +54,6 @@ class ShoppingItem {
     'checked': checked,
     'fromRecipeId': ?fromRecipeId,
     'addedBy': ?addedBy,
+    'store': ?store,
   };
 }

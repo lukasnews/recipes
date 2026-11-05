@@ -61,6 +61,7 @@ class Ingredient {
     this.pieceGrams,
     this.packSizes = const [],
     this.partOf,
+    this.stores = const [],
   });
 
   factory Ingredient.fromMap(String id, Map<String, dynamic> m) => Ingredient(
@@ -83,6 +84,7 @@ class Ingredient {
         if (v is num && v > 0) v.toDouble(),
     ],
     partOf: PartOf.fromMap(m['partOf']),
+    stores: m.strings('stores'),
   );
 
   final String id;
@@ -112,6 +114,9 @@ class Ingredient {
   /// Eiweiß is part of Ei: stock, cooking and shopping fall back to Ei.
   final PartOf? partOf;
 
+  /// Shops where this is usually bought (any of them; may vary with offers).
+  final List<String> stores;
+
   Map<String, dynamic> toMap() => {
     'name': name,
     'synonyms': synonyms,
@@ -124,6 +129,7 @@ class Ingredient {
     'pieceGrams': ?pieceGrams,
     if (packSizes.isNotEmpty) 'packSizes': packSizes,
     'partOf': ?partOf?.toMap(),
+    if (stores.isNotEmpty) 'stores': stores,
   };
 
   MatchCandidate get candidate =>
@@ -145,6 +151,7 @@ class Ingredient {
     double? Function()? pieceGrams,
     List<double>? packSizes,
     PartOf? Function()? partOf,
+    List<String>? stores,
   }) => Ingredient(
     id: id,
     name: name ?? this.name,
@@ -158,6 +165,7 @@ class Ingredient {
     pieceGrams: pieceGrams == null ? this.pieceGrams : pieceGrams(),
     packSizes: packSizes ?? this.packSizes,
     partOf: partOf == null ? this.partOf : partOf(),
+    stores: stores ?? this.stores,
   );
 
   /// Shows [preferred] (one of the synonyms) as the name; the old name becomes

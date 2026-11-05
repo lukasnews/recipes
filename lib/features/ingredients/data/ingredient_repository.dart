@@ -30,6 +30,10 @@ class IngredientRepository {
   Future<void> delete(String id) => _col.doc(id).delete();
 
   /// Remembered pack sizes (base unit), e.g. after a purchase.
+  /// Where this is usually bought.
+  Future<void> setStores(String id, List<String> stores) =>
+      _col.doc(id).update({'stores': stores});
+
   Future<void> setPackSizes(String id, List<double> sizes) =>
       _col.doc(id).update({'packSizes': sizes});
 

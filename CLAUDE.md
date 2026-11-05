@@ -64,6 +64,7 @@ users/{uid}
   onboardingDone?      # saw the 3-page introduction (OnboardingGate in the shell)
   aisleOrder?: [aisle] # own order of shopping sections (Einstellungen → Reihenfolge im Einkauf)
   favoriteRecipeIds?: [string]  # own favourites (arrayUnion/arrayRemove)
+  shoppingByStore?: bool        # shopping list grouped by shop (per person)
 
 invites/{code}         # 6 chars, no 0/O/1/I/L; get only, never list
   householdId
@@ -76,6 +77,7 @@ sharedRecipes/{code}   # recipe sent to another household; 8 chars, no 0/O/1/I/L
 households/{hid}
   name, memberIds: [uid], inviteCode, createdAt
   joinCode?            # set by a joiner; rules check joinCode == inviteCode
+  stores?: [string]    # shops in order; default Hofer, Billa, Spar, Lidl, Penny, dm
 
 households/{hid}/members/{uid}   # each person writes only their own
   displayName, allergens: [gluten|crustaceans|eggs|fish|peanuts|soy|milk|nuts|celery|mustard|sesame|sulphites|lupin|molluscs]
@@ -91,6 +93,7 @@ households/{hid}/ingredients/{ingredientId}
   density?: number                   # g per ml (Wasser 1, Öl 0.92, Mehl 0.55): g <-> ml
   pieceGrams?: number                # avg g per piece (Banane 120): kg <-> Stk.
   packSizes?: [number]               # learned pack sizes in baseUnit, oldest first, max 6 (Nüsse [100, 250, 500])
+  stores?: [string]                  # shops where it is usually bought (any of them)
   partOf?: {id, per}                 # part of another ingredient: 1 baseUnit uses `per` baseUnits of id (Eiweiß→Ei 1, Zitronensaft→Zitrone 0.025)
 
 households/{hid}/recipes/{recipeId}
@@ -118,6 +121,7 @@ households/{hid}/frozenMeals/{id}   # cooked dishes in the freezer
 households/{hid}/shopping/{itemId}
   ingredientId?, text, amount?, unit?, aisle
   checked: bool, fromRecipeId?, addedBy, createdAt
+  store?               # fixed shop for this purchase (offer); else ingredient.stores
 
 households/{hid}/barcodes/{code}   # remembered EAN -> ingredient
   ingredientId, amount?, unit?, name?, updatedAt
@@ -170,6 +174,7 @@ households/{hid}/cookLog/{logId}
 - **Gerichte im Tiefkühler:** Vorrat-Reiter → „Gerichte“; Portionen mit +/− (Increment, letzte Portion löscht den Eintrag), Hinweis „bald essen“ nach 90 Tagen. Im „Gekocht“-Dialog „Reste einfrieren (Portionen)“; Rezept-Detail zeigt Portionen im Tiefkühler.
 - **Reihenfolge im Einkauf** (pro Person, `users.aisleOrder`): Einstellungen → Anzeige → Abteilungen per Ziehen sortieren, „Zurücksetzen“ = Standard. `aisleOrder()` ergänzt fehlende Abteilungen; gilt für Einkaufsliste und Widget.
 - **Liste teilen** (Einkauf, Teilen-Symbol): offene Einträge als Text nach Abteilung (eigene Reihenfolge, gewählte Mengenanzeige, aktueller Zutatenname) → `shoppingShareText` → Teilen-Menü (z. B. WhatsApp).
+- **Geschäfte** (`shopping/domain/stores.dart`): Haushalt hat eine Liste (`households.stores`, Einstellungen → Anzeige → „Geschäfte“: hinzufügen, löschen, ziehen). Eintrag lange drücken → `StoreSheet`: „Diesmal kaufen bei“ (`shopping.store`, z. B. Aktion) und „… gibt's üblicherweise bei“ (mehrere, `ingredients.stores`). `itemStores` = fester Laden sonst übliche. Einkaufsliste: Umschalter Abteilung/Geschäft (`users.shoppingByStore`, `groupByStore`: unter dem ersten Laden in Haushaltsreihenfolge, innerhalb nach Abteilung, „Egal wo“ zuletzt) und Chips „Nur Hofer“ (`availableAt`: dort erhältlich oder egal wo). Teilen-Text folgt der Ansicht; Widget bleibt nach Abteilung.
 - **Einkauf → Vorrat:** Übernahme-Bildschirm (`planTransfer`) mit Menge/Einheit/Lagerort je abgehaktem Eintrag; die Einheit der Liste bleibt (5 kg Bananen bei Stück-Zutat), Auswahl = Zutaten-Einheiten + g/kg/ml/l/Stk. (`transferUnits`); Freitext-Einträge werden nachträglich zugeordnet, fehlende Umrechnung einmal erfragt; Einträge ohne Menge werden nur von der Liste genommen.
 - **Packungsgrößen** (`shopping/domain/pack_sizes.dart`): pro Zutat mehrere gemerkte Größen (`packSizes`, Basiseinheit). Gelernt ohne Rückfrage: in der Übernahme in den Vorrat jede geänderte Menge (`learnedPackSizes`; nicht bei bekannter Größe oder Vielfachem der vorgeschlagenen Packung) und beim Barcode-Speichern. `pickPack`: kleinste Packung, die den Bedarf deckt, sonst n × größte. Übernahme füllt ganze Packungen vor und zeigt die Größen als Chips; Einkaufsliste zeigt „1 Pkg. (200 g)“ bzw. „2 × 1 l“ unter dem Eintrag. Zutaten-Bearbeitung: „Übliche Packungen“ hinzufügen, antippen zum Ändern, löschen (neue Basiseinheit löscht sie).
 - **Allergien:** pro Person in `members/{uid}` (Einstellungen → Allergien & Unverträglichkeiten). Rezept-Allergene = Vereinigung der Zutaten-Allergene; Rezept-Detail zeigt Warnung mit betroffenen Personen, Liste ein Warnsymbol und den Filter „Für alle verträglich“. Seed-Daten tragen Allergene; ältere Haushalte bekommen sie einmalig per `backfillSeed` (`households.seedVersion`; v3 ergänzt auch fehlende Synonyme und Umrechnungen gleicher Basiseinheit, v4 Dichte und Stückgewicht, v5 Teile (`partOf`, neue Teil-Zutaten); überschreibt nichts – z. B. „Schlag“ und g→ml für Schlagobers).

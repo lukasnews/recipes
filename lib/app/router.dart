@@ -17,6 +17,7 @@ import '../features/recipes/presentation/recipe_edit_screen.dart';
 import '../features/recipes/presentation/recipe_list_screen.dart';
 import '../features/settings/presentation/aisle_order_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
+import '../features/settings/presentation/stores_screen.dart';
 import '../features/sharing/domain/shared_recipe.dart';
 import '../features/sharing/presentation/received_recipe_screen.dart';
 import '../features/sharing/presentation/sent_recipes_screen.dart';
@@ -194,6 +195,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'household/add',
             builder: (context, state) =>
                 const HouseholdSetupScreen(additional: true),
+          ),
+          GoRoute(
+            path: 'stores',
+            builder: (context, state) => const StoresScreen(),
           ),
           GoRoute(
             path: 'sent',

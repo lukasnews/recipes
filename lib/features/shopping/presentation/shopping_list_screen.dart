@@ -13,7 +13,9 @@ import '../../../core/widgets/profile_button.dart';
 import '../../ingredients/domain/ingredient.dart';
 import '../domain/pack_sizes.dart';
 import '../domain/shopping_item.dart';
+import '../domain/stores.dart';
 import 'pantry_transfer_sheet.dart';
+import 'store_sheet.dart';
 
 /// "1500 g" -> "1,5 kg", "2 Stk." -> "2", "½ TL" stays.
 String shoppingQuantity(
@@ -46,16 +48,33 @@ String shoppingShareText(
   required String Function(Aisle) aisleName,
   UnitDisplay display = UnitDisplay.original,
   List<Aisle> order = Aisle.values,
+  ({List<String> stores, String anywhere})? byStore,
 }) {
-  final byAisle = <Aisle, List<ShoppingItem>>{};
-  for (final i in items.where((i) => !i.checked)) {
-    byAisle.putIfAbsent(i.aisle, () => []).add(i);
+  final open = items.where((i) => !i.checked).toList();
+  final sections = <(String, List<ShoppingItem>)>[];
+  if (byStore != null) {
+    for (final (store, list) in groupByStore(
+      open,
+      ingredients,
+      byStore.stores,
+      order,
+    )) {
+      sections.add((store ?? byStore.anywhere, list));
+    }
+  } else {
+    final byAisle = <Aisle, List<ShoppingItem>>{};
+    for (final i in open) {
+      byAisle.putIfAbsent(i.aisle, () => []).add(i);
+    }
+    for (final aisle in order) {
+      if (byAisle[aisle] case final list?) {
+        sections.add((aisleName(aisle), list));
+      }
+    }
   }
   final out = StringBuffer(title);
-  for (final aisle in order) {
-    final list = byAisle[aisle];
-    if (list == null) continue;
-    out.write('\n\n${aisleName(aisle)}');
+  for (final (heading, list) in sections) {
+    out.write('\n\n$heading');
     for (final i in list) {
       final line = [
         shoppingQuantity(i, display),
@@ -76,6 +95,9 @@ class ShoppingListScreen extends ConsumerStatefulWidget {
 
 class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
   final _input = TextEditingController();
+
+  /// "Nur Hofer" while shopping there (null = all).
+  String? _only;
   final _focus = FocusNode();
 
   @override
@@ -138,6 +160,12 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                             aisleName: l10n.aisle,
                             display: ref.read(unitDisplayProvider),
                             order: ref.read(aisleOrderProvider),
+                            byStore: ref.read(shoppingByStoreProvider)
+                                ? (
+                                    stores: ref.read(storesProvider),
+                                    anywhere: l10n.storeAnywhere,
+                                  )
+                                : null,
                           ),
                           subject: l10n.shoppingShareTitle,
                         ),
@@ -190,7 +218,11 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                       icon: Icons.shopping_cart_outlined,
                       message: l10n.shoppingEmpty,
                     )
-                  : _ShoppingList(items: items),
+                  : _ShoppingList(
+                      items: items,
+                      only: _only,
+                      onOnly: (s) => setState(() => _only = s),
+                    ),
             ),
           ),
         ],
@@ -200,20 +232,42 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
 }
 
 class _ShoppingList extends ConsumerWidget {
-  const _ShoppingList({required this.items});
+  const _ShoppingList({
+    required this.items,
+    required this.only,
+    required this.onOnly,
+  });
 
   final List<ShoppingItem> items;
+  final String? only;
+  final ValueChanged<String?> onOnly;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final open = items.where((i) => !i.checked).toList();
+    final ingredients = ref.watch(ingredientsByIdProvider);
+    final stores = ref.watch(storesProvider);
+    final byStore = ref.watch(shoppingByStoreProvider);
+    final allOpen = items.where((i) => !i.checked).toList();
+    // Shops that matter for the open items, in the household's order.
+    final used = {
+      for (final i in allOpen) ...itemStores(i, ingredients[i.ingredientId]),
+    };
+    final storeChips = [
+      ...stores.where(used.contains),
+      ...used.where((s) => !stores.contains(s)),
+    ];
+    final current = storeChips.contains(only) ? only : null;
+    final open = allOpen
+        .where((i) => availableAt(i, ingredients[i.ingredientId], current))
+        .toList();
     final done = items.where((i) => i.checked).toList();
     final byAisle = <Aisle, List<ShoppingItem>>{};
     for (final i in open) {
       byAisle.putIfAbsent(i.aisle, () => []).add(i);
     }
+    final uid = ref.read(authUserProvider).value?.uid;
     Widget header(String text) => Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: Text(
@@ -227,11 +281,61 @@ class _ShoppingList extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: 32),
       children: [
-        for (final aisle in ref.watch(aisleOrderProvider))
-          if (byAisle[aisle] != null) ...[
-            header(l10n.aisle(aisle)),
-            for (final item in byAisle[aisle]!) _ItemTile(item: item),
-          ],
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+          child: Row(
+            spacing: 8,
+            children: [
+              SegmentedButton<bool>(
+                showSelectedIcon: false,
+                segments: [
+                  ButtonSegment(
+                    value: false,
+                    icon: const Icon(Icons.category_outlined),
+                    tooltip: l10n.shoppingByAisle,
+                  ),
+                  ButtonSegment(
+                    value: true,
+                    icon: const Icon(Icons.storefront_outlined),
+                    tooltip: l10n.shoppingByStore,
+                  ),
+                ],
+                selected: {byStore},
+                onSelectionChanged: (s) {
+                  if (uid == null) return;
+                  fire(
+                    ref
+                        .read(householdRepositoryProvider)
+                        .setShoppingByStore(uid, on: s.first),
+                  );
+                },
+              ),
+              for (final s in storeChips)
+                FilterChip(
+                  label: Text(l10n.storeOnly(s)),
+                  selected: current == s,
+                  onSelected: (on) => onOnly(on ? s : null),
+                ),
+            ],
+          ),
+        ),
+        if (byStore)
+          for (final (store, list) in groupByStore(
+            open,
+            ingredients,
+            stores,
+            ref.watch(aisleOrderProvider),
+          )) ...[
+            header(store ?? l10n.storeAnywhere),
+            for (final item in list) _ItemTile(item: item, section: store),
+          ]
+        else
+          for (final aisle in ref.watch(aisleOrderProvider))
+            if (byAisle[aisle] != null) ...[
+              header(l10n.aisle(aisle)),
+              for (final item in byAisle[aisle]!) _ItemTile(item: item),
+            ],
         if (done.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
@@ -261,9 +365,12 @@ class _ShoppingList extends ConsumerWidget {
 }
 
 class _ItemTile extends ConsumerWidget {
-  const _ItemTile({required this.item});
+  const _ItemTile({required this.item, this.section});
 
   final ShoppingItem item;
+
+  /// Shop section the tile is shown under (list by shop).
+  final String? section;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -272,7 +379,19 @@ class _ItemTile extends ConsumerWidget {
     // Linked items follow renames of the ingredient (e.g. preferred name).
     final ing = ref.watch(ingredientsByIdProvider)[item.ingredientId];
     final name = ing?.name ?? item.text;
-    final pack = shoppingPackHint(item, ing, context.l10n.packLabel);
+    final l10n = context.l10n;
+    final pack = shoppingPackHint(item, ing, l10n.packLabel);
+    final at = itemStores(item, ing);
+    final where = item.checked || at.isEmpty
+        ? null
+        : item.store != null
+        ? (section == null ? l10n.storeFixed(item.store!) : null)
+        : section == null
+        ? at.join(', ')
+        : (at.length > 1
+              ? l10n.storeAlso(at.where((s) => s != section).join(', '))
+              : null);
+    final subtitle = [?pack, ?where].join(' · ');
     return Dismissible(
       key: ValueKey(item.id),
       direction: DismissDirection.endToStart,
@@ -283,17 +402,20 @@ class _ItemTile extends ConsumerWidget {
         child: const Icon(Icons.delete_outline),
       ),
       onDismissed: (_) => fire(repo.delete(item.id)),
-      child: CheckboxListTile(
-        controlAffinity: ListTileControlAffinity.leading,
-        value: item.checked,
-        onChanged: (v) => fire(repo.setChecked(item.id, v ?? false)),
-        title: Text(
-          [if (qty.isNotEmpty) qty, name].join(' '),
-          style: item.checked
-              ? const TextStyle(decoration: TextDecoration.lineThrough)
-              : null,
+      child: GestureDetector(
+        onLongPress: () => showStoreSheet(context, item),
+        child: CheckboxListTile(
+          controlAffinity: ListTileControlAffinity.leading,
+          value: item.checked,
+          onChanged: (v) => fire(repo.setChecked(item.id, v ?? false)),
+          title: Text(
+            [if (qty.isNotEmpty) qty, name].join(' '),
+            style: item.checked
+                ? const TextStyle(decoration: TextDecoration.lineThrough)
+                : null,
+          ),
+          subtitle: subtitle.isEmpty ? null : Text(subtitle),
         ),
-        subtitle: pack == null ? null : Text(pack),
       ),
     );
   }

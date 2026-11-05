@@ -160,6 +160,13 @@ class HouseholdRepository {
   Future<void> setUnitDisplay(String uid, String mode) =>
       _user(uid).set({'unitDisplay': mode}, SetOptions(merge: true));
 
+  Future<void> setShoppingByStore(String uid, {required bool on}) =>
+      _user(uid).set({'shoppingByStore': on}, SetOptions(merge: true));
+
+  /// The household's shops, in its order.
+  Future<void> setStores(String hid, List<String> stores) =>
+      _db.collection('households').doc(hid).update({'stores': stores});
+
   Future<void> rename(String hid, String name) =>
       _db.collection('households').doc(hid).update({'name': name});
 

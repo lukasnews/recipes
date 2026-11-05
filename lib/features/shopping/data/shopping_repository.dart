@@ -64,6 +64,10 @@ class ShoppingRepository {
 
   Future<void> delete(String id) => _col.doc(id).delete();
 
+  /// This purchase at [store] (null = wherever).
+  Future<void> setStore(String id, String? store) =>
+      _col.doc(id).update({'store': store ?? FieldValue.delete()});
+
   Future<void> deleteAll(Iterable<String> ids) {
     final batch = _db.batch();
     for (final id in ids) {
