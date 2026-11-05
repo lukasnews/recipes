@@ -63,6 +63,7 @@ users/{uid}
   activeHouseholdId?   # picked in settings; falls back to householdIds.first
   onboardingDone?      # saw the 3-page introduction (OnboardingGate in the shell)
   aisleOrder?: [aisle] # own order of shopping sections (Einstellungen → Reihenfolge im Einkauf)
+  favoriteRecipeIds?: [string]  # own favourites (arrayUnion/arrayRemove)
 
 invites/{code}         # 6 chars, no 0/O/1/I/L; get only, never list
   householdId
@@ -88,6 +89,7 @@ households/{hid}/ingredients/{ingredientId}
 households/{hid}/recipes/{recipeId}
   title, category      # cooking|cake|cookies|<custom>
   tags: [string], servings: int, prepMinutes, cookMinutes
+  collections?: [string]   # shared collections ("Sonntagsessen"); set via setCollections, not in toMap
   photoPaths: [string] # Cloud Storage paths
   rating: 0-5, notes
   source: {type: manual|ocr|url, url?}
@@ -143,6 +145,7 @@ households/{hid}/cookLog/{logId}
 - **Nährwerte:** Rezept-Detail → „Nährwerte schätzen (KI)“ → `RecipeExtractor.estimateNutrition` (Titel, Portionen, Zutatenzeilen) → `recipes.nutrition` pro Portion, angezeigt als „ca. … (geschätzt)“. Jedes Speichern des Rezepts löscht die Schätzung (Zutaten könnten sich geändert haben); Bewertung ändert nur `rating` (`setRating`).
 - **Widget „BaCo Einkauf“** (Android-Startbildschirm): heutiges Gericht + offene Einkaufsliste (nach Abteilung, max. 10 Zeilen, aktueller Zutatenname). `WidgetSync` in der Shell schreibt die fertig übersetzten Texte per `home_widget`, sobald sich Liste/Plan ändern (nur während die App läuft); `ShoppingWidgetProvider.kt` zeichnet sie. Tippen öffnet `baco://shopping` → Einkauf-Reiter.
 - **Einstellungen – Konto & Haushalt:** Name ändern (Auth-`displayName`, `users.displayName`, eigener `members`-Eintrag; andere Haushalte via `MemberSync` beim Wechsel). „Neuen Code erzeugen“ (`renewInviteCode`: Batch aus neuem `invites`-Dokument, Löschen des alten, `inviteCode` am Haushalt; alter Code ungültig). „Haushalt verlassen“ (`AccountDeletionService.leaveHousehold`: als letztes Mitglied wird der Haushalt samt Daten gelöscht, sonst nur austreten; `householdIds`/`activeHouseholdId` am User bereinigt; braucht Netz). „Info → Datenschutzerklärung“ öffnet die GitHub-Pages-Seite (`Links.privacy`).
+- **Favoriten & Sammlungen:** Herz im Rezept-Detail (pro Person, `users.favoriteRecipeIds`); Sammlungen über ⋮ → „Sammlungen“ (`CollectionsSheet`, neue anlegen, gemeinsam im Haushalt, `recipes.collections`). Filter „Favoriten“ und je Sammlung ein Chip hinter dem Filter-Knopf; Favoriten tragen ein Herz in der Liste.
 - **Suche** läuft lokal über die gecachten Rezepte (Firestore hat keine Volltextsuche). Haushalte sind klein, das reicht.
 - **Zutaten zusammenführen:** Doppelte (z. B. „Sahne“ und „Schlagobers“) erkennt `IngredientMatcher.findDuplicates`; die Zutaten-Verwaltung zeigt sie an. Beim Zusammenführen werden Name und Synonyme der aufgelösten Zutat Synonyme der behaltenen; Rezepte, Vorrat (nur bei gleicher Basiseinheit) und Einkaufsliste werden umgehängt.
 - **Bevorzugter Begriff:** `name` ist der angezeigte Begriff. In der Zutaten-Bearbeitung kann ein Synonym zum Namen gemacht werden (`Ingredient.withPreferredName`), der alte Name wird Synonym. Die id bleibt, Erkennung findet weiter alle Begriffe. Verknüpfte Einkaufsposten zeigen immer den aktuellen Namen.

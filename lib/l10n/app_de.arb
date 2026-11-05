@@ -898,5 +898,14 @@
   "aisleOrderSubtitle": "Abteilungen so sortieren, wie du durch deinen Markt gehst",
   "aisleOrderHint": "Zum Verschieben am Griff rechts ziehen. Gilt nur für dich – die anderen im Haushalt können ihre eigene Reihenfolge haben.",
   "aisleOrderReset": "Zurücksetzen",
-  "aisleOrderDrag": "Verschieben"
+  "aisleOrderDrag": "Verschieben",
+  "favoriteAdd": "Zu Favoriten",
+  "favoriteRemove": "Aus Favoriten entfernen",
+  "moreActions": "Weitere Aktionen",
+  "collectionsEdit": "Sammlungen",
+  "collectionsHint": "Sammlungen gelten für den ganzen Haushalt.",
+  "collectionNew": "Neue Sammlung",
+  "collectionNameLabel": "Name der Sammlung",
+  "collectionNameHint": "z. B. Weihnachtsbäckerei",
+  "filterFavorites": "Favoriten"
 }

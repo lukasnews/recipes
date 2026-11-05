@@ -48,6 +48,8 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
   bool _safeForAll = false;
   bool _longNotCooked = false;
   bool _showFilters = false;
+  bool _favoritesOnly = false;
+  String? _collection;
   String _query = '';
 
   /// Example recipes for a household that has none (yet).
@@ -88,10 +90,20 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
             for (final r in recipes)
               if (!RecipeCategories.builtIn.contains(r.category)) r.category,
           }.toList()..sort();
+          final favorites = ref.watch(favoritesProvider);
+          final collections = ref.watch(collectionsProvider);
+          if (_collection != null && !collections.contains(_collection)) {
+            _collection = null;
+          }
           final filtered = recipes
               .where((r) => _category == null || r.category == _category)
               .where((r) => recipeMatches(r, _query))
               .where((r) => !_safeForAll || isSafe(r))
+              .where((r) => !_favoritesOnly || favorites.contains(r.id))
+              .where(
+                (r) =>
+                    _collection == null || r.collections.contains(_collection),
+              )
               .toList();
           var coverages = [
             for (final r in filtered) computeCoverage(r, ingredients, pantry),
@@ -113,6 +125,8 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
             _cookable,
             _longNotCooked,
             _safeForAll && showSafeFilter,
+            _favoritesOnly,
+            _collection != null,
           ].where((b) => b).length;
 
           return Column(
@@ -182,6 +196,23 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                           runSpacing: 8,
                           children: [
                             FilterChip(
+                              avatar: const Icon(Icons.favorite_border),
+                              label: Text(l10n.filterFavorites),
+                              selected: _favoritesOnly,
+                              onSelected: (v) =>
+                                  setState(() => _favoritesOnly = v),
+                            ),
+                            for (final c in collections)
+                              FilterChip(
+                                avatar: const Icon(
+                                  Icons.collections_bookmark_outlined,
+                                ),
+                                label: Text(c),
+                                selected: _collection == c,
+                                onSelected: (v) =>
+                                    setState(() => _collection = v ? c : null),
+                              ),
+                            FilterChip(
                               avatar: const Icon(Icons.kitchen_outlined),
                               label: Text(l10n.sortCookable),
                               selected: _cookable,
@@ -237,6 +268,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                           coverage: coverages[i],
                           showCoverage: _cookable,
                           expiringUsed: coverages[i].usesExpiring(expiring),
+                          favorite: favorites.contains(coverages[i].recipe.id),
                           warn: !isSafe(coverages[i].recipe),
                         ),
                       ),
@@ -255,7 +287,10 @@ class _RecipeTile extends StatelessWidget {
     required this.showCoverage,
     this.warn = false,
     this.expiringUsed = 0,
+    this.favorite = false,
   });
+
+  final bool favorite;
 
   /// Number of soon-expiring pantry items this recipe would use up.
   final int expiringUsed;
@@ -300,6 +335,13 @@ class _RecipeTile extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (favorite)
+              Icon(
+                Icons.favorite,
+                size: 18,
+                color: Colors.redAccent,
+                semanticLabel: context.l10n.filterFavorites,
+              ),
             if (warn)
               Icon(
                 Icons.warning_amber_rounded,

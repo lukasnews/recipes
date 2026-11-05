@@ -40,6 +40,9 @@ class RecipeRepository {
 
   Future<void> delete(String id) => _col.doc(id).delete();
 
+  Future<void> setCollections(String id, List<String> collections) =>
+      _col.doc(id).update({'collections': collections..sort()});
+
   Future<void> setRating(String id, int rating) =>
       _col.doc(id).update({'rating': rating});
 

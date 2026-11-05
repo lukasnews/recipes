@@ -22,6 +22,7 @@ import '../domain/nutrition.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_share.dart';
 import '../domain/recipe_stock.dart';
+import 'collections_sheet.dart';
 import 'cooked_dialog.dart';
 
 class RecipeDetailScreen extends ConsumerStatefulWidget {
@@ -51,6 +52,28 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     }
     context.pop();
     showSnack(context, l10n.recipeDeleted);
+  }
+
+  void _toggleFavorite(Recipe recipe, bool on) {
+    final uid = ref.read(authUserProvider).value?.uid;
+    if (uid == null) return;
+    fire(
+      ref.read(householdRepositoryProvider).setFavorite(uid, recipe.id, on: on),
+    );
+  }
+
+  Future<void> _editCollections(Recipe recipe) async {
+    final result = await showModalBottomSheet<List<String>>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => CollectionsSheet(
+        all: ref.read(collectionsProvider),
+        selected: recipe.collections.toSet(),
+      ),
+    );
+    if (result == null) return;
+    fire(ref.read(recipeRepositoryProvider).setCollections(recipe.id, result));
   }
 
   void _share(Recipe recipe, int servings) {
@@ -146,6 +169,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     final needs = {for (final n in coverage.needs) n.ingredient.id: n};
     final allergens = recipeAllergens(recipe, ingredients);
     final stats = ref.watch(cookStatsProvider).value?[recipe.id];
+    final isFavorite = ref.watch(favoritesProvider).contains(recipe.id);
     final pendingPhotos = [
       for (final p in ref.watch(photoUploadQueueProvider))
         if (p.recipeId == recipe.id) p,
@@ -163,14 +187,15 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
         title: Text(recipe.title),
         actions: [
           IconButton(
+            tooltip: isFavorite ? l10n.favoriteRemove : l10n.favoriteAdd,
+            onPressed: () => _toggleFavorite(recipe, !isFavorite),
+            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+            color: isFavorite ? Colors.redAccent : null,
+          ),
+          IconButton(
             tooltip: l10n.addToMealPlan,
             onPressed: () => _planDay(recipe),
             icon: const Icon(Icons.calendar_month_outlined),
-          ),
-          IconButton(
-            tooltip: l10n.shareRecipe,
-            onPressed: () => _share(recipe, servings),
-            icon: const Icon(Icons.share_outlined),
           ),
           IconButton(
             tooltip: l10n.edit,
@@ -178,10 +203,28 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
             icon: const Icon(Icons.edit_outlined),
           ),
           PopupMenuButton<void>(
+            tooltip: l10n.moreActions,
             itemBuilder: (context) => [
               PopupMenuItem(
+                onTap: () => _share(recipe, servings),
+                child: ListTile(
+                  leading: const Icon(Icons.share_outlined),
+                  title: Text(l10n.shareRecipe),
+                ),
+              ),
+              PopupMenuItem(
+                onTap: () => _editCollections(recipe),
+                child: ListTile(
+                  leading: const Icon(Icons.collections_bookmark_outlined),
+                  title: Text(l10n.collectionsEdit),
+                ),
+              ),
+              PopupMenuItem(
                 onTap: () => _delete(recipe),
-                child: Text(l10n.delete),
+                child: ListTile(
+                  leading: const Icon(Icons.delete_outline),
+                  title: Text(l10n.delete),
+                ),
               ),
             ],
           ),
@@ -241,6 +284,12 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                   ),
                 ),
               for (final t in recipe.tags) Chip(label: Text('#$t')),
+              for (final c in recipe.collections)
+                ActionChip(
+                  avatar: const Icon(Icons.collections_bookmark_outlined),
+                  label: Text(c),
+                  onPressed: () => _editCollections(recipe),
+                ),
               if (frozen > 0)
                 Chip(
                   avatar: const Icon(Icons.ac_unit),

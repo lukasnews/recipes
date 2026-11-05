@@ -138,6 +138,13 @@ class HouseholdRepository {
     return hid;
   }
 
+  Future<void> setFavorite(String uid, String recipeId, {required bool on}) =>
+      _user(uid).set({
+        'favoriteRecipeIds': on
+            ? FieldValue.arrayUnion([recipeId])
+            : FieldValue.arrayRemove([recipeId]),
+      }, SetOptions(merge: true));
+
   /// Null resets to the default order.
   Future<void> setAisleOrder(String uid, List<String>? order) => _user(
     uid,

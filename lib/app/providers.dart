@@ -363,6 +363,22 @@ final frozenMealsProvider = StreamProvider<List<FrozenMeal>>(
 );
 
 /// How amounts are shown (per person, stored on users/{uid}).
+/// This person's favourite recipe ids.
+final favoritesProvider = Provider<Set<String>>(
+  (ref) =>
+      ref.watch(appUserProvider.select((u) => u.value?.favoriteRecipeIds)) ??
+      const {},
+);
+
+/// All collection names used in the household, sorted.
+final collectionsProvider = Provider<List<String>>((ref) {
+  final names = <String>{
+    for (final r in ref.watch(recipesProvider).value ?? const <Recipe>[])
+      ...r.collections,
+  };
+  return names.toList()..sort();
+});
+
 /// Shopping list sections in this person's order.
 final aisleOrderProvider = Provider<List<Aisle>>(
   (ref) =>

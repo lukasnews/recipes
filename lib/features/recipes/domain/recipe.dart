@@ -88,6 +88,7 @@ class Recipe {
     this.createdAt,
     this.updatedAt,
     this.nutrition,
+    this.collections = const [],
   });
 
   factory Recipe.fromMap(String id, Map<String, dynamic> m) {
@@ -112,11 +113,17 @@ class Recipe {
       createdBy: m.strOrNull('createdBy'),
       createdAt: m.date('createdAt'),
       updatedAt: m.date('updatedAt'),
+      collections: m.strings('collections'),
       nutrition: Nutrition.fromMap(
         (m['nutrition'] as Map<dynamic, dynamic>?)?.cast<String, dynamic>(),
       ),
     );
   }
+
+  /// Household collections ("Weihnachtsbäckerei"). Not part of [toMap]:
+  /// changed only via RecipeRepository.setCollections, so saving the
+  /// edited recipe keeps them (merge).
+  final List<String> collections;
 
   /// AI estimate per serving. Not part of [toMap]: saving the edited
   /// recipe drops it, since the ingredients may have changed.
@@ -199,5 +206,7 @@ class Recipe {
     createdBy: createdBy ?? this.createdBy,
     createdAt: createdAt,
     updatedAt: updatedAt,
+    nutrition: nutrition,
+    collections: collections,
   );
 }

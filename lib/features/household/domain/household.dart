@@ -30,6 +30,7 @@ class AppUser {
     this.activeHouseholdId,
     this.onboardingDone = false,
     this.aisleOrder,
+    this.favoriteRecipeIds = const {},
   });
 
   factory AppUser.fromMap(String uid, Map<String, dynamic> m) => AppUser(
@@ -40,6 +41,7 @@ class AppUser {
     activeHouseholdId: m.strOrNull('activeHouseholdId'),
     onboardingDone: m.flag('onboardingDone'),
     aisleOrder: m['aisleOrder'] == null ? null : m.strings('aisleOrder'),
+    favoriteRecipeIds: m.strings('favoriteRecipeIds').toSet(),
   );
 
   final String uid;
@@ -57,6 +59,9 @@ class AppUser {
 
   /// Own order of the shopping list sections (aisle names); null = default.
   final List<String>? aisleOrder;
+
+  /// This person's favourite recipes (any household).
+  final Set<String> favoriteRecipeIds;
 
   String? get currentHouseholdId => householdIds.contains(activeHouseholdId)
       ? activeHouseholdId
