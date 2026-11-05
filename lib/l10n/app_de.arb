@@ -913,5 +913,9 @@
   "ratingStars": "{count} von 5 Sternen",
   "shareShoppingList": "Liste teilen",
   "shoppingShareTitle": "Einkaufsliste",
+  "packLabel": "1 Pkg.",
+  "packSizeUse": "Diese Packungsgröße übernehmen",
+  "packSizesLabel": "Übliche Packungen",
+  "packSizesHint": "Werden beim Übernehmen in den Vorrat gemerkt und auf der Einkaufsliste vorgeschlagen.",
   "@ratingStars": {"placeholders": {"count": {"type": "int"}}}
 }

@@ -32,6 +32,7 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
   final _conversions = <(String, TextEditingController)>[];
   final _density = TextEditingController();
   final _pieceGrams = TextEditingController();
+  var _packSizes = <double>[];
   Ingredient? _original;
 
   @override
@@ -60,6 +61,7 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
     _pieceGrams.text = i.pieceGrams == null
         ? ''
         : formatAmount(i.pieceGrams!, fractions: false);
+    _packSizes = [...i.packSizes];
     for (final e in i.conversions.entries) {
       _conversions.add((
         e.key,
@@ -112,6 +114,8 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
       },
       density: () => _positive(_density.text),
       pieceGrams: () => _positive(_pieceGrams.text),
+      // Sizes are stored in the base unit; a new base makes them meaningless.
+      packSizes: _base == original.baseUnit ? _packSizes : const [],
     );
     fire(ref.read(ingredientRepositoryProvider).save(updated));
     context.pop();
@@ -294,6 +298,27 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
               ),
             ],
           ),
+          if (_packSizes.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(l10n.packSizesLabel, style: theme.textTheme.titleSmall),
+            const SizedBox(height: 4),
+            Text(l10n.packSizesHint, style: theme.textTheme.bodySmall),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                for (final size in [..._packSizes]..sort())
+                  InputChip(
+                    avatar: const Icon(Icons.inventory_2_outlined, size: 18),
+                    label: Text(formatBaseAmount(size, _original!.baseUnit)),
+                    onDeleted: () => setState(
+                      () => _packSizes = [..._packSizes]..remove(size),
+                    ),
+                  ),
+              ],
+            ),
+          ],
           const SizedBox(height: 16),
           Text(l10n.conversionsLabel, style: theme.textTheme.titleSmall),
           for (final (i, (unit, controller)) in _conversions.indexed)

@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/firebase/fire.dart';
+import '../../../core/units/units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../import/data/photo_picker.dart';
 import '../../ingredients/domain/ingredient.dart';
 import '../../ingredients/presentation/ingredient_picker.dart';
+import '../../shopping/domain/pack_sizes.dart';
 import '../data/barcode_repository.dart';
 import '../domain/product.dart';
 import 'pantry_screen.dart';
@@ -74,17 +76,35 @@ Future<void> scanToPantry(BuildContext context) async {
     title: title,
     amount: product?.amount,
     unit: product?.unit,
-    onSaved: (ing, amount, unit) => fire(
-      barcodes.save(
-        code,
-        KnownBarcode(
-          ingredientId: ing.id,
-          amount: amount,
-          unit: unit,
-          name: title,
+    onSaved: (ing, amount, unit) {
+      fire(
+        barcodes.save(
+          code,
+          KnownBarcode(
+            ingredientId: ing.id,
+            amount: amount,
+            unit: unit,
+            name: title,
+          ),
         ),
-      ),
-    ),
+      );
+      // The package size is a pack size worth remembering.
+      final latest = container.read(ingredientsByIdProvider)[ing.id] ?? ing;
+      final base = latest.toBase(
+        amount,
+        unit == 'Stk.' && latest.baseUnit == BaseUnit.pcs ? null : unit,
+      );
+      final learned = base == null
+          ? null
+          : learnPackSize(latest.packSizes, base);
+      if (learned != null) {
+        fire(
+          container
+              .read(ingredientRepositoryProvider)
+              .setPackSizes(ing.id, learned),
+        );
+      }
+    },
   );
 }
 

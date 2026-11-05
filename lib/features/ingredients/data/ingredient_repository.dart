@@ -29,6 +29,10 @@ class IngredientRepository {
 
   Future<void> delete(String id) => _col.doc(id).delete();
 
+  /// Remembered pack sizes (base unit), e.g. after a purchase.
+  Future<void> setPackSizes(String id, List<double> sizes) =>
+      _col.doc(id).update({'packSizes': sizes});
+
   /// Merges [source] into [target]: source name and synonyms become synonyms
   /// of target, recipes, pantry and shopping list are re-linked, source is
   /// deleted. Both must share the same base unit for pantry amounts to add.

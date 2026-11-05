@@ -85,6 +85,7 @@ households/{hid}/ingredients/{ingredientId}
   allergens: [string]                # EU-14, siehe members
   density?: number                   # g per ml (Wasser 1, Öl 0.92, Mehl 0.55): g <-> ml
   pieceGrams?: number                # avg g per piece (Banane 120): kg <-> Stk.
+  packSizes?: [number]               # learned pack sizes in baseUnit, oldest first, max 6 (Nüsse [100, 250, 500])
 
 households/{hid}/recipes/{recipeId}
   title, category      # cooking|cake|cookies|<custom>
@@ -155,6 +156,7 @@ households/{hid}/cookLog/{logId}
 - **Reihenfolge im Einkauf** (pro Person, `users.aisleOrder`): Einstellungen → Anzeige → Abteilungen per Ziehen sortieren, „Zurücksetzen“ = Standard. `aisleOrder()` ergänzt fehlende Abteilungen; gilt für Einkaufsliste und Widget.
 - **Liste teilen** (Einkauf, Teilen-Symbol): offene Einträge als Text nach Abteilung (eigene Reihenfolge, gewählte Mengenanzeige, aktueller Zutatenname) → `shoppingShareText` → Teilen-Menü (z. B. WhatsApp).
 - **Einkauf → Vorrat:** Übernahme-Bildschirm (`planTransfer`) mit Menge/Einheit/Lagerort je abgehaktem Eintrag; die Einheit der Liste bleibt (5 kg Bananen bei Stück-Zutat), Auswahl = Zutaten-Einheiten + g/kg/ml/l/Stk. (`transferUnits`); Freitext-Einträge werden nachträglich zugeordnet, fehlende Umrechnung einmal erfragt; Einträge ohne Menge werden nur von der Liste genommen.
+- **Packungsgrößen** (`shopping/domain/pack_sizes.dart`): pro Zutat mehrere gemerkte Größen (`packSizes`, Basiseinheit). Gelernt ohne Rückfrage: in der Übernahme in den Vorrat jede geänderte Menge (`learnedPackSizes`; nicht bei bekannter Größe oder Vielfachem der vorgeschlagenen Packung) und beim Barcode-Speichern. `pickPack`: kleinste Packung, die den Bedarf deckt, sonst n × größte. Übernahme füllt ganze Packungen vor und zeigt die Größen als Chips; Einkaufsliste zeigt „1 Pkg. (200 g)“ bzw. „2 × 1 l“ unter dem Eintrag. Zutaten-Bearbeitung zeigt sie („Übliche Packungen“, löschbar; neue Basiseinheit löscht sie).
 - **Allergien:** pro Person in `members/{uid}` (Einstellungen → Allergien & Unverträglichkeiten). Rezept-Allergene = Vereinigung der Zutaten-Allergene; Rezept-Detail zeigt Warnung mit betroffenen Personen, Liste ein Warnsymbol und den Filter „Für alle verträglich“. Seed-Daten tragen Allergene; ältere Haushalte bekommen sie einmalig per `backfillSeed` (`households.seedVersion`; v3 ergänzt auch fehlende Synonyme und Umrechnungen gleicher Basiseinheit, v4 Dichte und Stückgewicht; überschreibt nichts – z. B. „Schlag“ und g→ml für Schlagobers).
 - **Mengen anzeigen** (pro Person, `users/{uid}.unitDisplay`): Wie im Rezept | Gramm & Milliliter | Dekagramm (österreichisch). `core/units/display_units.dart` rechnet nur reine Masse/Volumen (mg/g/dag/kg, ml/cl/dl/l) um; EL, TL, Stk., Pkg. bleiben. Gilt in Rezept-Detail, Kochmodus und Einkaufsliste.
 - **Österreichische Begriffe** sind gleichwertig: Topfen/Quark, Schlagobers/Sahne, Paradeiser/Tomaten, Erdäpfel/Kartoffeln, Karfiol/Blumenkohl, Marillen/Aprikosen, Faschiertes/Hackfleisch, Mehl glatt/griffig.
@@ -272,7 +274,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Import-Offline-Warteschlange (`ImportQueue`: „Später mit KI lesen“)
 - [x] Ablaufdatum im Vorrat, Hinweis „bald ablaufend“
 - [x] Barcode-Scan + Open Food Facts
-- [ ] Packungsgrößen beim Einkaufen (Bedarf auf ganze Packungen runden) – offen: Packungsgrößen variieren, nicht jede Packung wird gescannt; Ansatz noch klären
+- [x] Packungsgrößen beim Einkaufen (gelernt beim Übernehmen in den Vorrat, `packSizes`)
 - [ ] Aktionen der Märkte (Spar, Billa, Hofer …) – zurückgestellt: keine offizielle Schnittstelle; Optionen: Flugblatt-Links oder inoffizielles Aktions-Portal
 - [x] Wochenplaner → Einkaufsliste
 - [x] Kochverlauf (zuletzt gekocht, Sortierung „Lange nicht gekocht“)

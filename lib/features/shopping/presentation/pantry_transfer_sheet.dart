@@ -10,6 +10,7 @@ import '../../ingredients/domain/ingredient_factory.dart';
 import '../../ingredients/presentation/ingredient_picker.dart';
 import '../../pantry/domain/pantry_item.dart';
 import '../../pantry/presentation/stock_actions.dart';
+import '../domain/pack_sizes.dart';
 import '../domain/pantry_transfer.dart';
 import '../domain/shopping_item.dart';
 
@@ -77,6 +78,7 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
   Future<void> _confirm() async {
     setState(() => _busy = true);
     final stock = <String, (double, StorageLocation)>{};
+    final packs = <String, List<double>>{};
     for (final (i, line) in _lines.indexed) {
       line.amount = parseUserNumber(_amounts[i].text);
       final ing = line.ingredient;
@@ -90,6 +92,8 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
         base = line.amount! * factor;
       }
       if (base == null) continue;
+      final learned = learnedPackSizes(line, base);
+      if (learned != null) packs[ing.id] = learned;
       final prev = stock[ing.id]?.$1 ?? 0;
       stock[ing.id] = (prev + base, line.location);
     }
@@ -101,6 +105,10 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
             removeItemIds: _lines.map((l) => l.item.id),
           ),
     );
+    final ingredients = ref.read(ingredientRepositoryProvider);
+    for (final e in packs.entries) {
+      fire(ingredients.setPackSizes(e.key, e.value));
+    }
     if (!mounted) return;
     showSnack(context, context.l10n.transferDone(stock.length));
     Navigator.pop(context);
@@ -184,7 +192,7 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
               SizedBox(
                 width: 96,
                 child: DropdownButtonFormField<String>(
-                  key: ValueKey('unit-$i-${ing.id}'),
+                  key: ValueKey('unit-$i-${ing.id}-${line.unit}'),
                   isExpanded: true,
                   initialValue: line.unit ?? ing.unitChoices.first,
                   decoration: InputDecoration(labelText: l10n.unitLabel),
@@ -216,6 +224,27 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
                 ),
               ),
             ],
+          ),
+        if (ing != null && ing.packSizes.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                for (final size in [...ing.packSizes]..sort())
+                  ActionChip(
+                    avatar: const Icon(Icons.inventory_2_outlined, size: 18),
+                    label: Text(formatBaseAmount(size, ing.baseUnit)),
+                    tooltip: l10n.packSizeUse,
+                    onPressed: () => setState(() {
+                      final (a, u) = packAmount(size, ing.baseUnit);
+                      line.unit = u;
+                      _amounts[i].text = formatAmount(a, fractions: false);
+                    }),
+                  ),
+              ],
+            ),
           ),
       ],
     );

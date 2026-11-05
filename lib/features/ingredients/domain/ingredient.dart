@@ -32,6 +32,7 @@ class Ingredient {
     this.allergens = const {},
     this.density,
     this.pieceGrams,
+    this.packSizes = const [],
   });
 
   factory Ingredient.fromMap(String id, Map<String, dynamic> m) => Ingredient(
@@ -49,6 +50,10 @@ class Ingredient {
     allergens: Allergen.parseAll(m.strings('allergens')),
     density: m.dbl('density'),
     pieceGrams: m.dbl('pieceGrams'),
+    packSizes: [
+      for (final v in (m['packSizes'] as List<dynamic>?) ?? const [])
+        if (v is num && v > 0) v.toDouble(),
+    ],
   );
 
   final String id;
@@ -71,6 +76,10 @@ class Ingredient {
   /// Average grams per piece (Banane 120): kg ↔ Stk. without asking.
   final double? pieceGrams;
 
+  /// Pack sizes bought so far, in [baseUnit], oldest first (learned on the
+  /// way into the pantry or from a barcode; editable).
+  final List<double> packSizes;
+
   Map<String, dynamic> toMap() => {
     'name': name,
     'synonyms': synonyms,
@@ -81,6 +90,7 @@ class Ingredient {
     'allergens': [for (final a in allergens) a.name]..sort(),
     'density': ?density,
     'pieceGrams': ?pieceGrams,
+    if (packSizes.isNotEmpty) 'packSizes': packSizes,
   };
 
   MatchCandidate get candidate =>
@@ -100,6 +110,7 @@ class Ingredient {
     Set<Allergen>? allergens,
     double? Function()? density,
     double? Function()? pieceGrams,
+    List<double>? packSizes,
   }) => Ingredient(
     id: id,
     name: name ?? this.name,
@@ -111,6 +122,7 @@ class Ingredient {
     allergens: allergens ?? this.allergens,
     density: density == null ? this.density : density(),
     pieceGrams: pieceGrams == null ? this.pieceGrams : pieceGrams(),
+    packSizes: packSizes ?? this.packSizes,
   );
 
   /// Shows [preferred] (one of the synonyms) as the name; the old name becomes

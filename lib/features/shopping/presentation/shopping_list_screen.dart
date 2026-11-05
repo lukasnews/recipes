@@ -11,6 +11,7 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/profile_button.dart';
 import '../../ingredients/domain/ingredient.dart';
+import '../domain/pack_sizes.dart';
 import '../domain/shopping_item.dart';
 import 'pantry_transfer_sheet.dart';
 
@@ -269,9 +270,9 @@ class _ItemTile extends ConsumerWidget {
     final repo = ref.watch(shoppingRepositoryProvider);
     final qty = shoppingQuantity(item, ref.watch(unitDisplayProvider));
     // Linked items follow renames of the ingredient (e.g. preferred name).
-    final name =
-        ref.watch(ingredientsByIdProvider)[item.ingredientId]?.name ??
-        item.text;
+    final ing = ref.watch(ingredientsByIdProvider)[item.ingredientId];
+    final name = ing?.name ?? item.text;
+    final pack = shoppingPackHint(item, ing, context.l10n.packLabel);
     return Dismissible(
       key: ValueKey(item.id),
       direction: DismissDirection.endToStart,
@@ -292,6 +293,7 @@ class _ItemTile extends ConsumerWidget {
               ? const TextStyle(decoration: TextDecoration.lineThrough)
               : null,
         ),
+        subtitle: pack == null ? null : Text(pack),
       ),
     );
   }

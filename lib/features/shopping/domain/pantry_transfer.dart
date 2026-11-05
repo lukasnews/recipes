@@ -2,6 +2,7 @@ import '../../../core/matching/ingredient_matcher.dart';
 import '../../../core/units/units.dart';
 import '../../ingredients/domain/ingredient.dart';
 import '../../pantry/domain/pantry_item.dart';
+import 'pack_sizes.dart';
 import 'shopping_item.dart';
 
 /// One checked shopping item on its way into the pantry. The user can
@@ -13,7 +14,16 @@ class TransferLine {
     this.amount,
     this.unit,
     this.location = StorageLocation.pantry,
+    this.prefillBase,
+    this.suggestedPack,
   });
+
+  /// The pack size the suggestion was built from, if any.
+  final double? suggestedPack;
+
+  /// What was suggested (base unit); a different amount on confirm is a new
+  /// pack size worth remembering.
+  final double? prefillBase;
 
   final ShoppingItem item;
   Ingredient? ingredient;
@@ -26,10 +36,7 @@ class TransferLine {
     final ing = ingredient;
     final a = amount;
     if (ing == null || a == null || a <= 0) return null;
-    return ing.toBase(
-      a,
-      unit == 'Stk.' && ing.baseUnit == BaseUnit.pcs ? null : unit,
-    );
+    return ing.toBase(a, _unitForBase(ing, unit));
   }
 }
 
@@ -56,6 +63,7 @@ List<TransferLine> planTransfer(
         }
         var amount = item.amount;
         var unit = item.unit;
+        PackPick? pick;
         if (ing != null) {
           // Keep the list's unit ("5 kg" bananas counted in pieces): a
           // missing conversion is asked once on confirm, never guessed.
@@ -63,18 +71,44 @@ List<TransferLine> planTransfer(
           // "Eier" without amount: one piece is the obvious guess for pcs,
           // anything else the user fills in.
           if (amount == null && ing.baseUnit == BaseUnit.pcs) amount = 1;
+          // Known pack sizes: suggest whole packs ("125 g" -> 1 × 200 g).
+          final need = amount == null
+              ? null
+              : ing.toBase(amount, _unitForBase(ing, unit));
+          pick = pickPack(need, ing.packSizes);
+          if (pick != null) {
+            (amount, unit) = packAmount(pick.count * pick.size, ing.baseUnit);
+          }
         }
         return TransferLine(
           item: item,
           ingredient: ing,
           amount: amount,
           unit: unit,
+          suggestedPack: pick?.size,
+          prefillBase: ing == null || amount == null
+              ? null
+              : ing.toBase(amount, _unitForBase(ing, unit)),
           location: ing == null
               ? StorageLocation.pantry
               : defaultLocation(ing.aisle),
         );
       }(),
   ];
+}
+
+String? _unitForBase(Ingredient ing, String? unit) =>
+    unit == 'Stk.' && ing.baseUnit == BaseUnit.pcs ? null : unit;
+
+/// Pack sizes to remember after confirming [line] with [base] (base unit),
+/// or null if nothing new: only amounts the user changed are learned, so
+/// loose goods taken as suggested don't pile up sizes.
+List<double>? learnedPackSizes(TransferLine line, double base) {
+  final ing = line.ingredient;
+  if (ing == null) return null;
+  final prefill = line.prefillBase;
+  if (prefill != null && (prefill - base).abs() < 1e-6) return null;
+  return learnPackSize(ing.packSizes, base, suggested: line.suggestedPack);
 }
 
 /// Unit choices for a transfer line: the ingredient's own units, the
