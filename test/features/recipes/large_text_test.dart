@@ -16,7 +16,10 @@ void main() {
     final db = FakeFirebaseFirestore();
     await seedHousehold(db);
     await tester.pumpWidget(
-      testApp(db: db, auth: FakeAuthRepository(const AuthUser(uid: 'u1'))),
+      testApp(
+        db: db,
+        auth: FakeAuthRepository(const AuthUser(uid: 'u1')),
+      ),
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Neues Rezept'));

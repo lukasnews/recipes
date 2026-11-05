@@ -36,6 +36,36 @@ String shoppingQuantity(
   }
 }
 
+/// Open items as plain text for messengers, grouped by aisle:
+/// "Einkaufsliste\n\nObst & Gemüse\n- 6 Paradeiser\n…".
+String shoppingShareText(
+  List<ShoppingItem> items,
+  Map<String, Ingredient> ingredients, {
+  required String title,
+  required String Function(Aisle) aisleName,
+  UnitDisplay display = UnitDisplay.original,
+  List<Aisle> order = Aisle.values,
+}) {
+  final byAisle = <Aisle, List<ShoppingItem>>{};
+  for (final i in items.where((i) => !i.checked)) {
+    byAisle.putIfAbsent(i.aisle, () => []).add(i);
+  }
+  final out = StringBuffer(title);
+  for (final aisle in order) {
+    final list = byAisle[aisle];
+    if (list == null) continue;
+    out.write('\n\n${aisleName(aisle)}');
+    for (final i in list) {
+      final line = [
+        shoppingQuantity(i, display),
+        ingredients[i.ingredientId]?.name ?? i.text,
+      ].where((s) => s.isNotEmpty).join(' ');
+      out.write('\n- $line');
+    }
+  }
+  return out.toString();
+}
+
 class ShoppingListScreen extends ConsumerStatefulWidget {
   const ShoppingListScreen({super.key});
 
@@ -86,11 +116,33 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
     final repo = ref.watch(shoppingRepositoryProvider);
     final items = value.value ?? const <ShoppingItem>[];
     final checked = items.where((i) => i.checked).toList();
+    final hasOpen = items.any((i) => !i.checked);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.navShopping),
         actions: [
+          IconButton(
+            tooltip: l10n.shareShoppingList,
+            icon: const Icon(Icons.share_outlined),
+            onPressed: hasOpen
+                ? () => fire(
+                    ref
+                        .read(sharerProvider)
+                        .shareText(
+                          shoppingShareText(
+                            items,
+                            ref.read(ingredientsByIdProvider),
+                            title: l10n.shoppingShareTitle,
+                            aisleName: l10n.aisle,
+                            display: ref.read(unitDisplayProvider),
+                            order: ref.read(aisleOrderProvider),
+                          ),
+                          subject: l10n.shoppingShareTitle,
+                        ),
+                  )
+                : null,
+          ),
           PopupMenuButton<void>(
             enabled: checked.isNotEmpty,
             icon: const Icon(Icons.playlist_remove),

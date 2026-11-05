@@ -21,7 +21,10 @@ void main() {
     await repo.save(const Recipe(id: 'a', title: 'Gulasch'), isNew: true);
     await repo.save(const Recipe(id: 'b', title: 'Strudel'), isNew: true);
     await tester.pumpWidget(
-      testApp(db: db, auth: FakeAuthRepository(const AuthUser(uid: 'u1'))),
+      testApp(
+        db: db,
+        auth: FakeAuthRepository(const AuthUser(uid: 'u1')),
+      ),
     );
     await tester.pumpAndSettle();
 

@@ -911,5 +911,7 @@
   "decrease": "Weniger",
   "increase": "Mehr",
   "ratingStars": "{count} von 5 Sternen",
+  "shareShoppingList": "Liste teilen",
+  "shoppingShareTitle": "Einkaufsliste",
   "@ratingStars": {"placeholders": {"count": {"type": "int"}}}
 }
