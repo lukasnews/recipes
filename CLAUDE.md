@@ -55,7 +55,7 @@ test_rules/                  # Firestore rules tests (Node, emulator): cd test_r
 
 ## Datenmodell (Firestore)
 
-Alle Haushaltsdaten liegen unter `households/{householdId}`. Außerhalb gibt es nur `users`, `invites` und `sharedRecipes`.
+Alle Haushaltsdaten liegen unter `households/{householdId}`. Außerhalb gibt es nur `users`, `invites`, `sharedRecipes` und `sharedLists`.
 
 ```
 users/{uid}
@@ -73,6 +73,10 @@ sharedRecipes/{code}   # recipe sent to another household; 8 chars, no 0/O/1/I/L
   title, senderName, message, createdBy (uid), createdAt, expiresAt? (null = never)
   servings?, prepMinutes?, cookMinutes?, ingredients: [line], steps: [text]
   photoPath?           # Storage shared/{uid}/{code}.jpg (public read)
+
+sharedLists/{token}    # live link to a household's shopping list; token 22 chars
+  householdId, createdBy, title, createdAt, expiresAt? (null = never)
+  # web guest: anonymous auth, writes users/{uid}.listToken = token
 
 households/{hid}
   name, memberIds: [uid], inviteCode, createdAt
@@ -176,7 +180,7 @@ households/{hid}/cookLog/{logId}
 - **Inventur** (Vorrat → Symbol „Inventur“, `/pantry/inventory`): alle Einträge nach Lagerort/Name durchwischen, „Stimmt – weiter“ (mit korrigierter Menge), „Ist leer“, „Überspringen“; am Ende Zusammenfassung → `inventoryDeltas` als Increments gegen den Stand beim Start (Änderungen anderer Handys bleiben erhalten), Mindestbestand wird geprüft.
 - **Gerichte im Tiefkühler:** Vorrat-Reiter → „Gerichte“; Portionen mit +/− (Increment, letzte Portion löscht den Eintrag), Hinweis „bald essen“ nach 90 Tagen. Im „Gekocht“-Dialog „Reste einfrieren (Portionen)“; Rezept-Detail zeigt Portionen im Tiefkühler.
 - **Reihenfolge im Einkauf** (pro Person, `users.aisleOrder`): Einstellungen → Einkaufen → Abteilungen per Ziehen sortieren, „Zurücksetzen“ = Standard. `aisleOrder()` ergänzt fehlende Abteilungen; gilt für Einkaufsliste und Widget.
-- **Liste teilen** (Einkauf, Teilen-Symbol): offene Einträge als Text nach Abteilung (eigene Reihenfolge, gewählte Mengenanzeige, aktueller Zutatenname) → `shoppingShareText` → Teilen-Menü (z. B. WhatsApp).
+- **Liste teilen** (Einkauf, Teilen-Symbol → `ShareListSheet`): „Als Text teilen“ oder **„Live-Link teilen“** (Gültigkeit 7/30 Tage/unbegrenzt → `sharedLists/{token}`, Link `lukasnews.github.io/recipes/l/?t=TOKEN`; Webseite `docs/l/index.html` mit Firebase-JS-SDK: anonym anmelden, `users/{uid}.listToken` setzen, Liste live lesen und `checked` umschalten – Regel `listGuest(hid)`; Web-Konfiguration in `docs/l/config.js`); aktive Links dort beenden. Text: offene Einträge nach Abteilung (eigene Reihenfolge, gewählte Mengenanzeige, aktueller Zutatenname) → `shoppingShareText` → Teilen-Menü (z. B. WhatsApp).
 - **Geschäfte** (`shopping/domain/stores.dart`): Haushalt hat eine Liste (`households.stores`, Einstellungen → Einkaufen → „Geschäfte“: hinzufügen, löschen, ziehen). Eintrag lange drücken → `StoreSheet`: „Diesmal kaufen bei“ (`shopping.store`, z. B. Aktion) und „… gibt's üblicherweise bei“ (mehrere, `ingredients.stores`). `itemStores` = fester Laden sonst übliche. Einkaufsliste: Umschalter Abteilung/Geschäft (`users.shoppingByStore`, `groupByStore`: unter dem ersten Laden in Haushaltsreihenfolge, innerhalb nach Abteilung, „Egal wo“ zuletzt) und Chips „Nur Hofer“ (`availableAt`: dort erhältlich oder egal wo). Teilen-Text folgt der Ansicht; Widget bleibt nach Abteilung. **Aktionen:** keine offizielle Schnittstelle (Märkte, Aktionsfinder, marktguru, Preisrunter) – daher nur Links, keine Daten in der App: Flugblatt pro Geschäft (`flyerLink`: eigener Link aus `storeLinks` sonst `defaultFlyerLinks`, in Einstellungen → Geschäfte antippen zum Ändern) als Chip „Flugblatt“ neben „Nur …“ und im Abschnittskopf „Nach Geschäft“; im `StoreSheet` „Aktionen suchen“ → `offerSearchLink` (wogibtswas.at/ta/<begriff>).
 - **Einkauf → Vorrat:** Übernahme-Bildschirm (`planTransfer`) mit Menge/Einheit/Lagerort je abgehaktem Eintrag; die Einheit der Liste bleibt (5 kg Bananen bei Stück-Zutat), Auswahl = Zutaten-Einheiten + g/kg/ml/l/Stk. (`transferUnits`); Freitext-Einträge werden nachträglich zugeordnet, fehlende Umrechnung einmal erfragt; Einträge ohne Menge werden nur von der Liste genommen.
 - **Packungsgrößen** (`shopping/domain/pack_sizes.dart`): pro Zutat mehrere gemerkte Größen (`packSizes`, Basiseinheit). Gelernt ohne Rückfrage: in der Übernahme in den Vorrat jede geänderte Menge (`learnedPackSizes`; nicht bei bekannter Größe oder Vielfachem der vorgeschlagenen Packung) und beim Barcode-Speichern. `pickPack`: kleinste Packung, die den Bedarf deckt, sonst n × größte. Übernahme füllt ganze Packungen vor und zeigt die Größen als Chips; Einkaufsliste zeigt „1 Pkg. (200 g)“ bzw. „2 × 1 l“ unter dem Eintrag. Zutaten-Bearbeitung: „Übliche Packungen“ hinzufügen, antippen zum Ändern, löschen (neue Basiseinheit löscht sie).
@@ -193,7 +197,7 @@ households/{hid}/cookLog/{logId}
 
 ## Sicherheit
 
-- Firestore- und Storage-Regeln in `firestore.rules` / `storage.rules` im Repo pflegen. Einzige öffentlich lesbare Daten: `sharedRecipes/{code}` (nur `get` per Code, solange nicht abgelaufen; `list` nur eigene) und `shared/{uid}/…` in Storage. Lesen/Schreiben unter `households/{hid}` nur, wenn `request.auth.uid in memberIds`. Unterpfade mit `match /{collection}/{document=**}` matchen (ein nacktes `{document=**}` matcht in v2 auch das Haushalt-Dokument selbst). Jede Regeländerung braucht einen Test in `test_rules/`.
+- Firestore- und Storage-Regeln in `firestore.rules` / `storage.rules` im Repo pflegen. Einzige öffentlich lesbare Daten: `sharedRecipes/{code}`, die Einkaufsliste eines Haushalts für Gäste mit gültigem `sharedLists`-Token (nur lesen + `checked` ändern) (nur `get` per Code, solange nicht abgelaufen; `list` nur eigene) und `shared/{uid}/…` in Storage. Lesen/Schreiben unter `households/{hid}` nur, wenn `request.auth.uid in memberIds`. Unterpfade mit `match /{collection}/{document=**}` matchen (ein nacktes `{document=**}` matcht in v2 auch das Haushalt-Dokument selbst). Jede Regeländerung braucht einen Test in `test_rules/`.
 - Regeln deployed der CI-Job `deploy-rules` (nach grünen Regel-Tests), wenn ein Push `firestore.rules`/`storage.rules` ändert oder bei manuellem Lauf mit Häkchen. Braucht das Secret `FIREBASE_SERVICE_ACCOUNT` (Rollen Firebase Rules Admin + Firebase Viewer); ohne Secret wird übersprungen.
 - App Check für Firebase AI Logic aktivieren.
 - Keine Secrets committen (Keystore, Service-Account-JSON). `firebase_options.dart` und `google-services.json` dürfen ins Repo, der Schutz läuft über Regeln und App Check.

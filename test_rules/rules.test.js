@@ -264,3 +264,48 @@ describe('shared recipes', () => {
     await assertSucceeds(getDoc(doc(as('alice'), 'sharedRecipes/OLD23456')));
   });
 });
+
+describe('shopping list shared by link', () => {
+  const token = 'TOKEN1234567890ABCD';
+  beforeEach(async () => {
+    await reset();
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore();
+      await setDoc(doc(db, 'households/h1/shopping/s1'), { text: 'Milch', checked: false });
+      await setDoc(doc(db, 'households/h2'), { name: 'Andere', memberIds: ['bob'], inviteCode: 'XYZ234' });
+      await setDoc(doc(db, 'households/h2/shopping/s9'), { text: 'Geheim', checked: false });
+    });
+  });
+
+  test('member creates a link; guest with the token reads and ticks only', async () => {
+    await assertSucceeds(setDoc(doc(as('alice'), `sharedLists/${token}`), {
+      householdId: 'h1', createdBy: 'alice', title: 'Zuhause', expiresAt: null,
+    }));
+    const guest = as('guest');
+    await assertFails(getDocs(collection(guest, 'households/h1/shopping')));
+    await assertSucceeds(setDoc(doc(guest, 'users/guest'), { listToken: token }));
+    await assertSucceeds(getDocs(collection(guest, 'households/h1/shopping')));
+    await assertSucceeds(updateDoc(doc(guest, 'households/h1/shopping/s1'), { checked: true }));
+    await assertFails(updateDoc(doc(guest, 'households/h1/shopping/s1'), { text: 'Bier' }));
+    await assertFails(setDoc(doc(guest, 'households/h1/shopping/new'), { text: 'Bier' }));
+    await assertFails(getDoc(doc(guest, 'households/h1/recipes/r1')));
+    await assertFails(getDocs(collection(guest, 'households/h2/shopping')));
+  });
+
+  test('strangers cannot create links; expired or deleted links stop working', async () => {
+    await assertFails(setDoc(doc(as('mallory'), `sharedLists/${token}`), {
+      householdId: 'h1', createdBy: 'mallory', title: 'x',
+    }));
+    await assertFails(setDoc(doc(as('alice'), 'sharedLists/SHORT'), {
+      householdId: 'h1', createdBy: 'alice', title: 'x',
+    }));
+    await assertSucceeds(setDoc(doc(as('alice'), `sharedLists/${token}`), {
+      householdId: 'h1', createdBy: 'alice', title: 'Zuhause',
+      expiresAt: Timestamp.fromMillis(Date.now() - 1000),
+    }));
+    const guest = as('guest');
+    await setDoc(doc(guest, 'users/guest'), { listToken: token });
+    await assertFails(getDocs(collection(guest, 'households/h1/shopping')));
+    await assertSucceeds(deleteDoc(doc(as('alice'), `sharedLists/${token}`)));
+  });
+});

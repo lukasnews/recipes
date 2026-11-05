@@ -15,6 +15,7 @@ import '../domain/pack_sizes.dart';
 import '../domain/shopping_item.dart';
 import '../domain/stores.dart';
 import 'pantry_transfer_sheet.dart';
+import 'share_list_sheet.dart';
 import 'store_sheet.dart';
 
 /// "1500 g" -> "1,5 kg", "2 Stk." -> "2", "½ TL" stays.
@@ -139,7 +140,6 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
     final repo = ref.watch(shoppingRepositoryProvider);
     final items = value.value ?? const <ShoppingItem>[];
     final checked = items.where((i) => i.checked).toList();
-    final hasOpen = items.any((i) => !i.checked);
 
     return Scaffold(
       appBar: AppBar(
@@ -148,29 +148,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
           IconButton(
             tooltip: l10n.shareShoppingList,
             icon: const Icon(Icons.share_outlined),
-            onPressed: hasOpen
-                ? () => fire(
-                    ref
-                        .read(sharerProvider)
-                        .shareText(
-                          shoppingShareText(
-                            items,
-                            ref.read(ingredientsByIdProvider),
-                            title: l10n.shoppingShareTitle,
-                            aisleName: l10n.aisle,
-                            display: ref.read(unitDisplayProvider),
-                            order: ref.read(aisleOrderProvider),
-                            byStore: ref.read(shoppingByStoreProvider)
-                                ? (
-                                    stores: ref.read(storesProvider),
-                                    anywhere: l10n.storeAnywhere,
-                                  )
-                                : null,
-                          ),
-                          subject: l10n.shoppingShareTitle,
-                        ),
-                  )
-                : null,
+            onPressed: () => showShareListSheet(context, ref, items),
           ),
           PopupMenuButton<void>(
             enabled: checked.isNotEmpty,

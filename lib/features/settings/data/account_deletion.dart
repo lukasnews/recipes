@@ -49,6 +49,14 @@ class AccountDeletionService {
     for (final d in sent.docs) {
       await d.reference.delete();
     }
+    // Live links to shopping lists this person created.
+    final links = await _db
+        .collection('sharedLists')
+        .where('createdBy', isEqualTo: uid)
+        .get();
+    for (final d in links.docs) {
+      await d.reference.delete();
+    }
     await user.reference.delete();
   }
 

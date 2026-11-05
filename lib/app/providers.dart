@@ -45,7 +45,9 @@ import '../features/recipes/domain/recipe.dart';
 import '../features/recipes/domain/sample_recipes.dart';
 import '../features/settings/data/account_deletion.dart';
 import '../features/settings/data/backup_service.dart';
+import '../features/sharing/data/shared_list_repository.dart';
 import '../features/sharing/data/shared_recipe_repository.dart';
+import '../features/sharing/domain/shared_list.dart';
 import '../features/sharing/domain/shared_recipe.dart';
 import '../features/shopping/data/home_screen_widget.dart';
 import '../features/shopping/data/shopping_repository.dart';
@@ -374,6 +376,17 @@ final frozenMealsProvider = StreamProvider<List<FrozenMeal>>(
 final sharedRecipeRepositoryProvider = Provider<SharedRecipeRepository>(
   (ref) => SharedRecipeRepository(ref.watch(firestoreProvider)),
 );
+
+final sharedListRepositoryProvider = Provider<SharedListRepository>(
+  (ref) => SharedListRepository(ref.watch(firestoreProvider)),
+);
+
+/// Live links to this household's shopping list.
+final sharedListsProvider = StreamProvider<List<SharedList>>((ref) {
+  final hid = ref.watch(householdIdProvider);
+  if (hid == null) return Stream.value(const []);
+  return ref.watch(sharedListRepositoryProvider).watchFor(hid);
+});
 
 /// Recipes this person sent to other households.
 final sentRecipesProvider = StreamProvider<List<SharedRecipe>>((ref) {

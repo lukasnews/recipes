@@ -61,6 +61,35 @@ service cloud.firestore {
       allow delete: if isSender();
     }
 
+    // Shopping list shared by link (live, for someone without BaCo): the
+    // web page signs in anonymously and stores the link's token in its own
+    // users/{uid}.listToken; then it may read the list and tick items.
+    match /sharedLists/{token} {
+      allow get: if signedIn();
+      allow list: if signedIn()
+        && (resource.data.createdBy == request.auth.uid
+          || isMember(resource.data.householdId));
+      allow create: if signedIn()
+        && token.size() >= 16
+        && request.resource.data.createdBy == request.auth.uid
+        && isMember(request.resource.data.householdId);
+      allow delete: if signedIn()
+        && (resource.data.createdBy == request.auth.uid
+          || isMember(resource.data.householdId));
+    }
+
+    function listGuest(hid) {
+      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
+      let token = signedIn() && exists(userPath)
+        ? get(userPath).data.get('listToken', '')
+        : '';
+      let sharePath = /databases/$(database)/documents/sharedLists/$(token);
+      return token != '' && exists(sharePath)
+        && get(sharePath).data.householdId == hid
+        && (get(sharePath).data.get('expiresAt', null) == null
+          || get(sharePath).data.expiresAt > request.time);
+    }
+
     match /households/{hid} {
       allow get: if signedIn() && request.auth.uid in resource.data.memberIds;
 
@@ -87,6 +116,14 @@ service cloud.firestore {
         allow read: if isMember(hid);
         // members/ has its own rule below (only your own entry).
         allow write: if collection != 'members' && isMemberAfter(hid);
+      }
+
+      // Guests with a live link: read the shopping list, tick items only.
+      match /shopping/{item} {
+        allow read: if listGuest(hid);
+        allow update: if listGuest(hid)
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['checked']);
       }
 
       // Name and allergies per person: everyone in the household reads,

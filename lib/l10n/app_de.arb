@@ -1050,5 +1050,14 @@
   "tagsSuggesting": "Die KI sucht passende Tags …",
   "tagsSuggestFailed": "Tags konnten nicht vorgeschlagen werden (Internet?).",
   "tagsSuggestTitle": "Tags",
+  "listShareText": "Als Text teilen",
+  "listShareTextHint": "Die offenen Einträge, z. B. für WhatsApp",
+  "listShareLink": "Live-Link teilen",
+  "listShareLinkHint": "Im Browser ansehen und abhaken – auch ohne BaCo. Bleibt aktuell.",
+  "listLinkValidity": "Wie lange soll der Link gelten?",
+  "listLinkText": "Unsere Einkaufsliste ({title}) – hier ansehen und abhaken: {link}",
+  "@listLinkText": {"placeholders": {"title": {"type": "String"}, "link": {"type": "String"}}},
+  "listLinksActive": "Aktive Links",
+  "listLinkStop": "Link beenden",
   "@ratingStars": {"placeholders": {"count": {"type": "int"}}}
 }
