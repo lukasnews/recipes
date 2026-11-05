@@ -121,9 +121,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                         parentNavigatorKey: _rootNavigatorKey,
                         builder: (context, state) => CookModeScreen(
                           recipeId: state.pathParameters['id']!,
-                          servings: state.extra is int
-                              ? state.extra! as int
-                              : null,
+                          servings: switch (state.extra) {
+                            final int s => s,
+                            (final int s, double _) => s,
+                            _ => null,
+                          },
+                          panFactor: switch (state.extra) {
+                            (int _, final double f) => f,
+                            _ => 1,
+                          },
                         ),
                       ),
                       GoRoute(

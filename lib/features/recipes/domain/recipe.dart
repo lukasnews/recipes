@@ -1,4 +1,5 @@
 import '../../../core/firebase/map_utils.dart';
+import 'baking_pan.dart';
 import 'nutrition.dart';
 
 /// Built-in categories; any other string is a custom category.
@@ -46,6 +47,15 @@ class RecipeIngredient {
     'name': ?name,
   };
 
+  RecipeIngredient scaled(double factor) => RecipeIngredient(
+    rawText: rawText,
+    ingredientId: ingredientId,
+    amount: amount == null ? null : amount! * factor,
+    unit: unit,
+    note: note,
+    name: name,
+  );
+
   RecipeIngredient withIngredientId(String? id) => RecipeIngredient(
     rawText: rawText,
     ingredientId: id,
@@ -89,6 +99,7 @@ class Recipe {
     this.updatedAt,
     this.nutrition,
     this.collections = const [],
+    this.pan,
   });
 
   factory Recipe.fromMap(String id, Map<String, dynamic> m) {
@@ -114,6 +125,7 @@ class Recipe {
       createdAt: m.date('createdAt'),
       updatedAt: m.date('updatedAt'),
       collections: m.strings('collections'),
+      pan: BakingPan.fromMap(m['pan']),
       nutrition: Nutrition.fromMap(
         (m['nutrition'] as Map<dynamic, dynamic>?)?.cast<String, dynamic>(),
       ),
@@ -124,6 +136,9 @@ class Recipe {
   /// changed only via RecipeRepository.setCollections, so saving the
   /// edited recipe keeps them (merge).
   final List<String> collections;
+
+  /// Tin the amounts are for (cakes), to convert to another tin.
+  final BakingPan? pan;
 
   /// AI estimate per serving. Not part of [toMap]: saving the edited
   /// recipe drops it, since the ingredients may have changed.
@@ -173,7 +188,14 @@ class Recipe {
     'ingredientIds': ingredientIds,
     'steps': steps.map((s) => s.toMap()).toList(),
     'createdBy': ?createdBy,
+    // Explicit null so removing the tin in the editor clears it (merge).
+    'pan': pan?.toMap(),
   };
+
+  /// All amounts × [factor] (another baking tin), servings unchanged.
+  Recipe scaledBy(double factor) => factor == 1
+      ? this
+      : copyWith(ingredients: [for (final i in ingredients) i.scaled(factor)]);
 
   Recipe copyWith({
     String? id,
@@ -188,6 +210,7 @@ class Recipe {
     List<RecipeIngredient>? ingredients,
     List<RecipeStep>? steps,
     String? createdBy,
+    BakingPan? Function()? pan,
   }) => Recipe(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -208,5 +231,6 @@ class Recipe {
     updatedAt: updatedAt,
     nutrition: nutrition,
     collections: collections,
+    pan: pan == null ? this.pan : pan(),
   );
 }

@@ -10,16 +10,25 @@ import '../../../core/units/display_units.dart';
 import '../../../core/units/units.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../domain/recipe.dart';
+import '../domain/step_ingredients.dart';
 import '../domain/step_timers.dart';
 import 'cook_timers.dart';
 
 /// Full-screen step-by-step view: big text, screen stays on, timers.
 /// Pops with `true` when the cook taps "Gekocht" at the end.
 class CookModeScreen extends ConsumerStatefulWidget {
-  const CookModeScreen({super.key, required this.recipeId, this.servings});
+  const CookModeScreen({
+    super.key,
+    required this.recipeId,
+    this.servings,
+    this.panFactor = 1,
+  });
 
   final String recipeId;
   final int? servings;
+
+  /// Another baking tin chosen in the recipe detail.
+  final double panFactor;
 
   @override
   ConsumerState<CookModeScreen> createState() => _CookModeScreenState();
@@ -108,6 +117,21 @@ class _CookModeScreenState extends ConsumerState<CookModeScreen> {
     curve: Curves.easeOut,
   );
 
+  /// "3 Eier", "200 g Mehl glatt" scaled to [servings], in the chosen
+  /// unit display.
+  String _lineText(RecipeIngredient line, Recipe recipe, int servings) => [
+    displayQuantity(
+      line.amount == null
+          ? null
+          : scaleAmount(line.amount!, recipe.servings, servings),
+      line.unit,
+      ref.read(unitDisplayProvider),
+    ),
+    ref.read(ingredientsByIdProvider)[line.ingredientId]?.name ??
+        line.name ??
+        line.rawText,
+  ].where((s) => s.isNotEmpty).join(' ');
+
   void _showIngredients(Recipe recipe, int servings) {
     final l10n = context.l10n;
     final byId = ref.read(ingredientsByIdProvider);
@@ -161,7 +185,8 @@ class _CookModeScreenState extends ConsumerState<CookModeScreen> {
         .watch(recipesProvider)
         .value
         ?.where((r) => r.id == widget.recipeId)
-        .firstOrNull;
+        .firstOrNull
+        ?.scaledBy(widget.panFactor);
     if (recipe == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -198,6 +223,11 @@ class _CookModeScreenState extends ConsumerState<CookModeScreen> {
                       onPageChanged: (p) => setState(() => _page = p),
                       itemBuilder: (context, i) {
                         final step = steps[i];
+                        final used = ingredientsInStep(
+                          step.text,
+                          recipe.ingredients,
+                          ref.watch(ingredientsByIdProvider),
+                        );
                         final durations = [
                           if (step.timerSeconds != null)
                             Duration(seconds: step.timerSeconds!),
@@ -221,6 +251,35 @@ class _CookModeScreenState extends ConsumerState<CookModeScreen> {
                                   height: 1.4,
                                 ),
                               ),
+                              if (used.isNotEmpty) ...[
+                                const SizedBox(height: 20),
+                                Card(
+                                  margin: EdgeInsets.zero,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      spacing: 6,
+                                      children: [
+                                        Text(
+                                          l10n.cookStepIngredients,
+                                          style: theme.textTheme.labelLarge
+                                              ?.copyWith(
+                                                color:
+                                                    theme.colorScheme.primary,
+                                              ),
+                                        ),
+                                        for (final j in used)
+                                          Text(
+                                            '• ${_lineText(recipe.ingredients[j], recipe, servings)}',
+                                            style: theme.textTheme.titleMedium,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                               const SizedBox(height: 24),
                               Wrap(
                                 spacing: 12,

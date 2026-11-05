@@ -104,6 +104,7 @@ households/{hid}/recipes/{recipeId}
   ingredientIds: [string]     # denormalized for queries
   steps: [{text, timerSeconds?}]
   nutrition?: {kcal, protein, fat, carbs, estimatedAt}   # AI estimate per serving; save() deletes it
+  pan?: {d} | {w, l}   # baking tin in cm (round diameter / rectangle), for converting
   createdBy, createdAt, updatedAt
 
 households/{hid}/pantry/{ingredientId}       # doc id = ingredient id
@@ -143,6 +144,8 @@ households/{hid}/cookLog/{logId}
 - **Wochenplan:** Auswahl zeigt zuerst „Aus dem Tiefkühler“ (Gerichte mit Portionen), dann Rezepte ohne Kategorie Kekse. Geplantes Tiefkühl-Gericht antippen → „Portion entnehmen“ (Increment −1). Tiefkühl-Gerichte zählen nicht für „Woche einkaufen“.
 - **Woche vorschlagen** (Wochenplan, ✨): füllt freie Tage ab heute (`suggestWeek`, lokal): Punkte = Vorrat-Abdeckung ×3 + bald Ablaufendes ×2 + „lange nicht gekocht“ (bis 2) + Bewertung ×0,2; ohne Kekse/Kuchen, ohne schon Geplantes, kein Rezept doppelt; ein Tiefkühl-Gericht pro Woche (ältestes zuerst, Wochenmitte); Rezepte mit Ablaufendem an den ersten Tagen. Vorschau mit Häkchen, dann einplanen.
 - **Woche einkaufen** (Wochenplan): Bedarf aller ab heute geplanten Rezepte der angezeigten Woche summiert, Vorrat einmal abgezogen (`weekShoppingNeeds`), Auswahl per Häkchen, dann auf die Einkaufsliste.
+- **Backform umrechnen:** Rezept-Editor „Backform (optional)“: Keine/Rund (Ø)/Eckig (B × L) → `recipes.pan` (`BakingPan`). Rezept-Detail zeigt „Backform im Rezept: Ø 26 cm“ → „Andere Form“ → Faktor = Flächenverhältnis (`factorFor`); `Recipe.scaledBy` gilt dann für Mengen, Vorrat, Fehlendes einkaufen, „Gekocht“ und Kochmodus (`extra: (servings, panFactor)`), zusätzlich zu den Portionen. Senden nimmt das Original.
+- **Kochmodus – Zutaten pro Schritt:** `ingredientsInStep` findet Zutaten im Schritttext (Name, Synonyme, Zeilenname; Endungen e/en/n/s/er/es/ern, kurze Begriffe wie „Ei“ nur exakt oder „Eier“) → Karte „Dafür brauchst du“ mit skalierten Mengen unter dem Schritt.
 - **Kochverlauf:** aus `cookLog` (ohne `undone`) → `cookStats` (Anzahl, zuletzt). Rezept-Detail „Zuletzt vor … gekocht · n×“, Liste mit Chip „Lange nicht gekocht“ (`longNotCooked`).
 - **Ablaufdatum:** `pantry.expiresOn` optional in beiden Vorrat-Formularen. ≤ 3 Tage = „bald ablaufend“, davor „abgelaufen“; solche Einträge stehen oben im Abschnitt „Bald ablaufend“. „Was kann ich kochen?“ reiht bei gleicher Abdeckung Rezepte vor, die bald Ablaufendes verbrauchen.
 - **Mehrere Haushalte:** Einstellungen → „Haushalt wechseln“ (ab 2 Haushalten) setzt `activeHouseholdId`; „Weiteren Haushalt hinzufügen“ öffnet den Setup-Bildschirm (`/settings/household/add`). Anlegen/Beitreten macht den neuen Haushalt aktiv. Alle Repositories hängen an `householdIdProvider` und wechseln mit.

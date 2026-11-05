@@ -22,6 +22,7 @@ import '../../ingredients/domain/ingredient.dart';
 import '../../ingredients/domain/ingredient_factory.dart';
 import '../../ingredients/presentation/ingredient_picker.dart';
 import '../domain/recipe.dart';
+import 'pan_fields.dart';
 
 /// How one ingredient line will be linked when saving.
 class _LinePreview {
@@ -53,6 +54,7 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
   final _title = TextEditingController();
   final _servings = TextEditingController(text: '4');
   final _prep = TextEditingController();
+  var _pan = PanInput();
   final _cook = TextEditingController();
   final _tags = TextEditingController();
   final _ingredients = TextEditingController();
@@ -88,6 +90,7 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
     ]) {
       c.dispose();
     }
+    _pan.dispose();
     super.dispose();
   }
 
@@ -113,6 +116,8 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
     _title.text = r.title;
     _servings.text = '${r.servings}';
     _prep.text = r.prepMinutes?.toString() ?? '';
+    _pan.dispose();
+    _pan = PanInput(r.pan);
     _cook.text = r.cookMinutes?.toString() ?? '';
     _tags.text = r.tags.join(', ');
     _ingredients.text = r.ingredients.map((i) => i.rawText).join('\n');
@@ -219,6 +224,7 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
       servings: int.tryParse(_servings.text.trim()) ?? 4,
       prepMinutes: int.tryParse(_prep.text.trim()),
       cookMinutes: int.tryParse(_cook.text.trim()),
+      pan: _pan.value,
       // Uploads append their paths themselves once they are done.
       photoPaths: List.of(_keptPhotos),
       rating: _rating,
@@ -491,6 +497,10 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
                       );
               },
             ),
+            const SizedBox(height: 16),
+            Text(l10n.panLabel, style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            PanFields(input: _pan, onChanged: () => setState(() {})),
             const SizedBox(height: 12),
             TextFormField(
               controller: _tags,

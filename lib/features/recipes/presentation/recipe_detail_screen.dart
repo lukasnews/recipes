@@ -18,6 +18,7 @@ import '../../../core/widgets/storage_image.dart';
 import '../../mealplan/domain/meal_plan_day.dart';
 import '../../sharing/presentation/share_actions.dart';
 import '../domain/allergen_check.dart';
+import '../domain/baking_pan.dart';
 import '../domain/cook_history.dart';
 import '../domain/nutrition.dart';
 import '../domain/recipe.dart';
@@ -25,6 +26,7 @@ import '../domain/recipe_share.dart';
 import '../domain/recipe_stock.dart';
 import 'collections_sheet.dart';
 import 'cooked_dialog.dart';
+import 'pan_fields.dart';
 
 class RecipeDetailScreen extends ConsumerStatefulWidget {
   const RecipeDetailScreen({super.key, required this.recipeId});
@@ -37,6 +39,9 @@ class RecipeDetailScreen extends ConsumerStatefulWidget {
 
 class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
   int? _servings;
+
+  /// Own baking tin: amounts converted by area (null = as in the recipe).
+  BakingPan? _myPan;
 
   Future<void> _delete(Recipe recipe) async {
     final l10n = context.l10n;
@@ -160,8 +165,8 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final recipes = ref.watch(recipesProvider).value;
-    final recipe = recipes?.where((r) => r.id == widget.recipeId).firstOrNull;
-    if (recipe == null) {
+    final stored = recipes?.where((r) => r.id == widget.recipeId).firstOrNull;
+    if (stored == null) {
       return Scaffold(
         appBar: AppBar(),
         body: recipes == null
@@ -169,6 +174,12 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
             : EmptyState(icon: Icons.search_off, message: l10n.noSearchResults),
       );
     }
+    // Another tin: everything below (amounts, stock, shopping, cooking)
+    // uses the converted recipe.
+    final panFactor = (stored.pan != null && _myPan != null)
+        ? stored.pan!.factorFor(_myPan!)
+        : 1.0;
+    final recipe = stored.scaledBy(panFactor);
     final ingredients = ref.watch(ingredientsByIdProvider);
     final pantry = ref.watch(pantryProvider).value ?? const {};
     final servings = _servings ?? recipe.servings;
@@ -225,7 +236,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 ),
               ),
               PopupMenuItem(
-                onTap: () => sendRecipeToHousehold(context, ref, recipe),
+                onTap: () => sendRecipeToHousehold(context, ref, stored),
                 child: ListTile(
                   leading: const Icon(Icons.send_outlined),
                   title: Text(l10n.sendRecipeMenu),
@@ -379,6 +390,13 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
               ),
             ],
           ),
+          if (stored.pan case final pan?)
+            _PanRow(
+              recipePan: pan,
+              myPan: _myPan,
+              factor: panFactor,
+              onChanged: (p) => setState(() => _myPan = p),
+            ),
           const SizedBox(height: 8),
           Text(l10n.ingredientsTitle, style: theme.textTheme.titleLarge),
           for (final line in recipe.ingredients)
@@ -405,7 +423,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                   onPressed: () async {
                     final cooked = await context.push<bool>(
                       Routes.cookRecipe(recipe.id),
-                      extra: servings,
+                      extra: (servings, panFactor),
                     );
                     if (cooked == true && context.mounted) {
                       await showCookedDialog(context, ref, recipe, servings);
@@ -588,6 +606,104 @@ class _NutritionRowState extends ConsumerState<_NutritionRow> {
           tooltip: l10n.nutritionRefresh,
           onPressed: _busy ? null : _estimate,
           icon: const Icon(Icons.refresh, size: 20),
+        ),
+      ],
+    );
+  }
+}
+
+/// "Backform im Rezept: Ø 26 cm" with "Andere Form" (area ratio).
+class _PanRow extends StatelessWidget {
+  const _PanRow({
+    required this.recipePan,
+    required this.myPan,
+    required this.factor,
+    required this.onChanged,
+  });
+
+  final BakingPan recipePan;
+  final BakingPan? myPan;
+  final double factor;
+  final ValueChanged<BakingPan?> onChanged;
+
+  Future<void> _choose(BuildContext context) async {
+    final pan = await showDialog<BakingPan>(
+      context: context,
+      builder: (_) => _PanDialog(initial: myPan ?? recipePan),
+    );
+    if (pan != null) onChanged(pan);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final mine = myPan;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: const Icon(Icons.cake_outlined),
+      title: Text(l10n.panRecipe(panLabel(context, recipePan))),
+      subtitle: mine == null
+          ? null
+          : Text(
+              l10n.panConverted(
+                panLabel(context, mine),
+                formatAmount(factor, fractions: false),
+              ),
+            ),
+      trailing: mine == null
+          ? TextButton(
+              onPressed: () => _choose(context),
+              child: Text(l10n.panConvert),
+            )
+          : IconButton(
+              tooltip: l10n.panReset,
+              icon: const Icon(Icons.close),
+              onPressed: () => onChanged(null),
+            ),
+      onTap: () => _choose(context),
+    );
+  }
+}
+
+class _PanDialog extends StatefulWidget {
+  const _PanDialog({required this.initial});
+
+  final BakingPan initial;
+
+  @override
+  State<_PanDialog> createState() => _PanDialogState();
+}
+
+class _PanDialogState extends State<_PanDialog> {
+  late final _input = PanInput(widget.initial);
+
+  @override
+  void dispose() {
+    _input.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final value = _input.value;
+    return AlertDialog(
+      title: Text(l10n.panConvertTitle),
+      content: PanFields(
+        input: _input,
+        allowNone: false,
+        onChanged: () => setState(() {}),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: value == null
+              ? null
+              : () => Navigator.pop(context, _input.value ?? value),
+          child: Text(l10n.panConvertApply),
         ),
       ],
     );
