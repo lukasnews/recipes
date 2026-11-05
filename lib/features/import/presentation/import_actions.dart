@@ -299,16 +299,34 @@ Future<void> _runImport(
   }
   navigator.pop();
   if (!context.mounted || drafts.isEmpty) return;
+  await reviewDrafts(context, drafts);
+}
+
+/// Choice when there are several recipes, then the review screen for each
+/// one; back on one just skips it.
+Future<void> reviewDrafts(
+  BuildContext context,
+  List<RecipeDraft> drafts,
+) async {
   final chosen = drafts.length == 1
       ? drafts
       : await _chooseDrafts(context, drafts);
-  // Review one after another; back on one just skips it.
   for (final (i, d) in chosen.indexed) {
     if (!context.mounted) return;
     await context.push(
       Routes.newRecipe,
       extra: d.copyWith(position: i + 1, count: chosen.length),
     );
+  }
+}
+
+/// Queued photo imports the AI has read meanwhile: review them now.
+Future<void> reviewQueuedImports(BuildContext context, WidgetRef ref) async {
+  final queue = ref.read(importQueueProvider.notifier);
+  for (final item in ref.read(importQueueProvider).where((i) => i.isReady)) {
+    if (!context.mounted) return;
+    await reviewDrafts(context, item.drafts!);
+    await queue.done(item.id);
   }
 }
 

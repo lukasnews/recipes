@@ -874,5 +874,24 @@
         "type": "String"
       }
     }
+  },
+  "importReadLater": "Später mit KI lesen",
+  "importQueued": "Gemerkt – die KI liest die Fotos, sobald Internet da ist.",
+  "importQueueWaiting": "{count, plural, =1{1 Foto-Import wartet auf Internet} other{{count} Foto-Importe warten auf Internet}}",
+  "importQueueReady": "{count, plural, =1{1 Rezept aus Fotos gelesen} other{{count} Rezepte aus Fotos gelesen}}",
+  "importQueueReview": "Jetzt prüfen",
+  "@importQueueWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@importQueueReady": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

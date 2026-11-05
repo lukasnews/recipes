@@ -23,10 +23,14 @@ class _PhotoQueueRunnerState extends ConsumerState<PhotoQueueRunner> {
   void initState() {
     super.initState();
     // Reading the provider loads the stored queue and starts it.
-    ref.read(photoUploadQueueProvider);
+    ref
+      ..read(photoUploadQueueProvider)
+      ..read(importQueueProvider);
     _lifecycle = AppLifecycleListener(
-      onResume: () =>
-          unawaited(ref.read(photoUploadQueueProvider.notifier).process()),
+      onResume: () {
+        unawaited(ref.read(photoUploadQueueProvider.notifier).process());
+        unawaited(ref.read(importQueueProvider.notifier).process());
+      },
     );
   }
 
@@ -39,7 +43,9 @@ class _PhotoQueueRunnerState extends ConsumerState<PhotoQueueRunner> {
   @override
   Widget build(BuildContext context) {
     // Keep the queue alive for the whole session.
-    ref.watch(photoUploadQueueProvider);
+    ref
+      ..watch(photoUploadQueueProvider)
+      ..watch(importQueueProvider);
     return widget.child;
   }
 }

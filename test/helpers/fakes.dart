@@ -12,6 +12,7 @@ import 'package:recipes/core/share/sharer.dart';
 import 'package:recipes/core/widgets/url_opener.dart';
 import 'package:recipes/features/auth/data/auth_repository.dart';
 import 'package:recipes/features/household/data/household_repository.dart';
+import 'package:recipes/features/import/data/import_queue.dart';
 import 'package:recipes/features/import/data/photo_picker.dart';
 import 'package:recipes/features/import/data/recipe_extractor.dart';
 import 'package:recipes/features/import/data/recipe_import_service.dart';
@@ -148,6 +149,7 @@ Widget testApp({
     photoCacheProvider.overrideWithValue(FakePhotoCache()),
     photoRepositoryProvider.overrideWithValue(photos ?? FakePhotoRepository()),
     pendingUploadStoreProvider.overrideWithValue(MemoryPendingUploadStore()),
+    importQueueStoreProvider.overrideWithValue(MemoryImportQueueStore()),
     photoUploaderProvider.overrideWithValue(
       (hid, rid, file) => (photos ?? FakePhotoRepository()).upload(rid, file),
     ),
@@ -171,14 +173,17 @@ class FakePhotoPicker implements PhotoPicker {
 
 class FakeExtractor implements RecipeExtractor {
   FakeExtractor(this.results, {this.fail = false});
-  final List<RecipeDraft> results;
-  final bool fail;
+  List<RecipeDraft> results;
+  bool fail;
+
+  /// What a failure throws (e.g. a SocketException for "offline").
+  Object Function() failWith = () => Exception('offline');
   String? lastText;
   int? lastImageCount;
   @override
   Future<List<RecipeDraft>> extract(List<Uint8List> jpegImages) async {
     lastImageCount = jpegImages.length;
-    if (fail) throw Exception('offline');
+    if (fail) throw failWith();
     return results;
   }
 
@@ -351,4 +356,14 @@ class FakeUrlOpener implements UrlOpener {
     opened.add(url);
     return true;
   }
+}
+
+class MemoryImportQueueStore implements ImportQueueStore {
+  var items = <PendingImport>[];
+  @override
+  Future<List<PendingImport>> load() async => items;
+  @override
+  Future<void> save(List<PendingImport> list) async => items = list;
+  @override
+  Future<String> keep(String file) async => file;
 }

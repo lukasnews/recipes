@@ -171,6 +171,7 @@ households/{hid}/cookLog/{logId}
 ## KI-Import
 
 - Ablauf: „+“ im Rezepte-Reiter → Foto aufnehmen (Seite für Seite: nach jedem Foto „Weitere Seite“ oder „Fertig – Rezept lesen“, max. 6) oder Bilder/Screenshots wählen (max. 6, schon auf 1600 px/JPEG 80 verkleinert) → `RecipeImportService`: Gemini, bei Fehler/offline ML Kit + `draftFromOcrText` → `RecipeDraft` → Rezept-Editor als Prüf-Bildschirm (Hinweis-Banner, Zutaten-Zuordnung, optional Ausgangsbild als Foto speichern).
+- **Offline-Import später lesen:** Im Prüf-Bildschirm eines ohne KI erkannten Fotos „Später mit KI lesen“ → `ImportQueue` (Foto-Kopien + `queue.json` unter `<app-docs>/pending_imports/`, übersteht Neustarts) → beim Start, bei Rückkehr in die App und mit wachsenden Pausen `RecipeImportService.importWhenOnline` (Netzwerkfehler → später erneut, andere KI-Fehler → ML-Kit-Rückfall). Rezeptliste zeigt „n Foto-Importe warten auf Internet“ bzw. „n Rezepte aus Fotos gelesen – Jetzt prüfen“ → `reviewDrafts` → `done`. Verwaiste Foto-Kopien werden beim nächsten Laden nach 10 min gelöscht.
 - Kamera, ML Kit, KI und Storage liegen hinter Interfaces (`PhotoPicker`, `TextRecognizerService`, `RecipeExtractor`, `PhotoRepository`); Tests nutzen Fakes aus `test/helpers/fakes.dart`.
 
 - Prompt verlangt strukturiertes JSON nach festem Schema: `{recipes: [{title, servings, prepMinutes?, cookMinutes?, ingredients: [{amount?, unit?, name, note?}], steps: [string]}]}`. Ein Rezept über mehrere Bilder (Zutaten S. 1, Zubereitung S. 2) wird zu einem Rezept zusammengeführt; mehrere Rezepte auf einem Bild → Auswahl-Dialog, dann nacheinander prüfen („Rezept 1 von 2“). Backends: zuerst Gemini Developer API (`FirebaseAI.googleAI`), bei Einrichtungsfehlern (z. B. „genai config not found“, fehlender API-Schlüssel) die Agent Platform Gemini API (`FirebaseAI.agentPlatform`, Region `global`, braucht Blaze). Unbekannte Modellnamen fallen der Reihe nach auf `gemini-3.8-flash` … `gemini-3.5-flash` → `gemini-3-flash-preview` → `gemini-flash-latest` → `gemini-2.5-flash` zurück (Liste `GeminiRecipeExtractor.fallbackModels`; Agent Platform kennt keine `-latest`-Namen); der Fehlergrund steht im Hinweis-Banner und in Crashlytics. Antwort mit dem Schema validieren; bei Fehler einmal neu fragen, sonst Rohtext im Prüf-Bildschirm zeigen.
@@ -262,7 +263,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 
 ### Phase 3 – Komfort (Ziel: Produktionszugang im Play Store)
 - [x] Foto-/Screenshot-/Handschrift-Import per Firebase AI Logic (Gemini, Modell aus Remote Config `ai_model`, Standard `gemini-3.8-flash`)
-- [ ] Import-Offline-Warteschlange (jetzt: ML-Kit-Rückfall)
+- [x] Import-Offline-Warteschlange (`ImportQueue`: „Später mit KI lesen“)
 - [x] Ablaufdatum im Vorrat, Hinweis „bald ablaufend“
 - [x] Barcode-Scan + Open Food Facts
 - [ ] Aktionen der Märkte (Spar, Billa, Hofer …) – zurückgestellt: keine offizielle Schnittstelle; Optionen: Flugblatt-Links oder inoffizielles Aktions-Portal

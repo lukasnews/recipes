@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -20,6 +21,32 @@ class RecipeImportService {
   final Future<Uint8List> Function(String path) readBytes;
 
   static Future<Uint8List> _readFile(String path) => File(path).readAsBytes();
+
+  /// No connection (or the connection dropped): worth trying again later.
+  static bool isNetworkError(Object e) {
+    if (e is SocketException || e is TimeoutException) return true;
+    final m = e.toString().toLowerCase();
+    return m.contains('socketexception') ||
+        m.contains('failed host lookup') ||
+        m.contains('network') ||
+        m.contains('connection') ||
+        m.contains('unavailable') ||
+        m.contains('timed out') ||
+        m.contains('timeout');
+  }
+
+  /// For the import queue: AI only; throws on network errors so the queue
+  /// retries later. Other AI errors fall back to OCR like [import].
+  Future<List<RecipeDraft>> importWhenOnline(List<String> imagePaths) async {
+    try {
+      final images = [for (final p in imagePaths) await readBytes(p)];
+      final drafts = await extractor.extract(images);
+      return [for (final d in drafts) d.copyWith(imagePaths: imagePaths)];
+    } catch (e) {
+      if (isNetworkError(e)) rethrow;
+      return import(imagePaths);
+    }
+  }
 
   Future<List<RecipeDraft>> import(List<String> imagePaths) async {
     try {

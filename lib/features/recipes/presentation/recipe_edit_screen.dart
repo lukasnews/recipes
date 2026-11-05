@@ -271,6 +271,14 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
     }
   }
 
+  void _readLater() {
+    fire(
+      ref.read(importQueueProvider.notifier).enqueue(widget.draft!.imagePaths),
+    );
+    showGlobalSnack(context.l10n.importQueued);
+    context.pop();
+  }
+
   Future<void> _addPhotos(PhotoSource source) async {
     final paths = await ref.read(photoPickerProvider).pick(source);
     if (paths.isNotEmpty) setState(() => _newPhotos.addAll(paths));
@@ -408,6 +416,19 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
                   subtitle: widget.draft!.aiError == null
                       ? null
                       : Text(l10n.importAiReason(widget.draft!.aiError!)),
+                ),
+              ),
+            // Without internet: let the AI read the photos later instead.
+            if (widget.draft != null &&
+                _original == null &&
+                widget.draft!.recognizedOffline &&
+                widget.draft!.imagePaths.isNotEmpty)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: _readLater,
+                  icon: const Icon(Icons.schedule),
+                  label: Text(l10n.importReadLater),
                 ),
               ),
             TextFormField(

@@ -117,6 +117,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
 
           return Column(
             children: [
+              const _ImportQueueBanner(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
                 child: SearchBar(
@@ -308,6 +309,44 @@ class _RecipeTile extends StatelessWidget {
           ],
         ),
         onTap: () => context.push(Routes.recipe(r.id)),
+      ),
+    );
+  }
+}
+
+/// Photos queued for the AI: "wartet auf Internet" or "gelesen – prüfen".
+class _ImportQueueBanner extends ConsumerWidget {
+  const _ImportQueueBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final queue = ref.watch(importQueueProvider);
+    final ready = queue.where((i) => i.isReady).length;
+    final waiting = queue.length - ready;
+    if (queue.isEmpty) return const SizedBox.shrink();
+    return Card(
+      margin: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+      color: ready > 0
+          ? theme.colorScheme.primaryContainer
+          : theme.colorScheme.surfaceContainerHighest,
+      child: ListTile(
+        leading: Icon(ready > 0 ? Icons.auto_awesome : Icons.cloud_off),
+        title: Text(
+          ready > 0
+              ? l10n.importQueueReady(ready)
+              : l10n.importQueueWaiting(waiting),
+        ),
+        subtitle: ready > 0 && waiting > 0
+            ? Text(l10n.importQueueWaiting(waiting))
+            : null,
+        trailing: ready > 0
+            ? FilledButton(
+                onPressed: () => reviewQueuedImports(context, ref),
+                child: Text(l10n.importQueueReview),
+              )
+            : null,
       ),
     );
   }

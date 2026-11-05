@@ -19,6 +19,7 @@ import '../features/household/data/household_repository.dart';
 import '../features/household/data/member_repository.dart';
 import '../features/household/domain/allergen.dart';
 import '../features/household/domain/household.dart';
+import '../features/import/data/import_queue.dart';
 import '../features/import/data/link_importer.dart';
 import '../features/import/data/photo_picker.dart';
 import '../features/import/data/recipe_extractor.dart';
@@ -221,6 +222,20 @@ final recipeExtractorProvider = FutureProvider<RecipeExtractor>(
 final linkImporterProvider = FutureProvider<LinkImporter>(
   (ref) async =>
       LinkImporter(extractor: await ref.watch(recipeExtractorProvider.future)),
+);
+
+final importQueueStoreProvider = Provider<ImportQueueStore>(
+  (ref) => FileImportQueueStore(),
+);
+
+/// Recipe photos taken offline, read by the AI once online.
+final importQueueProvider = NotifierProvider<ImportQueue, List<PendingImport>>(
+  () => ImportQueue(
+    store: (ref) => ref.read(importQueueStoreProvider),
+    reader: (ref, paths) async =>
+        (await ref.read(recipeImportServiceProvider.future))
+            .importWhenOnline(paths),
+  ),
 );
 
 final recipeImportServiceProvider = FutureProvider<RecipeImportService>(

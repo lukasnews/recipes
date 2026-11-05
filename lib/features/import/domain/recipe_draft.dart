@@ -73,6 +73,37 @@ class RecipeDraft {
   );
 }
 
+/// For the import queue on the phone (JSON).
+extension RecipeDraftJson on RecipeDraft {
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'servings': ?servings,
+    'prepMinutes': ?prepMinutes,
+    'cookMinutes': ?cookMinutes,
+    'ingredientLines': ingredientLines,
+    'steps': steps,
+    'notes': notes,
+    'imagePaths': imagePaths,
+    'recognizedOffline': recognizedOffline,
+    'aiError': ?aiError,
+    'sourceUrl': ?sourceUrl,
+  };
+
+  static RecipeDraft fromJson(Map<String, dynamic> m) => RecipeDraft(
+    title: m['title'] as String? ?? '',
+    servings: m['servings'] as int?,
+    prepMinutes: m['prepMinutes'] as int?,
+    cookMinutes: m['cookMinutes'] as int?,
+    ingredientLines: [...?(m['ingredientLines'] as List?)?.cast<String>()],
+    steps: [...?(m['steps'] as List?)?.cast<String>()],
+    notes: m['notes'] as String? ?? '',
+    imagePaths: [...?(m['imagePaths'] as List?)?.cast<String>()],
+    recognizedOffline: m['recognizedOffline'] as bool? ?? false,
+    aiError: m['aiError'] as String?,
+    sourceUrl: m['sourceUrl'] as String?,
+  );
+}
+
 class InvalidDraftException implements Exception {
   InvalidDraftException(this.message);
   final String message;
