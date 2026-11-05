@@ -164,20 +164,53 @@ abstract final class Units {
   /// Factor to convert [unit] into [base], using ingredient specific
   /// [conversions] first and generic conversions second.
   /// Returns null when no conversion is known (UI must ask, never guess).
+  /// Factor from [unit] to [base]. Order: the ingredient's own
+  /// [conversions], the generic unit (kg → g), then the ingredient's
+  /// [density] (g per ml: g ↔ ml) and [pieceGrams] (g per piece: g ↔ Stk.).
   static double? factorToBase(
     String? unit,
     BaseUnit base, [
     Map<String, double> conversions = const {},
+    double? density,
+    double? pieceGrams,
   ]) {
-    if (unit == null || unit.isEmpty) {
-      return base == BaseUnit.pcs ? 1 : conversions['Stk.'];
+    if (unit == null || unit.isEmpty) unit = 'Stk.';
+    if (unit == base.name || (unit == 'Stk.' && base == BaseUnit.pcs)) {
+      return 1;
     }
-    if (unit == base.name) return 1;
     final specific = conversions[unit];
     if (specific != null) return specific;
     final def = _byKey[unit];
-    if (def?.base == base) return def!.factor;
-    return null;
+    final f = def?.factor;
+    if (def == null || f == null) return null;
+    if (def.base == base) return f;
+
+    // One [unit] in grams / millilitres, as far as known.
+    double? grams;
+    double? millilitres;
+    switch (def.base) {
+      case BaseUnit.g:
+        grams = f;
+        if (density != null && density > 0) millilitres = f / density;
+      case BaseUnit.ml:
+        millilitres = f;
+        if (density != null && density > 0) grams = f * density;
+      case BaseUnit.pcs:
+        if (pieceGrams != null && pieceGrams > 0) {
+          grams = f * pieceGrams;
+          if (density != null && density > 0) millilitres = grams / density;
+        }
+      case null:
+        return null;
+    }
+    return switch (base) {
+      BaseUnit.g => grams,
+      BaseUnit.ml => millilitres,
+      BaseUnit.pcs =>
+        grams != null && pieceGrams != null && pieceGrams > 0
+            ? grams / pieceGrams
+            : null,
+    };
   }
 
   /// Converts [amount] in [unit] to the ingredient's [base] unit.
@@ -186,8 +219,10 @@ abstract final class Units {
     String? unit,
     BaseUnit base, [
     Map<String, double> conversions = const {},
+    double? density,
+    double? pieceGrams,
   ]) {
-    final f = factorToBase(unit, base, conversions);
+    final f = factorToBase(unit, base, conversions, density, pieceGrams);
     return f == null ? null : amount * f;
   }
 }

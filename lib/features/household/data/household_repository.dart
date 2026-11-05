@@ -150,11 +150,12 @@ class HouseholdRepository {
   Future<void> rename(String hid, String name) =>
       _db.collection('households').doc(hid).update({'name': name});
 
-  static const seedVersion = 3;
+  static const seedVersion = 4;
 
   /// One-time update of older households from the seed list: allergens
   /// (v2), missing synonyms and conversions (v3, e.g. "Schlag" and g → ml
-  /// for Schlagobers). Only adds; names, own synonyms and conversions stay.
+  /// for Schlagobers), density and weight per piece (v4). Only adds;
+  /// names, own synonyms, conversions and weights stay.
   /// Updates (not sets) so deleted or merged ingredients stay gone.
   Future<void> backfillSeed(String hid, List<Ingredient> seed) async {
     final ref = _db.collection('households').doc(hid);
@@ -196,6 +197,12 @@ class HouseholdRepository {
             update[FieldPath(['conversions', e.key])] = e.value;
           }
         }
+      }
+      if (data['density'] == null && ing.density != null) {
+        update['density'] = ing.density;
+      }
+      if (data['pieceGrams'] == null && ing.pieceGrams != null) {
+        update['pieceGrams'] = ing.pieceGrams;
       }
       if (update.isNotEmpty) batch.update(ingredients.doc(ing.id), update);
     }

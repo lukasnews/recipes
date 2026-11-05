@@ -39,6 +39,36 @@ void main() {
     });
   });
 
+  group('density and weight per piece', () {
+    test('g <-> ml via density, own conversion wins', () {
+      // 50 g Schlag for cream kept in ml (density 1.0).
+      expect(Units.toBase(50, 'g', BaseUnit.ml, const {}, 1.0), 50);
+      // 1 kg oil = ~1087 ml.
+      expect(Units.toBase(1, 'kg', BaseUnit.ml, const {}, 0.92)!.round(), 1087);
+      // 2 EL honey in g.
+      expect(
+        Units.toBase(2, 'EL', BaseUnit.g, const {}, 1.42),
+        closeTo(42.6, 0.01),
+      );
+      // An own conversion beats the density.
+      expect(Units.toBase(1, 'EL', BaseUnit.g, const {'EL': 10}, 0.55), 10);
+      // No density: still unknown.
+      expect(Units.toBase(50, 'g', BaseUnit.ml), isNull);
+    });
+
+    test('kg <-> Stk. via weight per piece', () {
+      // 5 kg bananas at 120 g each.
+      expect(
+        Units.toBase(5, 'kg', BaseUnit.pcs, const {}, null, 120),
+        closeTo(41.67, 0.01),
+      );
+      // 3 Erdäpfel in g.
+      expect(Units.toBase(3, 'Stk.', BaseUnit.g, const {}, null, 100), 300);
+      expect(Units.toBase(3, null, BaseUnit.g, const {}, null, 100), 300);
+      expect(Units.toBase(1, 'kg', BaseUnit.pcs), isNull);
+    });
+  });
+
   test('scaleAmount', () {
     expect(scaleAmount(200, 4, 2), 100);
     expect(scaleAmount(3, 4, 6), 4.5);

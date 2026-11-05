@@ -30,12 +30,16 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
   bool _always = false;
   Set<Allergen> _allergens = {};
   final _conversions = <(String, TextEditingController)>[];
+  final _density = TextEditingController();
+  final _pieceGrams = TextEditingController();
   Ingredient? _original;
 
   @override
   void dispose() {
     _name.dispose();
     _synonyms.dispose();
+    _density.dispose();
+    _pieceGrams.dispose();
     for (final (_, c) in _conversions) {
       c.dispose();
     }
@@ -50,6 +54,12 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
     _base = i.baseUnit;
     _always = i.alwaysAvailable;
     _allergens = {...i.allergens};
+    _density.text = i.density == null
+        ? ''
+        : formatAmount(i.density!, fractions: false);
+    _pieceGrams.text = i.pieceGrams == null
+        ? ''
+        : formatAmount(i.pieceGrams!, fractions: false);
     for (final e in i.conversions.entries) {
       _conversions.add((
         e.key,
@@ -76,6 +86,11 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
     });
   }
 
+  static double? _positive(String text) {
+    final v = parseUserNumber(text);
+    return v != null && v > 0 ? v : null;
+  }
+
   String get _baseLabel => _base == BaseUnit.pcs ? 'Stk.' : _base.name;
 
   void _save() {
@@ -95,6 +110,8 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
           if ((parseUserNumber(c.text) ?? 0) > 0)
             unit: parseUserNumber(c.text)!,
       },
+      density: () => _positive(_density.text),
+      pieceGrams: () => _positive(_pieceGrams.text),
     );
     fire(ref.read(ingredientRepositoryProvider).save(updated));
     context.pop();
@@ -241,6 +258,40 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
                     () => on ? _allergens.add(a) : _allergens.remove(a),
                   ),
                 ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(l10n.weightsLabel, style: theme.textTheme.titleSmall),
+          const SizedBox(height: 4),
+          Text(l10n.weightsHint, style: theme.textTheme.bodySmall),
+          const SizedBox(height: 8),
+          Row(
+            spacing: 12,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _density,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: l10n.densityLabel,
+                    suffixText: 'g/ml',
+                  ),
+                ),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _pieceGrams,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: l10n.pieceGramsLabel,
+                    suffixText: 'g',
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),

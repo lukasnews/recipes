@@ -14,7 +14,8 @@
    "Stk.": 100.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 100.0
  },
  {
   "id": "erdaepfel-speckig",
@@ -29,7 +30,8 @@
    "Stk.": 100.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 100.0
  },
  {
   "id": "erdaepfel-mehlig",
@@ -44,7 +46,8 @@
    "Stk.": 100.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 100.0
  },
  {
   "id": "suesskartoffel",
@@ -59,7 +62,8 @@
    "Stk.": 300.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 250.0
  },
  {
   "id": "zwiebel",
@@ -74,7 +78,8 @@
    "g": 0.01
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 100.0
  },
  {
   "id": "rote-zwiebel",
@@ -86,7 +91,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 100.0
  },
  {
   "id": "fruehlingszwiebel",
@@ -103,7 +109,8 @@
    "Bund": 6.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 20.0
  },
  {
   "id": "schalotte",
@@ -115,7 +122,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 30.0
  },
  {
   "id": "knoblauch",
@@ -132,7 +140,8 @@
    "Knolle": 10.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 5.0
  },
  {
   "id": "lauch",
@@ -147,7 +156,8 @@
    "Stange": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 250.0
  },
  {
   "id": "karotte",
@@ -163,7 +173,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 80.0
  },
  {
   "id": "petersilienwurzel",
@@ -175,7 +186,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 80.0
  },
  {
   "id": "pastinake",
@@ -187,7 +199,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 150.0
  },
  {
   "id": "sellerie",
@@ -205,7 +218,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "celery"
-  ]
+  ],
+  "pieceGrams": 500.0
  },
  {
   "id": "stangensellerie",
@@ -222,7 +236,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "celery"
-  ]
+  ],
+  "pieceGrams": 40.0
  },
  {
   "id": "paradeiser",
@@ -238,7 +253,8 @@
    "g": 0.0083
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 120.0
  },
  {
   "id": "cocktailparadeiser",
@@ -253,7 +269,8 @@
   "baseUnit": "g",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 15.0
  },
  {
   "id": "paprika-rot",
@@ -266,7 +283,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 160.0
  },
  {
   "id": "paprika-gelb",
@@ -278,7 +296,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 160.0
  },
  {
   "id": "paprika-gruen",
@@ -291,7 +310,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 160.0
  },
  {
   "id": "pfefferoni",
@@ -306,7 +326,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 20.0
  },
  {
   "id": "gurke",
@@ -320,7 +341,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 400.0
  },
  {
   "id": "zucchini",
@@ -333,7 +355,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 250.0
  },
  {
   "id": "melanzani",
@@ -347,7 +370,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 300.0
  },
  {
   "id": "kuerbis",
@@ -363,7 +387,8 @@
    "Stk.": 1200.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 1500.0
  },
  {
   "id": "karfiol",
@@ -377,7 +402,8 @@
    "Kopf": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 800.0
  },
  {
   "id": "brokkoli",
@@ -391,7 +417,8 @@
    "Kopf": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 450.0
  },
  {
   "id": "kohlrabi",
@@ -403,7 +430,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 300.0
  },
  {
   "id": "weisskraut",
@@ -418,7 +446,8 @@
    "Kopf": 1500.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 1000.0
  },
  {
   "id": "rotkraut",
@@ -433,7 +462,8 @@
    "Kopf": 1200.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 1000.0
  },
  {
   "id": "kohl",
@@ -491,7 +521,8 @@
    "Kopf": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 300.0
  },
  {
   "id": "eisbergsalat",
@@ -505,7 +536,8 @@
    "Kopf": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 500.0
  },
  {
   "id": "vogerlsalat",
@@ -544,7 +576,8 @@
    "Bund": 10.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 15.0
  },
  {
   "id": "rettich",
@@ -556,7 +589,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 400.0
  },
  {
   "id": "rote-rueben",
@@ -625,7 +659,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 300.0
  },
  {
   "id": "fisolen",
@@ -687,7 +722,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 250.0
  },
  {
   "id": "ingwer",
@@ -725,7 +761,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 200.0
  },
  {
   "id": "apfel",
@@ -739,7 +776,8 @@
    "g": 0.0067
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 180.0
  },
  {
   "id": "birne",
@@ -751,7 +789,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 180.0
  },
  {
   "id": "banane",
@@ -763,7 +802,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 120.0
  },
  {
   "id": "zitrone",
@@ -775,7 +815,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 100.0
  },
  {
   "id": "limette",
@@ -787,7 +828,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 60.0
  },
  {
   "id": "orange",
@@ -801,7 +843,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 200.0
  },
  {
   "id": "mandarine",
@@ -815,7 +858,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 80.0
  },
  {
   "id": "marillen",
@@ -960,7 +1004,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 150.0
  },
  {
   "id": "nektarine",
@@ -972,7 +1017,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 150.0
  },
  {
   "id": "ananas",
@@ -982,7 +1028,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 1200.0
  },
  {
   "id": "mango",
@@ -994,7 +1041,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 350.0
  },
  {
   "id": "kiwi",
@@ -1006,7 +1054,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 80.0
  },
  {
   "id": "granatapfel",
@@ -1018,7 +1067,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 300.0
  },
  {
   "id": "rhabarber",
@@ -1184,7 +1234,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "eggs"
-  ]
+  ],
+  "pieceGrams": 60.0
  },
  {
   "id": "milch",
@@ -1203,7 +1254,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.03
  },
  {
   "id": "schlagobers",
@@ -1225,7 +1277,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "sauerrahm",
@@ -1243,7 +1296,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.02
  },
  {
   "id": "creme-fraiche",
@@ -1261,7 +1315,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "schmand",
@@ -1276,7 +1331,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "rahm",
@@ -1291,7 +1347,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.02
  },
  {
   "id": "butter",
@@ -1310,7 +1367,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 0.91
  },
  {
   "id": "butterschmalz",
@@ -1327,7 +1385,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 0.9
  },
  {
   "id": "topfen",
@@ -1348,7 +1407,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.05
  },
  {
   "id": "joghurt",
@@ -1367,7 +1427,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.03
  },
  {
   "id": "griechisches-joghurt",
@@ -1384,7 +1445,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.05
  },
  {
   "id": "buttermilch",
@@ -1398,7 +1460,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.03
  },
  {
   "id": "mascarpone",
@@ -1412,7 +1475,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "ricotta",
@@ -1426,7 +1490,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "frischkaese",
@@ -1444,7 +1509,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "mozzarella",
@@ -1459,7 +1525,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "pieceGrams": 125.0
  },
  {
   "id": "parmesan",
@@ -1539,7 +1606,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 0.4
  },
  {
   "id": "feta",
@@ -1572,7 +1640,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "mozzarella-gerieben",
@@ -1586,7 +1655,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 0.4
  },
  {
   "id": "kondensmilch",
@@ -1600,7 +1670,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "milk"
-  ]
+  ],
+  "density": 1.07
  },
  {
   "id": "hafermilch",
@@ -1612,7 +1683,8 @@
   "baseUnit": "ml",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.03
  },
  {
   "id": "sojamilch",
@@ -1626,7 +1698,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "soy"
-  ]
+  ],
+  "density": 1.03
  },
  {
   "id": "margarine",
@@ -1639,7 +1712,8 @@
    "Pkg.": 250.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.9
  },
  {
   "id": "germ",
@@ -1702,7 +1776,8 @@
    "Stk.": 200.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 180.0
  },
  {
   "id": "huehnerkeule",
@@ -1718,7 +1793,8 @@
    "Stk.": 250.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 250.0
  },
  {
   "id": "huhn",
@@ -1748,7 +1824,8 @@
   "baseUnit": "g",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 180.0
  },
  {
   "id": "schweinsschnitzel",
@@ -1763,7 +1840,8 @@
    "Stk.": 150.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 150.0
  },
  {
   "id": "kalbsschnitzel",
@@ -1777,7 +1855,8 @@
    "Stk.": 150.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 150.0
  },
  {
   "id": "schweinsschopf",
@@ -1958,7 +2037,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 50.0
  },
  {
   "id": "kaesekrainer",
@@ -1968,7 +2048,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 100.0
  },
  {
   "id": "bratwurst",
@@ -1980,7 +2061,8 @@
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 100.0
  },
  {
   "id": "extrawurst",
@@ -2023,7 +2105,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "fish"
-  ]
+  ],
+  "pieceGrams": 150.0
  },
  {
   "id": "raeucherlachs",
@@ -2053,7 +2136,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "fish"
-  ]
+  ],
+  "pieceGrams": 300.0
  },
  {
   "id": "zander",
@@ -2067,7 +2151,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "fish"
-  ]
+  ],
+  "pieceGrams": 400.0
  },
  {
   "id": "garnelen",
@@ -2122,7 +2207,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.55
  },
  {
   "id": "mehl-griffig",
@@ -2142,7 +2228,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.6
  },
  {
   "id": "mehl-universal",
@@ -2160,7 +2247,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.55
  },
  {
   "id": "dinkelmehl",
@@ -2177,7 +2265,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.55
  },
  {
   "id": "vollkornmehl",
@@ -2195,7 +2284,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.55
  },
  {
   "id": "roggenmehl",
@@ -2210,7 +2300,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.55
  },
  {
   "id": "staerke",
@@ -2228,7 +2319,8 @@
    "TL": 3.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.6
  },
  {
   "id": "griess",
@@ -2246,7 +2338,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.7
  },
  {
   "id": "kristallzucker",
@@ -2264,7 +2357,8 @@
    "Pkg.": 1000.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.85
  },
  {
   "id": "staubzucker",
@@ -2280,7 +2374,8 @@
    "Pkg.": 500.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.56
  },
  {
   "id": "feinkristallzucker",
@@ -2296,7 +2391,8 @@
    "TL": 5.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.85
  },
  {
   "id": "brauner-zucker",
@@ -2312,7 +2408,8 @@
    "TL": 5.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.8
  },
  {
   "id": "vanillezucker",
@@ -2327,7 +2424,8 @@
    "TL": 4.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.85
  },
  {
   "id": "bourbon-vanillezucker",
@@ -2339,7 +2437,8 @@
    "Pkg.": 8.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.85
  },
  {
   "id": "vanilleschote",
@@ -2366,7 +2465,8 @@
    "EL": 12.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.8
  },
  {
   "id": "natron",
@@ -2381,7 +2481,8 @@
    "TL": 5.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.9
  },
  {
   "id": "trockengerm",
@@ -2439,7 +2540,8 @@
    "Pkg.": 37.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.6
  },
  {
   "id": "kakaopulver",
@@ -2455,7 +2557,8 @@
    "TL": 3.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "schokolade-zartbitter",
@@ -2529,7 +2632,8 @@
   "baseUnit": "g",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.6
  },
  {
   "id": "mandeln-gerieben",
@@ -2547,7 +2651,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "nuts"
-  ]
+  ],
+  "density": 0.45
  },
  {
   "id": "mandeln",
@@ -2594,7 +2699,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "nuts"
-  ]
+  ],
+  "density": 0.45
  },
  {
   "id": "haselnuesse",
@@ -2638,7 +2744,8 @@
    "EL": 6.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.35
  },
  {
   "id": "rosinen",
@@ -2651,7 +2758,8 @@
   "baseUnit": "g",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.65
  },
  {
   "id": "mohn",
@@ -2666,7 +2774,8 @@
    "EL": 10.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.6
  },
  {
   "id": "marillenmarmelade",
@@ -2683,7 +2792,8 @@
    "Glas": 450.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.3
  },
  {
   "id": "ribiselmarmelade",
@@ -2699,7 +2809,8 @@
    "Glas": 450.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.3
  },
  {
   "id": "erdbeermarmelade",
@@ -2714,7 +2825,8 @@
    "Glas": 450.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.3
  },
  {
   "id": "powidl",
@@ -2729,7 +2841,8 @@
    "EL": 20.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.3
  },
  {
   "id": "honig",
@@ -2744,7 +2857,8 @@
    "TL": 7.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.42
  },
  {
   "id": "ahornsirup",
@@ -2756,7 +2870,8 @@
    "EL": 15.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.32
  },
  {
   "id": "zitronat",
@@ -2783,7 +2898,8 @@
    "Pkg.": 15.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "biskotten",
@@ -2896,7 +3012,8 @@
   "baseUnit": "g",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.8
  },
  {
   "id": "lebensmittelfarbe",
@@ -2923,7 +3040,8 @@
    "Schuss": 20.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.95
  },
  {
   "id": "spaghetti",
@@ -3055,7 +3173,8 @@
    "Pkg.": 1000.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.85
  },
  {
   "id": "basmatireis",
@@ -3070,7 +3189,8 @@
    "Pkg.": 1000.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.85
  },
  {
   "id": "risottoreis",
@@ -3085,7 +3205,8 @@
    "Pkg.": 1000.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.85
  },
  {
   "id": "milchreis",
@@ -3099,7 +3220,8 @@
    "Pkg.": 500.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.85
  },
  {
   "id": "couscous",
@@ -3113,7 +3235,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.75
  },
  {
   "id": "bulgur",
@@ -3127,7 +3250,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.75
  },
  {
   "id": "polenta",
@@ -3141,7 +3265,8 @@
    "Pkg.": 500.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.7
  },
  {
   "id": "haferflocken",
@@ -3159,7 +3284,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.4
  },
  {
   "id": "muesli",
@@ -3173,7 +3299,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.45
  },
  {
   "id": "linsen",
@@ -3186,7 +3313,8 @@
   "baseUnit": "g",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.85
  },
  {
   "id": "rote-linsen",
@@ -3196,7 +3324,8 @@
   "baseUnit": "g",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.85
  },
  {
   "id": "kichererbsen",
@@ -3272,7 +3401,8 @@
    "Dose": 400.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.03
  },
  {
   "id": "passierte-paradeiser",
@@ -3287,7 +3417,8 @@
    "Pkg.": 500.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.03
  },
  {
   "id": "paradeismark",
@@ -3304,7 +3435,8 @@
    "Dose": 70.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.1
  },
  {
   "id": "ketchup",
@@ -3316,7 +3448,8 @@
    "EL": 15.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.15
  },
  {
   "id": "senf",
@@ -3335,7 +3468,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "mustard"
-  ]
+  ],
+  "density": 1.05
  },
  {
   "id": "dijonsenf",
@@ -3351,7 +3485,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "mustard"
-  ]
+  ],
+  "density": 1.05
  },
  {
   "id": "mayonnaise",
@@ -3368,7 +3503,8 @@
   "allergens": [
    "eggs",
    "mustard"
-  ]
+  ],
+  "density": 0.95
  },
  {
   "id": "sojasauce",
@@ -3387,7 +3523,8 @@
   "allergens": [
    "gluten",
    "soy"
-  ]
+  ],
+  "density": 1.15
  },
  {
   "id": "worcestershiresauce",
@@ -3404,7 +3541,8 @@
   "allergens": [
    "fish",
    "gluten"
-  ]
+  ],
+  "density": 1.1
  },
  {
   "id": "essig",
@@ -3423,7 +3561,8 @@
    "Schuss": 10.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.01
  },
  {
   "id": "balsamico",
@@ -3440,7 +3579,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "sulphites"
-  ]
+  ],
+  "density": 1.1
  },
  {
   "id": "oel",
@@ -3458,7 +3598,8 @@
    "TL": 5.0
   },
   "alwaysAvailable": true,
-  "allergens": []
+  "allergens": [],
+  "density": 0.92
  },
  {
   "id": "olivenoel",
@@ -3474,7 +3615,8 @@
    "Schuss": 10.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.91
  },
  {
   "id": "kuerbiskernoel",
@@ -3488,7 +3630,8 @@
    "EL": 15.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.92
  },
  {
   "id": "sesamoel",
@@ -3502,7 +3645,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "sesame"
-  ]
+  ],
+  "density": 0.92
  },
  {
   "id": "kokosmilch",
@@ -3516,7 +3660,8 @@
    "Dose": 400.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.98
  },
  {
   "id": "gemuesesuppe",
@@ -3536,7 +3681,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "celery"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "rindsuppe",
@@ -3554,7 +3700,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "celery"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "huehnersuppe",
@@ -3572,7 +3719,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "celery"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "semmelbroesel",
@@ -3590,7 +3738,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 0.45
  },
  {
   "id": "knoedelbrot",
@@ -3650,7 +3799,8 @@
    "Glas": 10.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "pieceGrams": 30.0
  },
  {
   "id": "pesto",
@@ -3669,7 +3819,8 @@
   "allergens": [
    "milk",
    "nuts"
-  ]
+  ],
+  "density": 1.0
  },
  {
   "id": "erdnussbutter",
@@ -3683,7 +3834,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "peanuts"
-  ]
+  ],
+  "density": 1.1
  },
  {
   "id": "nutella",
@@ -3701,7 +3853,8 @@
   "allergens": [
    "milk",
    "nuts"
-  ]
+  ],
+  "density": 1.2
  },
  {
   "id": "sesam",
@@ -3715,7 +3868,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "sesame"
-  ]
+  ],
+  "density": 0.6
  },
  {
   "id": "sonnenblumenkerne",
@@ -3727,7 +3881,8 @@
    "EL": 10.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.55
  },
  {
   "id": "kuerbiskerne",
@@ -3739,7 +3894,8 @@
    "EL": 10.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.55
  },
  {
   "id": "pinienkerne",
@@ -3751,7 +3907,8 @@
    "EL": 10.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.6
  },
  {
   "id": "chiasamen",
@@ -3763,7 +3920,8 @@
    "EL": 12.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.65
  },
  {
   "id": "leinsamen",
@@ -3775,7 +3933,8 @@
    "EL": 10.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.65
  },
  {
   "id": "erdnuesse",
@@ -3827,7 +3986,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.3
  },
  {
   "id": "kaffee",
@@ -3840,7 +4000,8 @@
   "baseUnit": "g",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.4
  },
  {
   "id": "tee",
@@ -3890,7 +4051,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "pieceGrams": 40.0
  },
  {
   "id": "taco-schalen",
@@ -3921,7 +4083,8 @@
    "EL": 15.0
   },
   "alwaysAvailable": true,
-  "allergens": []
+  "allergens": [],
+  "density": 1.2
  },
  {
   "id": "pfeffer",
@@ -3937,7 +4100,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": true,
-  "allergens": []
+  "allergens": [],
+  "density": 0.5
  },
  {
   "id": "pfeffer-weiss",
@@ -3951,7 +4115,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.55
  },
  {
   "id": "paprikapulver-edelsuess",
@@ -3968,7 +4133,8 @@
    "EL": 8.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "paprikapulver-scharf",
@@ -3983,7 +4149,8 @@
    "TL": 3.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "paprikapulver-geraeuchert",
@@ -3998,7 +4165,8 @@
    "TL": 3.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "chilipulver",
@@ -4014,7 +4182,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "kuemmel",
@@ -4028,7 +4197,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "kuemmel-gemahlen",
@@ -4040,7 +4210,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "kreuzkuemmel",
@@ -4055,7 +4226,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "koriander-gemahlen",
@@ -4069,7 +4241,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "curry",
@@ -4084,7 +4257,8 @@
    "EL": 8.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "kurkuma",
@@ -4098,7 +4272,8 @@
    "TL": 3.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.5
  },
  {
   "id": "zimt",
@@ -4114,7 +4289,8 @@
    "EL": 8.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.55
  },
  {
   "id": "zimtstange",
@@ -4141,7 +4317,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.5
  },
  {
   "id": "nelken",
@@ -4206,7 +4383,8 @@
    "TL": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.15
  },
  {
   "id": "oregano",
@@ -4220,7 +4398,8 @@
    "TL": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.15
  },
  {
   "id": "thymian",
@@ -4234,7 +4413,8 @@
    "TL": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.2
  },
  {
   "id": "rosmarin",
@@ -4260,7 +4440,8 @@
    "TL": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.15
  },
  {
   "id": "petersilie-getrocknet",
@@ -4272,7 +4453,8 @@
    "TL": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.15
  },
  {
   "id": "italienische-kraeuter",
@@ -4287,7 +4469,8 @@
    "TL": 1.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.15
  },
  {
   "id": "knoblauchpulver",
@@ -4301,7 +4484,8 @@
    "TL": 3.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.6
  },
  {
   "id": "zwiebelpulver",
@@ -4313,7 +4497,8 @@
    "TL": 3.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.6
  },
  {
   "id": "senfkoerner",
@@ -4349,7 +4534,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "vanillemark",
@@ -4373,7 +4559,8 @@
    "TL": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "suppengewuerz",
@@ -4400,7 +4587,8 @@
    "TL": 3.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.45
  },
  {
   "id": "brathendlgewuerz",
@@ -4432,7 +4620,8 @@
    "g": 1.0
   },
   "alwaysAvailable": true,
-  "allergens": []
+  "allergens": [],
+  "density": 1.0
  },
  {
   "id": "erbsen",
@@ -4577,7 +4766,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "pieceGrams": 50.0
  },
  {
   "id": "schwarzbrot",
@@ -4612,7 +4802,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "pieceGrams": 25.0
  },
  {
   "id": "vollkornbrot",
@@ -4641,7 +4832,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "pieceGrams": 250.0
  },
  {
   "id": "kipferl",
@@ -4657,7 +4849,8 @@
   "allergens": [
    "gluten",
    "milk"
-  ]
+  ],
+  "pieceGrams": 50.0
  },
  {
   "id": "laugengebaeck",
@@ -4712,7 +4905,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "pieceGrams": 60.0
  },
  {
   "id": "weisswein",
@@ -4730,7 +4924,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "sulphites"
-  ]
+  ],
+  "density": 0.99
  },
  {
   "id": "rotwein",
@@ -4747,7 +4942,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "sulphites"
-  ]
+  ],
+  "density": 0.99
  },
  {
   "id": "bier",
@@ -4764,7 +4960,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "gluten"
-  ]
+  ],
+  "density": 1.01
  },
  {
   "id": "apfelsaft",
@@ -4776,7 +4973,8 @@
   "baseUnit": "ml",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.04
  },
  {
   "id": "orangensaft",
@@ -4788,7 +4986,8 @@
   "baseUnit": "ml",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.04
  },
  {
   "id": "zitronensaft",
@@ -4804,7 +5003,8 @@
    "Spritzer": 2.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.03
  },
  {
   "id": "mineralwasser",
@@ -4820,7 +5020,8 @@
    "Flasche": 1000.0
   },
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.0
  },
  {
   "id": "sirup",
@@ -4833,7 +5034,8 @@
   "baseUnit": "ml",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 1.3
  },
  {
   "id": "sekt",
@@ -4849,7 +5051,8 @@
   "alwaysAvailable": false,
   "allergens": [
    "sulphites"
-  ]
+  ],
+  "density": 0.99
  },
  {
   "id": "schnaps",
@@ -4863,7 +5066,8 @@
   "baseUnit": "ml",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "density": 0.95
  },
  {
   "id": "tofu",

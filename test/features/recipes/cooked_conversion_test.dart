@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -120,6 +123,23 @@ void main() {
     expect((cream['conversions'] as Map)['g'], 1);
   });
 
+  test('seed list: common liquids and pieces need no question', () {
+    final seed = [
+      for (final m in (jsonDecode(
+        File('assets/seed/ingredients_de.json').readAsStringSync(),
+      ) as List).cast<Map<String, dynamic>>())
+        Ingredient.fromMap(m['id'] as String, m),
+    ];
+    Ingredient by(String id) => seed.firstWhere((i) => i.id == id);
+    expect(by('schlagobers').toBase(50, 'g'), 50);
+    expect(by('oel').toBase(100, 'g')!.round(), 109);
+    // Own conversion (1 EL = 20 g) wins over the density.
+    expect(by('honig').toBase(1, 'EL'), 20);
+    expect(by('honig').toBase(100, 'ml')!.round(), 142);
+    expect(by('banane').toBase(1.2, 'kg'), 10);
+    expect(by('ei').toBase(120, 'g'), 2);
+  });
+
   test('backfill v3 adds missing synonyms and conversions only', () async {
     final db = FakeFirebaseFirestore();
     final hid = await seedHousehold(db);
@@ -146,6 +166,6 @@ void main() {
     expect(cream['name'], 'Sahne');
     expect(cream['synonyms'], ['Schlagobers', 'Schlag']);
     expect(cream['conversions'], {'Becher': 200, 'g': 1});
-    expect((await h.get()).data()!['seedVersion'], 3);
+    expect((await h.get()).data()!['seedVersion'], 4);
   });
 }

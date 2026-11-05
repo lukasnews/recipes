@@ -30,6 +30,8 @@ class Ingredient {
     this.conversions = const {},
     this.alwaysAvailable = false,
     this.allergens = const {},
+    this.density,
+    this.pieceGrams,
   });
 
   factory Ingredient.fromMap(String id, Map<String, dynamic> m) => Ingredient(
@@ -45,6 +47,8 @@ class Ingredient {
     },
     alwaysAvailable: m.flag('alwaysAvailable'),
     allergens: Allergen.parseAll(m.strings('allergens')),
+    density: m.dbl('density'),
+    pieceGrams: m.dbl('pieceGrams'),
   );
 
   final String id;
@@ -60,6 +64,13 @@ class Ingredient {
   /// EU allergens, e.g. gluten for flour, milk for Topfen.
   final Set<Allergen> allergens;
 
+  /// Grams per millilitre (Wasser 1, Öl 0.92, Mehl 0.55): g ↔ ml without
+  /// asking.
+  final double? density;
+
+  /// Average grams per piece (Banane 120): kg ↔ Stk. without asking.
+  final double? pieceGrams;
+
   Map<String, dynamic> toMap() => {
     'name': name,
     'synonyms': synonyms,
@@ -68,6 +79,8 @@ class Ingredient {
     'conversions': conversions,
     'alwaysAvailable': alwaysAvailable,
     'allergens': [for (final a in allergens) a.name]..sort(),
+    'density': ?density,
+    'pieceGrams': ?pieceGrams,
   };
 
   MatchCandidate get candidate =>
@@ -75,7 +88,7 @@ class Ingredient {
 
   /// Amount in [baseUnit], or null if the unit can't be converted.
   double? toBase(double amount, String? unit) =>
-      Units.toBase(amount, unit, baseUnit, conversions);
+      Units.toBase(amount, unit, baseUnit, conversions, density, pieceGrams);
 
   Ingredient copyWith({
     String? name,
@@ -85,6 +98,8 @@ class Ingredient {
     Map<String, double>? conversions,
     bool? alwaysAvailable,
     Set<Allergen>? allergens,
+    double? Function()? density,
+    double? Function()? pieceGrams,
   }) => Ingredient(
     id: id,
     name: name ?? this.name,
@@ -94,6 +109,8 @@ class Ingredient {
     conversions: conversions ?? this.conversions,
     alwaysAvailable: alwaysAvailable ?? this.alwaysAvailable,
     allergens: allergens ?? this.allergens,
+    density: density == null ? this.density : density(),
+    pieceGrams: pieceGrams == null ? this.pieceGrams : pieceGrams(),
   );
 
   /// Shows [preferred] (one of the synonyms) as the name; the old name becomes

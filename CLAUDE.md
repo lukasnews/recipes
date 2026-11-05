@@ -81,6 +81,8 @@ households/{hid}/ingredients/{ingredientId}
   conversions: {unit: factorToBase}   # {"EL": 10, "Packung": 1000}
   alwaysAvailable: bool               # Salz, Pfeffer, Wasser, Öl
   allergens: [string]                # EU-14, siehe members
+  density?: number                   # g per ml (Wasser 1, Öl 0.92, Mehl 0.55): g <-> ml
+  pieceGrams?: number                # avg g per piece (Banane 120): kg <-> Stk.
 
 households/{hid}/recipes/{recipeId}
   title, category      # cooking|cake|cookies|<custom>
@@ -120,7 +122,7 @@ households/{hid}/cookLog/{logId}
 
 ## Fachliche Regeln
 
-- **Einheiten:** Jede Zutat hat eine Basiseinheit (g, ml, pcs). Allgemeine Umrechnungen sind fix in `core/units` (kg→g, l→ml, EL = 15 ml, TL = 5 ml, Prise, Msp.). Zutatenbezogene Umrechnungen kommen aus `ingredient.conversions`. Fehlt eine Umrechnung, fragt die UI einmal nach und speichert sie an der Zutat. Nie stillschweigend raten.
+- **Einheiten:** Jede Zutat hat eine Basiseinheit (g, ml, pcs). Reihenfolge in `Units.factorToBase`: 1. `ingredient.conversions` (eigene, haben Vorrang), 2. allgemeine Umrechnungen in `core/units` (kg→g, l→ml, EL = 15 ml, TL = 5 ml, Prise, Msp.), 3. `density` (g ↔ ml, auch EL/TL bei Gramm-Zutaten) und `pieceGrams` (g/kg ↔ Stk.). Seed-Liste trägt Dichte für ~130 Flüssigkeiten, Milchprodukte, Mehle, Zucker, Gewürze und Stückgewichte für ~70 Obst/Gemüse/Eier/Gebäck (Durchschnittswerte); in der Zutaten-Bearbeitung unter „Gewicht“ änderbar. Erst wenn nichts davon greift, fragt die UI einmal nach und speichert die Umrechnung an der Zutat. Nie stillschweigend raten.
 - **Zuordnung von Zutatnamen** (`core/matching`): 1. exakter Name, 2. Synonym, 3. normalisiert (Kleinschreibung, Umlaute, Plural, Zusätze wie „weich“, „gehackt“ entfernt), 4. ähnlichster Vorschlag (markiert als unsicher), 5. neue Zutat. `rawText` bleibt immer erhalten.
 - **Vorrat ändern** nur mit `FieldValue.increment`, nie Menge lesen und überschreiben. So bleiben gleichzeitige Offline-Änderungen mehrerer Handys korrekt.
 - **„Gekocht“:** Fehlende Umrechnungen (z. B. „50 g Schlag“ bei Schlagobers in ml, `unconvertibleUnits`) werden vorher einmal erfragt und an der Zutat gespeichert; abgebrochene erscheinen mit 0 zum Ausfüllen – nie still weglassen. Dialog zeigt alle geplanten Abzüge (skaliert auf gewählte Portionen), jede Menge editierbar. Nach Bestätigen: Batch mit Increments + `cookLog`-Eintrag. „Rückgängig“ bucht die Deductions aus dem Log zurück. Vorrat darf nicht unter 0 fallen (auf 0 kappen, Hinweis zeigen).
@@ -146,7 +148,7 @@ households/{hid}/cookLog/{logId}
 - **Neue Zutat beim Speichern:** Zeilen ohne Treffer legen eine Zutat an (Basiseinheit aus der Einheit geraten, Abteilung `other`). Unsichere Treffer werden im Rezept-Editor markiert und können per Tippen geändert werden.
 - **Gerichte im Tiefkühler:** Vorrat-Reiter → „Gerichte“; Portionen mit +/− (Increment, letzte Portion löscht den Eintrag), Hinweis „bald essen“ nach 90 Tagen. Im „Gekocht“-Dialog „Reste einfrieren (Portionen)“; Rezept-Detail zeigt Portionen im Tiefkühler.
 - **Einkauf → Vorrat:** Übernahme-Bildschirm (`planTransfer`) mit Menge/Einheit/Lagerort je abgehaktem Eintrag; die Einheit der Liste bleibt (5 kg Bananen bei Stück-Zutat), Auswahl = Zutaten-Einheiten + g/kg/ml/l/Stk. (`transferUnits`); Freitext-Einträge werden nachträglich zugeordnet, fehlende Umrechnung einmal erfragt; Einträge ohne Menge werden nur von der Liste genommen.
-- **Allergien:** pro Person in `members/{uid}` (Einstellungen → Allergien & Unverträglichkeiten). Rezept-Allergene = Vereinigung der Zutaten-Allergene; Rezept-Detail zeigt Warnung mit betroffenen Personen, Liste ein Warnsymbol und den Filter „Für alle verträglich“. Seed-Daten tragen Allergene; ältere Haushalte bekommen sie einmalig per `backfillSeed` (`households.seedVersion`; v3 ergänzt auch fehlende Synonyme und Umrechnungen gleicher Basiseinheit, überschreibt nichts – z. B. „Schlag“ und g→ml für Schlagobers/Milch/Wasser).
+- **Allergien:** pro Person in `members/{uid}` (Einstellungen → Allergien & Unverträglichkeiten). Rezept-Allergene = Vereinigung der Zutaten-Allergene; Rezept-Detail zeigt Warnung mit betroffenen Personen, Liste ein Warnsymbol und den Filter „Für alle verträglich“. Seed-Daten tragen Allergene; ältere Haushalte bekommen sie einmalig per `backfillSeed` (`households.seedVersion`; v3 ergänzt auch fehlende Synonyme und Umrechnungen gleicher Basiseinheit, v4 Dichte und Stückgewicht; überschreibt nichts – z. B. „Schlag“ und g→ml für Schlagobers).
 - **Mengen anzeigen** (pro Person, `users/{uid}.unitDisplay`): Wie im Rezept | Gramm & Milliliter | Dekagramm (österreichisch). `core/units/display_units.dart` rechnet nur reine Masse/Volumen (mg/g/dag/kg, ml/cl/dl/l) um; EL, TL, Stk., Pkg. bleiben. Gilt in Rezept-Detail, Kochmodus und Einkaufsliste.
 - **Österreichische Begriffe** sind gleichwertig: Topfen/Quark, Schlagobers/Sahne, Paradeiser/Tomaten, Erdäpfel/Kartoffeln, Karfiol/Blumenkohl, Marillen/Aprikosen, Faschiertes/Hackfleisch, Mehl glatt/griffig.
 
