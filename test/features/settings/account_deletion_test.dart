@@ -42,6 +42,15 @@ void main() {
                 .data()!['inviteCode']
             as String;
     final deletedPhotos = <String>[];
+    await db.collection('sharedRecipes').doc('K7MQX4PA').set({
+      'title': 'Schmarrn',
+      'createdBy': 'u1',
+      'photoPath': 'shared/u1/K7MQX4PA.jpg',
+    });
+    await db.collection('sharedRecipes').doc('OTHER234').set({
+      'title': 'Gulasch',
+      'createdBy': 'u2',
+    });
 
     await AccountDeletionService(
       db,
@@ -56,7 +65,18 @@ void main() {
       (await db.collection('invites').doc(aloneCode).get()).exists,
       isFalse,
     );
-    expect(deletedPhotos, ['households/$alone/recipes/r1/1.jpg']);
+    expect(deletedPhotos, [
+      'households/$alone/recipes/r1/1.jpg',
+      'shared/u1/K7MQX4PA.jpg',
+    ]);
+    expect(
+      (await db.collection('sharedRecipes').doc('K7MQX4PA').get()).exists,
+      isFalse,
+    );
+    expect(
+      (await db.collection('sharedRecipes').doc('OTHER234').get()).exists,
+      isTrue,
+    );
 
     final s = db.collection('households').doc(shared);
     expect((await s.get()).data()!['memberIds'], ['u2']);

@@ -27,6 +27,15 @@ class _MemberSyncState extends ConsumerState<MemberSync> {
     final user = ref.read(authUserProvider).value;
     if (user != null) {
       fire(ref.read(memberRepositoryProvider).ensure(user.uid, user.bestName));
+      // Expired recipes sent to others: remove copy and public photo.
+      fire(() async {
+        final photos = await ref
+            .read(sharedRecipeRepositoryProvider)
+            .deleteExpired(user.uid, DateTime.now());
+        if (photos.isNotEmpty) {
+          await ref.read(photoRepositoryProvider).deleteFiles(photos);
+        }
+      }());
     }
     final hid = ref.read(householdIdProvider);
     if (hid != null) {

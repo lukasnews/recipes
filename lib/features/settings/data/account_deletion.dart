@@ -35,6 +35,20 @@ class AccountDeletionService {
     for (final hid in ids) {
       await _leave(uid, hid);
     }
+    // Recipes sent to other households (and their photos): links stop
+    // working; copies others already took over stay theirs.
+    final sent = await _db
+        .collection('sharedRecipes')
+        .where('createdBy', isEqualTo: uid)
+        .get();
+    final photos = [
+      for (final d in sent.docs)
+        if (d.data()['photoPath'] case final String p) p,
+    ];
+    if (photos.isNotEmpty) await _deleteFiles(photos);
+    for (final d in sent.docs) {
+      await d.reference.delete();
+    }
     await user.reference.delete();
   }
 

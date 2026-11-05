@@ -47,4 +47,18 @@ class SharedRecipeRepository {
       );
 
   Future<void> delete(String code) => _col.doc(code).delete();
+
+  /// Deletes what [uid] sent that has expired; returns their photo paths
+  /// (public by link) so the caller removes them from Storage too.
+  Future<List<String>> deleteExpired(String uid, DateTime now) async {
+    final snap = await _col.where('createdBy', isEqualTo: uid).get();
+    final photos = <String>[];
+    for (final d in snap.docs) {
+      final r = SharedRecipe.fromMap(d.id, d.data());
+      if (!r.isExpired(now)) continue;
+      await d.reference.delete();
+      if (r.photoPath != null) photos.add(r.photoPath!);
+    }
+    return photos;
+  }
 }

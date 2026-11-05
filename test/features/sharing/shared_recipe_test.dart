@@ -78,6 +78,33 @@ void main() {
     expect(draft.notes, 'Von Lukas');
   });
 
+  test('expired sends are cleaned up with their photos', () async {
+    final db = FakeFirebaseFirestore();
+    final repo = SharedRecipeRepository(db);
+    final now = DateTime(2026, 11, 5);
+    await repo.send(
+      SharedRecipe(
+        code: 'OLD23456',
+        title: 'Alt',
+        createdBy: 'u1',
+        photoPath: 'shared/u1/OLD23456.jpg',
+        createdAt: now,
+        expiresAt: now.subtract(const Duration(days: 1)),
+      ),
+    );
+    await repo.send(
+      SharedRecipe(
+        code: 'NEW23456',
+        title: 'Neu',
+        createdBy: 'u1',
+        createdAt: now,
+      ),
+    );
+    expect(await repo.deleteExpired('u1', now), ['shared/u1/OLD23456.jpg']);
+    expect(await repo.fetch('OLD23456'), isNull);
+    expect(await repo.fetch('NEW23456'), isNotNull);
+  });
+
   testWidgets('send from the recipe, receive by link, take it over', (
     tester,
   ) async {
