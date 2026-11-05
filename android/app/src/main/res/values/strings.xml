@@ -3,4 +3,11 @@
     <string name="widget_label">BaCo Einkauf</string>
     <string name="widget_description">Heutiges Gericht und offene Einkaufsliste</string>
     <string name="widget_open_app">BaCo öffnen, um die Liste zu laden</string>
+    <string name="plan_widget_label">BaCo Wochenplan</string>
+    <string name="plan_widget_description">Was heute und in den nächsten Tagen ansteht</string>
+    <string name="plan_widget_title">Wochenplan</string>
+    <string name="plan_widget_today">Heute: %1$s</string>
+    <string name="plan_widget_tomorrow">Morgen</string>
+    <string name="plan_widget_nothing">nichts geplant</string>
+    <string name="plan_widget_open_app">BaCo öffnen, um den Plan zu laden</string>
 </resources>

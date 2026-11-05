@@ -10,6 +10,7 @@ import '../../../core/firebase/fire.dart';
 import '../../../core/units/display_units.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../ingredients/domain/ingredient.dart';
+import '../../mealplan/data/meal_plan_repository.dart';
 import '../../mealplan/domain/meal_plan_day.dart';
 import '../../pantry/domain/frozen_meal.dart';
 import '../../recipes/domain/recipe.dart';
@@ -34,6 +35,27 @@ List<String> widgetLines(
       ].where((s) => s.isNotEmpty).join(' '),
   ];
 }
+
+/// Meal plan widget data: titles per day from [from] for [days] days
+/// ("" when nothing is planned), recipes first, then frozen dishes.
+Map<String, String> planWidgetDays(
+  Map<String, MealPlanDay> plan,
+  Map<String, Recipe> recipes,
+  Map<String, FrozenMeal> frozen,
+  DateTime from, {
+  int days = 14,
+}) => {
+  for (var i = 0; i < days; i++)
+    dayKey(DateTime(from.year, from.month, from.day + i)): () {
+      final day = plan[dayKey(DateTime(from.year, from.month, from.day + i))];
+      return [
+        for (final id in day?.recipeIds ?? const <String>[])
+          ?recipes[id]?.title,
+        for (final id in day?.frozenMealIds ?? const <String>[])
+          ?frozen[id]?.title,
+      ].join(', ');
+    }(),
+};
 
 /// Keeps the home screen widget up to date while the app runs and opens
 /// the shopping list when the widget is tapped.
@@ -60,7 +82,13 @@ class _WidgetSyncState extends ConsumerState<WidgetSync> {
   }
 
   void _open(Uri? uri) {
-    if (uri?.host == 'shopping' && mounted) context.go(Routes.shopping);
+    if (!mounted) return;
+    switch (uri?.host) {
+      case 'shopping':
+        context.go(Routes.shopping);
+      case 'mealplan':
+        context.go(Routes.mealPlan);
+    }
   }
 
   @override
@@ -84,13 +112,8 @@ class _WidgetSyncState extends ConsumerState<WidgetSync> {
             in ref.watch(frozenMealsProvider).value ?? const <FrozenMeal>[])
           m.id: m,
       };
-      final day = plan[dayKey(DateTime.now())];
-      final todayTitles = [
-        for (final id in day?.recipeIds ?? const <String>[])
-          ?recipes[id]?.title,
-        for (final id in day?.frozenMealIds ?? const <String>[])
-          ?frozen[id]?.title,
-      ];
+      final days = planWidgetDays(plan, recipes, frozen, DateTime.now());
+      final todayText = days.values.first;
       final lines = widgetLines(
         shopping,
         ref.watch(ingredientsByIdProvider),
@@ -99,9 +122,8 @@ class _WidgetSyncState extends ConsumerState<WidgetSync> {
       );
       final content = WidgetContent(
         title: l10n.widgetTitle(lines.length),
-        today: todayTitles.isEmpty
-            ? null
-            : l10n.widgetToday(todayTitles.join(', ')),
+        today: todayText.isEmpty ? null : l10n.widgetToday(todayText),
+        plan: days,
         items: lines.isEmpty
             ? l10n.widgetListEmpty
             : [

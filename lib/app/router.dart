@@ -49,7 +49,11 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       // App links like baco://shopping (home screen widget) -> the tab.
       if (state.uri.scheme == 'baco') {
-        return state.uri.host == 'shopping' ? Routes.shopping : Routes.recipes;
+        return switch (state.uri.host) {
+          'shopping' => Routes.shopping,
+          'mealplan' => Routes.mealPlan,
+          _ => Routes.recipes,
+        };
       }
       final loc = state.matchedLocation;
       final gate = switch (refresh.value) {

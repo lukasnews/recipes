@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:recipes/features/auth/data/auth_repository.dart';
 import 'package:recipes/features/mealplan/data/meal_plan_repository.dart';
 import 'package:recipes/features/mealplan/domain/meal_plan_day.dart';
+import 'package:recipes/features/pantry/domain/frozen_meal.dart';
 import 'package:recipes/features/recipes/data/recipe_repository.dart';
 import 'package:recipes/features/recipes/domain/recipe.dart';
+import 'package:recipes/features/shopping/presentation/widget_sync.dart';
 
 import '../../helpers/fakes.dart';
 
@@ -52,6 +54,14 @@ void main() {
     expect(last.today, 'Heute: Kaiserschmarrn');
     // Linked item shows the ingredient's current name; bread before dairy.
     expect(last.items, '• 6 Semmeln\n• 250 ml Schlagobers');
+    final today = dayKey(DateTime.now());
+    expect(last.plan.length, 14);
+    expect(last.plan[today], 'Kaiserschmarrn');
+    expect(last.plan.values.skip(1), everyElement(''));
+
+    widget.clickController.add(Uri.parse('baco://mealplan'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Woche ab'), findsOneWidget);
 
     widget.clickController.add(Uri.parse('baco://shopping'));
     await tester.pumpAndSettle();
@@ -75,5 +85,31 @@ void main() {
         .go('baco://shopping/');
     await tester.pumpAndSettle();
     expect(find.textContaining('Was brauchst du?'), findsOneWidget);
+  });
+
+  test('plan days: recipes and frozen dishes per day, empty days blank', () {
+    final from = DateTime(2026, 12, 31);
+    final days = planWidgetDays(
+      {
+        '2026-12-31': const MealPlanDay(recipeIds: ['g'], frozenMealIds: ['f']),
+        '2027-01-02': const MealPlanDay(recipeIds: ['x', 'g']),
+      },
+      {'g': const Recipe(id: 'g', title: 'Gulasch')},
+      {
+        'f': FrozenMeal(
+          id: 'f',
+          title: 'Krautfleckerl',
+          portions: 2,
+          frozenOn: from,
+        ),
+      },
+      from,
+      days: 3,
+    );
+    expect(days, {
+      '2026-12-31': 'Gulasch, Krautfleckerl',
+      '2027-01-01': '',
+      '2027-01-02': 'Gulasch',
+    });
   });
 }
