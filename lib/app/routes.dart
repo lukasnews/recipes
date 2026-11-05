@@ -11,6 +11,7 @@ abstract final class Routes {
   static const mealPlan = '/mealplan';
   static const shopping = '/shopping';
   static const pantry = '/pantry';
+  static const inventory = '/pantry/inventory';
   static const settings = '/settings';
   static const ingredients = '/settings/ingredients';
   static const allergies = '/settings/allergies';

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/routes.dart';
 import '../../../core/firebase/fire.dart';
 import '../../../core/units/units.dart';
 import '../../../core/widgets/async_view.dart';
@@ -42,6 +44,11 @@ class PantryScreen extends StatelessWidget {
         appBar: AppBar(
           title: Text(l10n.navPantry),
           actions: [
+            IconButton(
+              tooltip: l10n.inventoryTitle,
+              onPressed: () => context.push(Routes.inventory),
+              icon: const Icon(Icons.fact_check_outlined),
+            ),
             IconButton(
               tooltip: l10n.scanBarcode,
               onPressed: () => scanToPantry(context),

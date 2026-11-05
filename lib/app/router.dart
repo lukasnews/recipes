@@ -9,6 +9,7 @@ import '../features/import/domain/recipe_draft.dart';
 import '../features/ingredients/presentation/ingredient_edit_screen.dart';
 import '../features/ingredients/presentation/ingredients_screen.dart';
 import '../features/mealplan/presentation/meal_plan_screen.dart';
+import '../features/pantry/presentation/inventory_screen.dart';
 import '../features/pantry/presentation/pantry_screen.dart';
 import '../features/recipes/presentation/cook_mode_screen.dart';
 import '../features/recipes/presentation/recipe_detail_screen.dart';
@@ -166,6 +167,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.pantry,
                 builder: (context, state) => const PantryScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'inventory',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const InventoryScreen(),
+                  ),
+                ],
               ),
             ],
           ),
