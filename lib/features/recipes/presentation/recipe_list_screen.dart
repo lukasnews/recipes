@@ -50,6 +50,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
   bool _showFilters = false;
   bool _favoritesOnly = false;
   String? _collection;
+  String? _tag;
   String _query = '';
 
   /// Example recipes for a household that has none (yet).
@@ -95,6 +96,8 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
           if (_collection != null && !collections.contains(_collection)) {
             _collection = null;
           }
+          final tags = ref.watch(tagsProvider).take(12).toList();
+          if (_tag != null && !tags.contains(_tag)) _tag = null;
           final filtered = recipes
               .where((r) => _category == null || r.category == _category)
               .where((r) => recipeMatches(r, _query))
@@ -104,6 +107,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                 (r) =>
                     _collection == null || r.collections.contains(_collection),
               )
+              .where((r) => _tag == null || r.tags.contains(_tag))
               .toList();
           var coverages = [
             for (final r in filtered) computeCoverage(r, ingredients, pantry),
@@ -127,6 +131,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
             _safeForAll && showSafeFilter,
             _favoritesOnly,
             _collection != null,
+            _tag != null,
           ].where((b) => b).length;
 
           return Column(
@@ -202,6 +207,13 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                               onSelected: (v) =>
                                   setState(() => _favoritesOnly = v),
                             ),
+                            for (final t in tags)
+                              FilterChip(
+                                label: Text('#$t'),
+                                selected: _tag == t,
+                                onSelected: (v) =>
+                                    setState(() => _tag = v ? t : null),
+                              ),
                             for (final c in collections)
                               FilterChip(
                                 avatar: const Icon(

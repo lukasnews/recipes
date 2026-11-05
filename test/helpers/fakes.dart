@@ -229,6 +229,18 @@ class FakeExtractor implements RecipeExtractor {
     if (fail) throw Exception('offline');
     return nutrition;
   }
+
+  List<String> tags = const ['vegetarisch', 'süß', 'schnell'];
+  List<String>? lastKnownTags;
+  @override
+  Future<List<String>> suggestTags(
+    String recipeText,
+    List<String> known,
+  ) async {
+    lastKnownTags = known;
+    if (fail) throw Exception('offline');
+    return tags;
+  }
 }
 
 class FakeOcr implements TextRecognizerService {

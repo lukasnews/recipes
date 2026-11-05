@@ -1046,5 +1046,9 @@
   "settingsShopping": "Einkaufen",
   "settingsShoppingSubtitle": "Geschäfte, Flugblätter, Reihenfolge der Abteilungen",
   "settingsDataSubtitle": "Sichern, wiederherstellen, gesendete Rezepte",
+  "tagsSuggest": "Tags vorschlagen (KI)",
+  "tagsSuggesting": "Die KI sucht passende Tags …",
+  "tagsSuggestFailed": "Tags konnten nicht vorgeschlagen werden (Internet?).",
+  "tagsSuggestTitle": "Tags",
   "@ratingStars": {"placeholders": {"count": {"type": "int"}}}
 }

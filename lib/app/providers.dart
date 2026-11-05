@@ -397,6 +397,20 @@ final collectionsProvider = Provider<List<String>>((ref) {
   return names.toList()..sort();
 });
 
+/// Tags used in the household, most used first.
+final tagsProvider = Provider<List<String>>((ref) {
+  final counts = <String, int>{};
+  for (final r in ref.watch(recipesProvider).value ?? const <Recipe>[]) {
+    for (final t in r.tags) {
+      counts[t] = (counts[t] ?? 0) + 1;
+    }
+  }
+  return counts.keys.toList()..sort((a, b) {
+    final c = counts[b]!.compareTo(counts[a]!);
+    return c != 0 ? c : a.compareTo(b);
+  });
+});
+
 /// Shopping list sections in this person's order.
 /// The household's shops (Hofer, Billa, …) in its order.
 final storesProvider = Provider<List<String>>(

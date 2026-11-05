@@ -70,6 +70,36 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     );
   }
 
+  /// "Tags vorschlagen (KI)": suggestions to tick, then only the tags are
+  /// saved (the nutrition estimate stays).
+  Future<void> _suggestTags(Recipe recipe) async {
+    final l10n = context.l10n;
+    showSnack(context, l10n.tagsSuggesting);
+    List<String> suggested;
+    try {
+      final extractor = await ref.read(recipeExtractorProvider.future);
+      suggested = await extractor.suggestTags(
+        [
+          recipe.title,
+          for (final l in recipe.ingredients) l.rawText,
+          for (final s in recipe.steps) s.text,
+        ].join('\n'),
+        ref.read(tagsProvider),
+      );
+    } catch (e, st) {
+      reportError(e, st);
+      if (mounted) showSnack(context, l10n.tagsSuggestFailed);
+      return;
+    }
+    if (!mounted) return;
+    final chosen = await showDialog<List<String>>(
+      context: context,
+      builder: (_) => _TagsDialog(current: recipe.tags, suggested: suggested),
+    );
+    if (chosen == null) return;
+    fire(ref.read(recipeRepositoryProvider).setTags(recipe.id, chosen));
+  }
+
   Future<void> _editCollections(Recipe recipe) async {
     final result = await showModalBottomSheet<List<String>>(
       context: context,
@@ -295,6 +325,13 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 child: ListTile(
                   leading: const Icon(Icons.send_outlined),
                   title: Text(l10n.sendRecipeMenu),
+                ),
+              ),
+              PopupMenuItem(
+                onTap: () => fire(_suggestTags(stored)),
+                child: ListTile(
+                  leading: const Icon(Icons.sell_outlined),
+                  title: Text(l10n.tagsSuggest),
                 ),
               ),
               PopupMenuItem(
@@ -759,6 +796,60 @@ class _PanDialogState extends State<_PanDialog> {
               ? null
               : () => Navigator.pop(context, _input.value ?? value),
           child: Text(l10n.panConvertApply),
+        ),
+      ],
+    );
+  }
+}
+
+/// Current tags plus AI suggestions, each as a chip to keep or drop.
+class _TagsDialog extends StatefulWidget {
+  const _TagsDialog({required this.current, required this.suggested});
+
+  final List<String> current;
+  final List<String> suggested;
+
+  @override
+  State<_TagsDialog> createState() => _TagsDialogState();
+}
+
+class _TagsDialogState extends State<_TagsDialog> {
+  late final List<String> _all = [
+    ...widget.current,
+    for (final t in widget.suggested)
+      if (!widget.current.any((c) => c.toLowerCase() == t.toLowerCase())) t,
+  ];
+  late final Set<String> _chosen = {..._all};
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return AlertDialog(
+      title: Text(l10n.tagsSuggestTitle),
+      content: Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        children: [
+          for (final t in _all)
+            FilterChip(
+              label: Text('#$t'),
+              selected: _chosen.contains(t),
+              onSelected: (on) =>
+                  setState(() => on ? _chosen.add(t) : _chosen.remove(t)),
+            ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, [
+            for (final t in _all)
+              if (_chosen.contains(t)) t,
+          ]),
+          child: Text(l10n.save),
         ),
       ],
     );

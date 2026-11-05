@@ -26,7 +26,49 @@ abstract class RecipeExtractor {
 
   /// Rough nutrition per serving for a recipe given as text.
   Future<Nutrition> estimateNutrition(String recipeText);
+
+  /// A few short tags ("vegetarisch", "schnell") for a recipe given as
+  /// text, preferring [known] tags the household already uses.
+  Future<List<String>> suggestTags(String recipeText, List<String> known);
 }
+
+/// Tags the AI chooses from (plus the household's own).
+const tagVocabulary = [
+  'vegetarisch',
+  'vegan',
+  'glutenfrei',
+  'laktosefrei',
+  'schnell',
+  'einfach',
+  'günstig',
+  'deftig',
+  'leicht',
+  'süß',
+  'pikant',
+  'scharf',
+  'Ofen',
+  'One-Pot',
+  'Suppe',
+  'Salat',
+  'Beilage',
+  'Hauptspeise',
+  'Vorspeise',
+  'Dessert',
+  'Frühstück',
+  'Fingerfood',
+  'Party',
+  'Kinder',
+  'Fleisch',
+  'Fisch',
+  'Meal-Prep',
+  'Sommer',
+  'Winter',
+  'Weihnachten',
+  'Ostern',
+  'österreichisch',
+  'italienisch',
+  'asiatisch',
+];
 
 /// Gemini via Firebase AI Logic. Handles print, handwriting and screenshots.
 class GeminiRecipeExtractor implements RecipeExtractor {
@@ -170,6 +212,36 @@ $recipeText'''),
         );
         if (n == null) throw const FormatException('No nutrition values');
         return n;
+      });
+
+  @override
+  Future<List<String>> suggestTags(String recipeText, List<String> known) =>
+      _run((ai, name) async {
+        final model = ai.generativeModel(
+          model: name,
+          generationConfig: GenerationConfig(
+            responseMimeType: 'application/json',
+            responseSchema: Schema.array(items: Schema.string()),
+            temperature: 0,
+          ),
+        );
+        final response = await model
+            .generateContent([
+              Content.text('''
+Wähle 2 bis 6 passende, kurze Schlagworte (Tags) für dieses Rezept.
+Nimm bevorzugt Tags, die der Haushalt schon verwendet: ${known.join(', ')}
+sonst aus dieser Liste: ${tagVocabulary.join(', ')}
+Nur zutreffende Tags (vegetarisch/vegan/glutenfrei/laktosefrei nur, wenn es laut Zutaten sicher stimmt). Gib NUR ein JSON-Array von Strings zurück.
+
+$recipeText'''),
+            ])
+            .timeout(const Duration(seconds: 60));
+        final list = jsonDecode(response.text ?? '[]');
+        if (list is! List) throw const FormatException('No tags');
+        return [
+          for (final t in list.whereType<String>())
+            if (t.trim().isNotEmpty) t.trim().replaceFirst(RegExp('^#'), ''),
+        ].take(6).toList();
       });
 
   /// Backends in order: Gemini Developer API first, then the Agent Platform

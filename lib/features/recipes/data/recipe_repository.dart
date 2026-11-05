@@ -40,6 +40,10 @@ class RecipeRepository {
 
   Future<void> delete(String id) => _col.doc(id).delete();
 
+  /// Only the tags (e.g. accepted AI suggestions); keeps the estimate.
+  Future<void> setTags(String id, List<String> tags) =>
+      _col.doc(id).update({'tags': tags});
+
   Future<void> setCollections(String id, List<String> collections) =>
       _col.doc(id).update({'collections': collections..sort()});
 
