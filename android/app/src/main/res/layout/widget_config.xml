@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/widget_settings_title"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <!-- Live preview on a wallpaper-like checkerboard. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/widget_preview_backdrop"
+        android:padding="16dp">
+
+        <include
+            android:id="@+id/preview"
+            layout="@layout/shopping_widget" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/opacity_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <SeekBar
+        android:id="@+id/opacity"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:max="100" />
+
+    <Button
+        android:id="@+id/done"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="16dp"
+        android:text="@string/widget_settings_done" />
+</LinearLayout>
