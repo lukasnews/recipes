@@ -82,6 +82,8 @@ Play Console → **Dashboard** führt durch alles. Die Antworten:
 | App-Info und Leistung → Absturzprotokolle, Diagnosedaten | erhoben, erforderlich, Analyse (Fehlerbehebung) |
 | Geräte- oder andere IDs | erhoben, erforderlich, Analyse + Betrugsprävention (Crashlytics, App Check) |
 
+„Rezept an anderen Haushalt senden“ macht eine Rezept-Kopie (mit Name und Foto) per Link lesbar. Das löst die Person selbst aus und erwartet es – laut Google ist das **kein „Teilen“** im Sinne der Datensicherheit; die Angaben oben bleiben gleich. Die Datenschutzerklärung beschreibt es.
+
 **Store-Eintrag – Kurzbeschreibung (max. 80 Zeichen):**
 > Rezepte, Einkaufsliste und Vorrat für den ganzen Haushalt – auch offline.
 
@@ -92,13 +94,18 @@ Play Console → **Dashboard** führt durch alles. Die Antworten:
 > • Gemeinsam einkaufen: eine Einkaufsliste für alle, live abgeglichen, nach Abteilungen sortiert. Fehlende Zutaten eines Rezepts oder der ganzen Woche mit einem Tipp auf die Liste.
 > • Vorrat im Blick: was im Kühlschrank, in der Speis und im Tiefkühler ist – mit Ablaufdatum, Mindestbestand und Barcode-Scan. Gekochtes zieht automatisch ab.
 > • Was kann ich kochen? BaCo zeigt, welche Rezepte du mit dem Vorrat kochen kannst, und bevorzugt, was bald abläuft.
-> • Kochmodus: Schritt für Schritt, Bildschirm bleibt an, Timer aus dem Rezepttext – mit Erinnerung auch bei geschlossener App.
+> • Kochmodus: Schritt für Schritt mit den Zutaten des Schritts, Bildschirm bleibt an, Timer aus dem Rezepttext – mit Erinnerung auch bei geschlossener App.
 > • Wochenplan mit Rezepten und Gerichten aus dem Tiefkühler.
+> • Widgets für den Startbildschirm: Einkaufsliste zum Abhaken und was heute ansteht.
+> • Rezepte weitergeben: per Link an Freunde schicken – die können es auch ohne BaCo im Browser ansehen.
+> • Backform umrechnen, Favoriten und Sammlungen, Inventur für den Vorrat, gemerkte Packungsgrößen beim Einkaufen.
 > • Allergien pro Person mit Warnung im Rezept.
 > • Österreichisch: Topfen, Schlagobers, Paradeiser, Erdäpfel – und Mengen in Dekagramm, wenn du willst.
 > • Offline nutzbar, Abgleich sobald wieder Netz da ist. Keine Werbung.
 
-**Grafiken:** App-Symbol 512×512 PNG, Vorstellungsgrafik 1024×500, mindestens 2 Handy-Screenshots (einfach Screenshots aus der App).
+**Grafiken:** App-Symbol 512×512 PNG (`assets/branding/play_icon_512.png`), Vorstellungsgrafik 1024×500 (`assets/branding/feature_graphic_1024x500.png`), Handy-Screenshots mit Rahmen und Text: `assets/branding/store/1_rezepte.png` … `7_gesendet.png` (neu erzeugen: siehe CLAUDE.md → Befehle).
+
+**Aufräumen abgelaufener gesendeter Rezepte (einmalig):** Firebase Console → Firestore Database → Reiter **TTL** (bzw. „Time-to-live“) → **Richtlinie erstellen** → Sammlungsgruppe `sharedRecipes`, Zeitstempelfeld `expiresAt` → Erstellen. Firestore löscht abgelaufene Kopien dann automatisch (meist innerhalb von 24 h; Einträge ohne Ablaufdatum bleiben). Die Fotos dazu löscht die App des Absenders beim nächsten Start.
 
 ## 7. Danach: geschlossener Test → Produktion
 

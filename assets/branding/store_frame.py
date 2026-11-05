@@ -6,10 +6,11 @@ fonts = '/opt/sdk/flutter/bin/cache/artifacts/material_fonts'
 shots = [
   ('1_rezepte', 'Was kann ich heute kochen?', 'BaCo zeigt, was dein Vorrat hergibt –<br>Bald-Ablaufendes zuerst.'),
   ('2_rezept', 'Alles beim Rezept', 'Portionen anpassen, Vorrat prüfen,<br>Allergien im Blick.'),
-  ('3_kochmodus', 'Kochen Schritt für Schritt', 'Timer direkt aus dem Rezept –<br>auch bei geschlossener App.'),
+  ('3_kochmodus', 'Kochen Schritt für Schritt', 'Zutaten und Timer zu jedem Schritt –<br>auch bei geschlossener App.'),
   ('4_wochenplan', 'Die Woche planen', 'Mit Rezepten und Gerichten<br>aus dem Tiefkühler.'),
-  ('5_einkauf', 'Gemeinsam einkaufen', 'Eine Liste für den ganzen Haushalt,<br>nach Abteilungen sortiert.'),
-  ('6_vorrat', 'Vorrat im Griff', 'Ablaufdaten, Mindestbestand<br>und Barcode-Scan.'),
+  ('5_einkauf', 'Gemeinsam einkaufen', 'Eine Liste für den ganzen Haushalt –<br>mit Packungsgrößen und Widget.'),
+  ('6_vorrat', 'Vorrat im Griff', 'Ablaufdaten, Mindestbestand,<br>Barcode-Scan und Inventur.'),
+  ('7_gesendet', 'Rezepte weitergeben', 'Per Link an Freunde schicken –<br>auch ohne BaCo zum Nachkochen.'),
 ]
 tpl = """<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{{font-family:R;src:url(file://{fonts}/Roboto-Bold.ttf);font-weight:700}}

@@ -1,6 +1,7 @@
 // Store screenshots of the real app with demo data.
 // Run: flutter test tool/screenshots/screenshots_test.dart
 // Output: assets/branding/screenshots/*.png (1080 x 1920).
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:recipes/core/matching/ingredient_matcher.dart';
 import 'package:recipes/features/auth/data/auth_repository.dart';
 import 'package:recipes/features/household/data/household_repository.dart';
@@ -343,6 +345,43 @@ void main() {
     await plan.add(day(5), 'gulasch');
     await plan.add(day(6), 'marillenkuchen');
 
+    // Favourites (hearts in the list) and learned pack sizes (shopping hint).
+    await db.collection('users').doc('u1').update({
+      'favoriteRecipeIds': ['kaiserschmarrn', 'gulasch'],
+    });
+    await db
+        .collection('households')
+        .doc(hid)
+        .collection('ingredients')
+        .doc('rindfleisch')
+        .update({
+          'packSizes': [400],
+        });
+    // A recipe someone sent (screenshot 7).
+    await db.collection('sharedRecipes').doc('K7MQX4PA').set({
+      'title': 'Apfelstrudel',
+      'createdBy': 'u2',
+      'senderName': 'Anna',
+      'message': 'Der beste Strudel – unbedingt mit Vanilleeis!',
+      'servings': 8,
+      'prepMinutes': 40,
+      'cookMinutes': 45,
+      'ingredients': [
+        '1 Pkg. Strudelteig',
+        '1,2 kg Äpfel',
+        '80 g Butter',
+        '100 g Zucker',
+        '60 g Rosinen',
+        '1 TL Zimt',
+        '50 g Semmelbrösel',
+      ],
+      'steps': [
+        'Äpfel schälen, entkernen und blättrig schneiden.',
+        'Mit Zucker, Zimt und Rosinen vermischen.',
+      ],
+      'expiresAt': null,
+    });
+
     final log = db.collection('households').doc(hid).collection('cookLog');
     for (final (rid, daysAgo) in [
       ('kaiserschmarrn', 12),
@@ -458,6 +497,14 @@ void main() {
     // 6. Pantry.
     await tab('Vorrat');
     await shot('6_vorrat');
+
+    // 7. A recipe sent from another household.
+    unawaited(
+      GoRouter.of(tester.element(find.byType(NavigationBar)))
+          .push('/shared/K7MQX4PA'),
+    );
+    await tester.pumpAndSettle();
+    await shot('7_gesendet');
     debugDisableShadows = true;
   });
 }
