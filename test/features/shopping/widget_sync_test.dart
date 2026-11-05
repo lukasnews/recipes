@@ -8,6 +8,7 @@ import 'package:recipes/features/mealplan/domain/meal_plan_day.dart';
 import 'package:recipes/features/pantry/domain/frozen_meal.dart';
 import 'package:recipes/features/recipes/data/recipe_repository.dart';
 import 'package:recipes/features/recipes/domain/recipe.dart';
+import 'package:recipes/features/shopping/data/home_screen_widget.dart';
 import 'package:recipes/features/shopping/presentation/widget_sync.dart';
 
 import '../../helpers/fakes.dart';
@@ -54,6 +55,12 @@ void main() {
     expect(last.today, 'Heute: Kaiserschmarrn');
     // Linked item shows the ingredient's current name; bread before dairy.
     expect(last.items, '• 6 Semmeln\n• 250 ml Schlagobers');
+    expect(
+      [for (final r in last.rows) r.text],
+      ['6 Semmeln', '250 ml Schlagobers'],
+    );
+    expect(last.householdId, hid);
+    expect(decodeWidgetRows(encodeWidgetRows(last.rows)), last.rows);
     final today = dayKey(DateTime.now());
     expect(last.plan.length, 14);
     expect(last.plan[today], 'Kaiserschmarrn');

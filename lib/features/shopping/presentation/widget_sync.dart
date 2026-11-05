@@ -18,8 +18,9 @@ import '../data/home_screen_widget.dart';
 import '../domain/shopping_item.dart';
 import 'shopping_list_screen.dart';
 
-/// Widget lines: open items by aisle, linked items with their current name.
-List<String> widgetLines(
+/// Widget rows: open items by aisle, linked items with their current name;
+/// the id lets the widget check an item off.
+List<WidgetRow> widgetRows(
   List<ShoppingItem> shopping,
   Map<String, Ingredient> ingredients,
   UnitDisplay display, [
@@ -29,12 +30,25 @@ List<String> widgetLines(
     ..sort((a, b) => order.indexOf(a.aisle).compareTo(order.indexOf(b.aisle)));
   return [
     for (final i in open)
-      [
-        shoppingQuantity(i, display),
-        ingredients[i.ingredientId]?.name ?? i.text,
-      ].where((s) => s.isNotEmpty).join(' '),
+      (
+        id: i.id,
+        text: [
+          shoppingQuantity(i, display),
+          ingredients[i.ingredientId]?.name ?? i.text,
+        ].where((s) => s.isNotEmpty).join(' '),
+      ),
   ];
 }
+
+/// Widget lines (text only), see [widgetRows].
+List<String> widgetLines(
+  List<ShoppingItem> shopping,
+  Map<String, Ingredient> ingredients,
+  UnitDisplay display, [
+  List<Aisle> order = Aisle.values,
+]) => [
+  for (final r in widgetRows(shopping, ingredients, display, order)) r.text,
+];
 
 /// Meal plan widget data: titles per day from [from] for [days] days
 /// ("" when nothing is planned), recipes first, then frozen dishes.
@@ -114,13 +128,16 @@ class _WidgetSyncState extends ConsumerState<WidgetSync> {
       };
       final days = planWidgetDays(plan, recipes, frozen, DateTime.now());
       final todayText = days.values.first;
-      final lines = widgetLines(
+      final rows = widgetRows(
         shopping,
         ref.watch(ingredientsByIdProvider),
         ref.watch(unitDisplayProvider),
         ref.watch(aisleOrderProvider),
       );
+      final lines = [for (final r in rows) r.text];
       final content = WidgetContent(
+        householdId: ref.watch(householdIdProvider),
+        rows: rows,
         title: l10n.widgetTitle(lines.length),
         today: todayText.isEmpty ? null : l10n.widgetToday(todayText),
         plan: days,

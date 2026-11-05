@@ -23,6 +23,8 @@ class ShoppingWidgetProvider : HomeWidgetProvider() {
                 BacoWidgets.views(context, BacoWidgets.SHOPPING, id, widgetData, options),
             )
         }
+        // Rows come from ShoppingListService; reload them as well.
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list)
     }
 
     override fun onAppWidgetOptionsChanged(

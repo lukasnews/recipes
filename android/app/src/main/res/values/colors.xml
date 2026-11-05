@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widgets, "wie Telefon": light here, dark in values-night. -->
+    <color name="widget_bg">#FFFFFF</color>
+    <color name="widget_title">#1B1C18</color>
+    <color name="widget_today">#8A5300</color>
+    <color name="widget_items">#2E312B</color>
+
+    <!-- Fixed colour choices -->
+    <color name="widget_bg_light">#FFFFFF</color>
+    <color name="widget_title_light">#1B1C18</color>
+    <color name="widget_today_light">#8A5300</color>
+    <color name="widget_items_light">#2E312B</color>
+    <color name="widget_bg_dark">#1E1F1C</color>
+    <color name="widget_title_dark">#FFFFFF</color>
+    <color name="widget_today_dark">#F2C46D</color>
+    <color name="widget_items_dark">#E6E9E1</color>
+    <color name="widget_title_green">#FFFFFF</color>
+    <color name="widget_today_green">#F2C46D</color>
+    <color name="widget_items_green">#EEF4E8</color>
+
+    <!-- Settings screen (Samsung-like dark panel) -->
+    <color name="config_panel">#1C1C1E</color>
+    <color name="config_text">#FFFFFF</color>
+    <color name="config_hint">#A9A9AE</color>
+    <color name="config_accent">#7B7BF5</color>
+</resources>

@@ -11,10 +11,20 @@
     <string name="plan_widget_nothing">nichts geplant</string>
     <string name="plan_widget_open_app">BaCo öffnen, um den Plan zu laden</string>
     <string name="widget_settings_title">Widget-Einstellungen</string>
-    <string name="widget_settings_transparency">Transparenz: %1$d %%</string>
-    <string name="widget_settings_done">Fertig</string>
+    <string name="widget_settings_opacity">Deckkraft: %1$d %%</string>
+    <string name="widget_settings_background">Hintergrund</string>
+    <string name="widget_settings_colors">Farben</string>
+    <string name="widget_settings_colors_auto">Wie Telefon (hell/dunkel)</string>
+    <string name="widget_settings_colors_light">Hell</string>
+    <string name="widget_settings_colors_dark">Dunkel</string>
+    <string name="widget_settings_colors_green">BaCo-Grün</string>
+    <string name="widget_settings_cancel">Abbrechen</string>
+    <string name="widget_settings_done">Speichern</string>
     <string name="preview_shopping_title">Einkauf (3)</string>
     <string name="preview_today">Heute: Rindsgulasch</string>
-    <string name="preview_shopping_items">• 6 Semmeln\n• 250 ml Schlagobers\n• 1 kg Erdäpfel</string>
+    <string name="preview_shopping_items">○  6 Semmeln\n○  250 ml Schlagobers\n○  1 kg Erdäpfel</string>
     <string name="preview_plan_items">Morgen: Topfenknödel\nSa. 7.11.: Kaiserschmarrn\nSo. 8.11.: Krautfleckerl</string>
+    <string name="shopping_widget_title">Einkauf (%1$d)</string>
+    <string name="shopping_widget_empty">Die Einkaufsliste ist leer</string>
+    <string name="shopping_widget_check">Abhaken</string>
 </resources>

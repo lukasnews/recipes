@@ -54,11 +54,17 @@
             android:exported="true"
             android:excludeFromRecents="true"
             android:label="@string/widget_settings_title"
-            android:theme="@android:style/Theme.DeviceDefault.Dialog.NoActionBar">
+            android:theme="@android:style/Theme.DeviceDefault.Wallpaper.NoTitleBar">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
+        <!-- Shopping widget list rows and check-off taps -->
+        <service
+            android:name=".ShoppingListService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <receiver android:name=".BacoCheckReceiver" android:exported="false" />
         <!-- Home screen widget: today's dish and shopping list -->
         <receiver android:name=".ShoppingWidgetProvider" android:exported="false"
             android:label="@string/widget_label">
