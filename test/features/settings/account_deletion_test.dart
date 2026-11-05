@@ -101,6 +101,8 @@ void main() {
     await tester.tap(find.byTooltip('Profil und Einstellungen'));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byIcon(Icons.person));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Konto löschen'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Endgültig löschen'));

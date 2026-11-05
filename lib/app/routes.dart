@@ -17,6 +17,10 @@ abstract final class Routes {
   static const allergies = '/settings/allergies';
   static const aisleOrder = '/settings/aisles';
   static const addHousehold = '/settings/household/add';
+  static const settingsAccount = '/settings/account';
+  static const settingsHousehold = '/settings/household';
+  static const settingsShopping = '/settings/shopping';
+  static const settingsData = '/settings/data';
   static const sentRecipes = '/settings/sent';
   static const stores = '/settings/stores';
   static String sharedRecipe(String code) => '/shared/$code';

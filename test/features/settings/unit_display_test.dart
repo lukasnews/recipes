@@ -37,6 +37,8 @@ void main() {
 
     await tester.tap(find.byTooltip('Profil und Einstellungen'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Mengen anzeigen'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Dekagramm (österreichisch)'));
     await tester.pumpAndSettle();
     final user = (await db.doc('users/u1').get()).data()!;

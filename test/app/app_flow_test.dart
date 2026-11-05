@@ -68,6 +68,8 @@ void main() {
 
     await tester.tap(find.byTooltip('Profil und Einstellungen'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Haushalt'));
+    await tester.pumpAndSettle();
     expect(find.text(code), findsOneWidget);
     expect(find.text('Zuhause'), findsOneWidget);
   });

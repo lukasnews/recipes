@@ -625,7 +625,7 @@
       }
     }
   },
-  "settingsData": "Daten",
+  "settingsData": "Daten & Teilen",
   "backupExport": "Daten sichern",
   "backupExportSubtitle": "Alles als Datei exportieren, z. B. in Google Drive speichern",
   "backupSubject": "BaCo-Sicherung",
@@ -1043,5 +1043,8 @@
   "offerSearch": "Aktionen suchen",
   "offerSearchHint": "Wo gibt's {name} gerade günstig? (wogibtswas.at)",
   "@offerSearchHint": {"placeholders": {"name": {"type": "String"}}},
+  "settingsShopping": "Einkaufen",
+  "settingsShoppingSubtitle": "Geschäfte, Flugblätter, Reihenfolge der Abteilungen",
+  "settingsDataSubtitle": "Sichern, wiederherstellen, gesendete Rezepte",
   "@ratingStars": {"placeholders": {"count": {"type": "int"}}}
 }

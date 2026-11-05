@@ -74,6 +74,8 @@ void main() {
     );
     await tester.pumpWidget(testApp(db: db, auth: auth));
     await _openSettings(tester);
+    await tester.tap(find.byIcon(Icons.person));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byTooltip('Name ändern'));
     await tester.pumpAndSettle();
@@ -126,6 +128,8 @@ void main() {
       ),
     );
     await _openSettings(tester);
+    await tester.tap(find.text('Haushalt'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Haushalt verlassen'));
     await tester.pumpAndSettle();

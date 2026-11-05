@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,67 +6,44 @@ import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../core/firebase/fire.dart';
 import '../../../core/units/display_units.dart';
-import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/url_opener.dart';
-import 'backup_actions.dart';
-import 'delete_account.dart';
-import 'household_actions.dart';
+import '../../../l10n/app_localizations.dart';
 
+/// Short overview; details live on sub pages (Konto, Haushalt, Einkaufen,
+/// Daten & Teilen) so the list stays one screen long.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
-  Future<void> _rename(
-    BuildContext context,
-    WidgetRef ref,
-    String current,
-  ) async {
+  Future<void> _unitDisplay(BuildContext context, WidgetRef ref) async {
     final l10n = context.l10n;
-    final name = (await showTextInputDialog(
-      context,
-      title: l10n.renameHousehold,
-      label: l10n.householdNameLabel,
-      initial: current,
-      confirmLabel: l10n.save,
-    ))?.trim();
-    final hid = ref.read(householdIdProvider);
-    if (name == null || name.isEmpty || hid == null) return;
-    fire(ref.read(householdRepositoryProvider).rename(hid, name));
-  }
-
-  Future<void> _switch(
-    BuildContext context,
-    WidgetRef ref,
-    List<String> ids,
-    String current,
-  ) async {
-    final picked = await showDialog<String>(
+    final uid = ref.read(authUserProvider).value?.uid;
+    final picked = await showDialog<UnitDisplay>(
       context: context,
-      builder: (context) => SimpleDialog(
-        title: Text(context.l10n.switchHousehold),
-        children: [
-          for (final id in ids)
-            Consumer(
-              builder: (context, ref, _) {
-                final name = ref.watch(householdByIdProvider(id)).value?.name;
-                return ListTile(
-                  leading: Icon(
-                    id == current
-                        ? Icons.radio_button_checked
-                        : Icons.radio_button_unchecked,
-                  ),
-                  title: Text(name ?? '…'),
-                  onTap: () => Navigator.pop(context, id),
-                );
-              },
-            ),
-        ],
+      builder: (context) => AlertDialog(
+        title: Text(l10n.unitDisplayTitle),
+        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+        content: RadioGroup<UnitDisplay>(
+          groupValue: ref.read(unitDisplayProvider),
+          onChanged: (v) => Navigator.pop(context, v),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final mode in UnitDisplay.values)
+                RadioListTile<UnitDisplay>(
+                  value: mode,
+                  title: Text(unitDisplayName(l10n, mode)),
+                  subtitle: Text(unitDisplayHint(l10n, mode)),
+                ),
+            ],
+          ),
+        ),
       ),
     );
-    final uid = ref.read(authUserProvider).value?.uid;
-    if (picked == null || picked == current || uid == null) return;
-    fire(ref.read(householdRepositoryProvider).setActiveHousehold(uid, picked));
-    if (context.mounted) context.go(Routes.recipes);
+    if (picked == null || uid == null) return;
+    fire(
+      ref.read(householdRepositoryProvider).setUnitDisplay(uid, picked.name),
+    );
   }
 
   @override
@@ -76,210 +52,89 @@ class SettingsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final user = ref.watch(authUserProvider).value;
     final household = ref.watch(householdProvider).value;
-    final householdIds = ref.watch(appUserProvider).value?.householdIds ?? [];
 
-    Widget section(String title) => Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-      child: Text(
-        title,
-        style: theme.textTheme.titleSmall?.copyWith(
-          color: theme.colorScheme.primary,
-        ),
-      ),
+    ListTile entry(
+      IconData icon,
+      String title,
+      String? subtitle,
+      VoidCallback onTap, {
+      Widget trailing = const Icon(Icons.chevron_right),
+    }) => ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: subtitle == null ? null : Text(subtitle),
+      trailing: trailing,
+      onTap: onTap,
     );
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListView(
         children: [
-          section(l10n.settingsAccount),
-          ListTile(
-            leading: const CircleAvatar(child: Icon(Icons.person)),
-            title: Text(user?.bestName ?? ''),
-            subtitle: Text(user?.email ?? ''),
-            trailing: IconButton(
-              tooltip: l10n.editNameTitle,
-              onPressed: () =>
-                  editDisplayName(context, ref, user?.bestName ?? ''),
-              icon: const Icon(Icons.edit_outlined),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: Text(l10n.signOut),
-            onTap: () => ref.read(authRepositoryProvider).signOut(),
-          ),
-          if (household != null) ...[
-            section(l10n.settingsHousehold),
-            ListTile(
-              leading: const Icon(Icons.home_outlined),
-              title: Text(household.name),
-              subtitle: Text(l10n.membersCount(household.memberIds.length)),
-              trailing: IconButton(
-                tooltip: l10n.renameHousehold,
-                onPressed: () => _rename(context, ref, household.name),
-                icon: const Icon(Icons.edit_outlined),
+          Card(
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
               ),
-            ),
-            if (householdIds.length > 1)
-              ListTile(
-                leading: const Icon(Icons.swap_horiz),
-                title: Text(l10n.switchHousehold),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _switch(context, ref, householdIds, household.id),
+              leading: const CircleAvatar(child: Icon(Icons.person)),
+              title: Text(
+                user?.bestName ?? '',
+                style: theme.textTheme.titleMedium,
               ),
-            ListTile(
-              leading: const Icon(Icons.add_home_outlined),
-              title: Text(l10n.addHousehold),
-              subtitle: Text(l10n.addHouseholdSubtitle),
+              subtitle: Text(user?.email ?? l10n.settingsAccount),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push(Routes.addHousehold),
-            ),
-            ListTile(
-              leading: const Icon(Icons.group_add_outlined),
-              title: Text(l10n.inviteCodeTitle),
-              subtitle: Text(l10n.inviteCodeHelp),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 56, right: 8),
-              child: Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  TextButton.icon(
-                    onPressed: () {
-                      Clipboard.setData(
-                        ClipboardData(text: household.inviteCode),
-                      );
-                      showSnack(context, l10n.copied);
-                    },
-                    icon: const Icon(Icons.copy),
-                    label: Text(
-                      household.inviteCode,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        letterSpacing: 2,
-                      ),
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () => renewInviteCode(context, ref, household),
-                    icon: const Icon(Icons.autorenew),
-                    label: Text(l10n.renewInvite),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.health_and_safety_outlined),
-              title: Text(l10n.allergiesTitle),
-              subtitle: Text(l10n.allergiesSubtitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push(Routes.allergies),
-            ),
-            ListTile(
-              leading: const Icon(Icons.egg_outlined),
-              title: Text(l10n.ingredientsManage),
-              subtitle: Text(l10n.ingredientsManageSubtitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push(Routes.ingredients),
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: Text(l10n.leaveHousehold),
-              onTap: () => leaveHousehold(context, ref, household),
-            ),
-          ],
-          section(l10n.settingsDisplay),
-          ListTile(
-            leading: const Icon(Icons.format_list_numbered),
-            title: Text(l10n.aisleOrderTitle),
-            subtitle: Text(l10n.aisleOrderSubtitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push(Routes.aisleOrder),
-          ),
-          ListTile(
-            leading: const Icon(Icons.storefront_outlined),
-            title: Text(l10n.storesTitle),
-            subtitle: Text(ref.watch(storesProvider).join(', ')),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push(Routes.stores),
-          ),
-          ListTile(title: Text(l10n.unitDisplayTitle)),
-          RadioGroup<UnitDisplay>(
-            groupValue: ref.watch(unitDisplayProvider),
-            onChanged: (v) {
-              if (v == null || user == null) return;
-              fire(
-                ref
-                    .read(householdRepositoryProvider)
-                    .setUnitDisplay(user.uid, v.name),
-              );
-            },
-            child: Column(
-              children: [
-                for (final (mode, title, hint) in [
-                  (
-                    UnitDisplay.original,
-                    l10n.unitDisplayOriginal,
-                    l10n.unitDisplayOriginalHint,
-                  ),
-                  (
-                    UnitDisplay.metric,
-                    l10n.unitDisplayMetric,
-                    l10n.unitDisplayMetricHint,
-                  ),
-                  (
-                    UnitDisplay.austrian,
-                    l10n.unitDisplayAustrian,
-                    l10n.unitDisplayAustrianHint,
-                  ),
-                ])
-                  RadioListTile<UnitDisplay>(
-                    value: mode,
-                    title: Text(title),
-                    subtitle: Text(hint),
-                  ),
-              ],
+              onTap: () => context.push(Routes.settingsAccount),
             ),
           ),
           if (household != null) ...[
-            section(l10n.settingsData),
-            ListTile(
-              leading: const Icon(Icons.send_outlined),
-              title: Text(l10n.sentTitle),
-              subtitle: Text(l10n.sentSubtitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push(Routes.sentRecipes),
+            entry(
+              Icons.home_outlined,
+              l10n.settingsHousehold,
+              '${household.name} · '
+              '${l10n.membersCount(household.memberIds.length)}',
+              () => context.push(Routes.settingsHousehold),
             ),
-            ListTile(
-              leading: const Icon(Icons.save_alt),
-              title: Text(l10n.backupExport),
-              subtitle: Text(l10n.backupExportSubtitle),
-              onTap: () => exportBackup(context, ref),
+            entry(
+              Icons.health_and_safety_outlined,
+              l10n.allergiesTitle,
+              l10n.allergiesSubtitle,
+              () => context.push(Routes.allergies),
             ),
-            ListTile(
-              leading: const Icon(Icons.settings_backup_restore),
-              title: Text(l10n.restoreTitle),
-              subtitle: Text(l10n.restoreSubtitle),
-              onTap: () => showRestoreHelp(context),
+            entry(
+              Icons.egg_outlined,
+              l10n.ingredientsManage,
+              l10n.ingredientsManageSubtitle,
+              () => context.push(Routes.ingredients),
+            ),
+            entry(
+              Icons.shopping_cart_outlined,
+              l10n.settingsShopping,
+              l10n.settingsShoppingSubtitle,
+              () => context.push(Routes.settingsShopping),
             ),
           ],
-          section(l10n.settingsInfo),
-          ListTile(
-            leading: const Icon(Icons.privacy_tip_outlined),
-            title: Text(l10n.privacyPolicy),
+          entry(
+            Icons.scale_outlined,
+            l10n.unitDisplayTitle,
+            unitDisplayName(l10n, ref.watch(unitDisplayProvider)),
+            () => _unitDisplay(context, ref),
+            trailing: const Icon(Icons.expand_more),
+          ),
+          if (household != null)
+            entry(
+              Icons.cloud_sync_outlined,
+              l10n.settingsData,
+              l10n.settingsDataSubtitle,
+              () => context.push(Routes.settingsData),
+            ),
+          entry(
+            Icons.privacy_tip_outlined,
+            l10n.privacyPolicy,
+            null,
+            () => fire(ref.read(urlOpenerProvider).open(Links.privacy)),
             trailing: const Icon(Icons.open_in_new),
-            onTap: () => fire(ref.read(urlOpenerProvider).open(Links.privacy)),
-          ),
-          section(l10n.settingsAccount),
-          ListTile(
-            leading: Icon(Icons.delete_forever, color: theme.colorScheme.error),
-            title: Text(
-              l10n.deleteAccountTitle,
-              style: TextStyle(color: theme.colorScheme.error),
-            ),
-            subtitle: Text(l10n.deleteAccountSubtitle),
-            onTap: () => deleteAccount(context, ref),
           ),
           const SizedBox(height: 24),
           Center(
@@ -299,3 +154,17 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 }
+
+String unitDisplayName(AppLocalizations l10n, UnitDisplay mode) =>
+    switch (mode) {
+      UnitDisplay.original => l10n.unitDisplayOriginal,
+      UnitDisplay.metric => l10n.unitDisplayMetric,
+      UnitDisplay.austrian => l10n.unitDisplayAustrian,
+    };
+
+String unitDisplayHint(AppLocalizations l10n, UnitDisplay mode) =>
+    switch (mode) {
+      UnitDisplay.original => l10n.unitDisplayOriginalHint,
+      UnitDisplay.metric => l10n.unitDisplayMetricHint,
+      UnitDisplay.austrian => l10n.unitDisplayAustrianHint,
+    };
