@@ -38,6 +38,7 @@ import '../features/pantry/domain/frozen_meal.dart';
 import '../features/pantry/domain/pantry_item.dart';
 import '../features/recipes/data/photo_repository.dart';
 import '../features/recipes/data/photo_upload_queue.dart';
+import '../features/recipes/data/recipe_printer.dart';
 import '../features/recipes/data/recipe_repository.dart';
 import '../features/recipes/domain/cook_history.dart';
 import '../features/recipes/domain/recipe.dart';
@@ -335,6 +336,10 @@ final urlOpenerProvider = Provider<UrlOpener>(
 );
 
 final sharerProvider = Provider<Sharer>((ref) => const SystemSharer());
+
+final recipePrinterProvider = Provider<RecipePrinter>(
+  (ref) => const SystemRecipePrinter(),
+);
 
 final sharedLinkSourceProvider = Provider<SharedLinkSource>(
   (ref) => ReceiveSharingIntentLinks(),

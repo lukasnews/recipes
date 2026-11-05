@@ -1027,5 +1027,12 @@
   "@storeAlso": {"placeholders": {"stores": {"type": "String"}}},
   "storeFixed": "diesmal bei {store}",
   "@storeFixed": {"placeholders": {"store": {"type": "String"}}},
+  "printRecipe": "Drucken / als PDF speichern",
+  "sharePdf": "Als PDF teilen",
+  "pdfPrep": "Vorbereitung {minutes} Min.",
+  "@pdfPrep": {"placeholders": {"minutes": {"type": "int"}}},
+  "pdfCook": "Kochen {minutes} Min.",
+  "@pdfCook": {"placeholders": {"minutes": {"type": "int"}}},
+  "pdfFooter": "Aus BaCo – Bake & Cook",
   "@ratingStars": {"placeholders": {"count": {"type": "int"}}}
 }

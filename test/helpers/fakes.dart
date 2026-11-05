@@ -25,6 +25,7 @@ import 'package:recipes/features/pantry/data/product_lookup.dart';
 import 'package:recipes/features/pantry/domain/product.dart';
 import 'package:recipes/features/recipes/data/photo_repository.dart';
 import 'package:recipes/features/recipes/data/photo_upload_queue.dart';
+import 'package:recipes/features/recipes/data/recipe_printer.dart';
 import 'package:recipes/features/recipes/data/timer_alarms.dart';
 import 'package:recipes/features/recipes/domain/nutrition.dart';
 import 'package:recipes/features/recipes/presentation/cook_timers.dart';
@@ -131,6 +132,7 @@ Widget testApp({
   FakeExtractor? extractor,
   FakeHomeScreenWidget? homeWidget,
   FakeUrlOpener? urlOpener,
+  FakeRecipePrinter? printer,
 }) => ProviderScope(
   overrides: [
     urlOpenerProvider.overrideWithValue(urlOpener ?? FakeUrlOpener()),
@@ -144,6 +146,7 @@ Widget testApp({
     barcodeReaderProvider.overrideWithValue(barcodes ?? FakeBarcodeReader()),
     productLookupProvider.overrideWithValue(products ?? FakeProductLookup()),
     sharerProvider.overrideWithValue(sharer ?? FakeSharer()),
+    recipePrinterProvider.overrideWithValue(printer ?? FakeRecipePrinter()),
     photoPickerProvider.overrideWithValue(FakePhotoPicker()),
     sharedLinkSourceProvider.overrideWithValue(FakeSharedLinks()),
     photoCacheProvider.overrideWithValue(FakePhotoCache()),
@@ -373,4 +376,22 @@ class MemoryImportQueueStore implements ImportQueueStore {
   Future<void> save(List<PendingImport> list) async => items = list;
   @override
   Future<String> keep(String file) async => file;
+}
+
+class FakeRecipePrinter implements RecipePrinter {
+  final printed = <String>[];
+  final shared = <String>[];
+  Uint8List? lastPdf;
+
+  @override
+  Future<void> print(Uint8List pdf, String name) async {
+    lastPdf = pdf;
+    printed.add(name);
+  }
+
+  @override
+  Future<void> share(Uint8List pdf, String fileName) async {
+    lastPdf = pdf;
+    shared.add(fileName);
+  }
 }
