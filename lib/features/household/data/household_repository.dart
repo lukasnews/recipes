@@ -167,6 +167,14 @@ class HouseholdRepository {
   Future<void> setStores(String hid, List<String> stores) =>
       _db.collection('households').doc(hid).update({'stores': stores});
 
+  /// Flyer link of one shop; empty removes the household's own link.
+  Future<void> setStoreLink(String hid, String store, String url) =>
+      _db.collection('households').doc(hid).update({
+        FieldPath(['storeLinks', store]): url.trim().isEmpty
+            ? FieldValue.delete()
+            : url.trim(),
+      });
+
   Future<void> rename(String hid, String name) =>
       _db.collection('households').doc(hid).update({'name': name});
 

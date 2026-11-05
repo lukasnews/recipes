@@ -405,6 +405,13 @@ final storesProvider = Provider<List<String>>(
       Household.defaultStores,
 );
 
+/// Own flyer links per shop.
+final storeLinksProvider = Provider<Map<String, String>>(
+  (ref) =>
+      ref.watch(householdProvider.select((h) => h.value?.storeLinks)) ??
+      const {},
+);
+
 /// Shopping list grouped by shop instead of aisle (per person).
 final shoppingByStoreProvider = Provider<bool>(
   (ref) =>

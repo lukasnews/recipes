@@ -6,6 +6,7 @@ import '../../../core/firebase/fire.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../settings/presentation/stores_screen.dart';
 import '../domain/shopping_item.dart';
+import '../domain/stores.dart';
 
 /// Long press on a shopping item: where to buy it this time, and (for
 /// linked items) where the ingredient is usually bought.
@@ -146,6 +147,15 @@ class _StoreSheetState extends ConsumerState<_StoreSheet> {
                 leading: const Icon(Icons.add),
                 title: Text(l10n.storeNew),
                 onTap: _addStore,
+              ),
+              ListTile(
+                leading: const Icon(Icons.local_offer_outlined),
+                title: Text(l10n.offerSearch),
+                subtitle: Text(l10n.offerSearchHint(name)),
+                trailing: const Icon(Icons.open_in_new),
+                onTap: () => fire(
+                  ref.read(urlOpenerProvider).open(offerSearchLink(name)),
+                ),
               ),
             ],
           ),

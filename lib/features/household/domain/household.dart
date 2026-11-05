@@ -7,6 +7,7 @@ class Household {
     required this.memberIds,
     required this.inviteCode,
     this.stores = defaultStores,
+    this.storeLinks = const {},
   });
 
   factory Household.fromMap(String id, Map<String, dynamic> m) => Household(
@@ -15,6 +16,11 @@ class Household {
     memberIds: m.strings('memberIds'),
     inviteCode: m.str('inviteCode'),
     stores: m['stores'] is List ? m.strings('stores') : defaultStores,
+    storeLinks: {
+      for (final e
+          in ((m['storeLinks'] as Map<dynamic, dynamic>?) ?? const {}).entries)
+        if (e.value is String) '${e.key}': e.value as String,
+    },
   );
 
   /// Suggested until the household changes the list.
@@ -29,6 +35,9 @@ class Household {
 
   /// Shops the household buys at, in its own order.
   final List<String> stores;
+
+  /// Own flyer links per shop (else the defaults for the big chains).
+  final Map<String, String> storeLinks;
 
   final String id;
   final String name;

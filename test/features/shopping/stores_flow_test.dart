@@ -33,10 +33,12 @@ void main() {
       'aisle': 'other',
       'checked': false,
     });
+    final urls = FakeUrlOpener();
     await tester.pumpWidget(
       testApp(
         db: db,
         auth: FakeAuthRepository(const AuthUser(uid: 'u1')),
+        urlOpener: urls,
       ),
     );
     await tester.pumpAndSettle();
@@ -76,5 +78,18 @@ void main() {
     expect(find.text('Mehl glatt'), findsOneWidget);
     expect(find.text('Spülmittel'), findsOneWidget);
     expect(find.text('Schlagobers'), findsNothing);
+
+    // Flyer of the shop and an offer search for an item.
+    await tester.tap(find.widgetWithText(ActionChip, 'Flugblatt'));
+    await tester.pumpAndSettle();
+    expect(urls.opened.last.host, 'www.hofer.at');
+    await tester.longPress(find.text('Mehl glatt'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Aktionen suchen'));
+    await tester.pumpAndSettle();
+    expect(
+      urls.opened.last.toString(),
+      'https://www.wogibtswas.at/ta/mehl-glatt',
+    );
   });
 }

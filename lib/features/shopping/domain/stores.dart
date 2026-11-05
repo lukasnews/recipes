@@ -56,3 +56,36 @@ List<(String?, List<ShoppingItem>)> groupByStore(
       ),
   ];
 }
+
+/// Flyer / offers pages of the usual Austrian chains; the household can
+/// change them (Einstellungen → Geschäfte).
+const defaultFlyerLinks = {
+  'Hofer': 'https://www.hofer.at/de/angebote.html',
+  'Billa': 'https://www.billa.at/unsere-aktionen/aktionen',
+  'Spar': 'https://www.spar.at/angebote',
+  'Lidl': 'https://www.lidl.at/c/flugblatt/s10008100',
+  'Penny': 'https://www.penny.at/angebote',
+  'dm': 'https://www.dm.at/angebote',
+};
+
+/// The flyer link for [store]: the household's own, else the default.
+Uri? flyerLink(String store, Map<String, String> own) {
+  final url = own[store] ?? defaultFlyerLinks[store];
+  if (url == null || url.trim().isEmpty) return null;
+  final uri = Uri.tryParse(url.trim());
+  return uri != null && uri.hasScheme ? uri : null;
+}
+
+/// Offer search for an item across Austrian flyers (wogibtswas.at), e.g.
+/// "Schlagobers" -> https://www.wogibtswas.at/ta/schlagobers.
+Uri offerSearchLink(String name) {
+  final slug = name
+      .toLowerCase()
+      .replaceAll('ä', 'a')
+      .replaceAll('ö', 'o')
+      .replaceAll('ü', 'u')
+      .replaceAll('ß', 'ss')
+      .replaceAll(RegExp('[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
+  return Uri.parse('https://www.wogibtswas.at/ta/$slug');
+}

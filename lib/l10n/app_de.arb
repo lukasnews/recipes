@@ -1034,5 +1034,14 @@
   "pdfCook": "Kochen {minutes} Min.",
   "@pdfCook": {"placeholders": {"minutes": {"type": "int"}}},
   "pdfFooter": "Aus BaCo – Bake & Cook",
+  "storeFlyer": "Flugblatt",
+  "storeNoFlyer": "Kein Flugblatt-Link – antippen zum Eintragen",
+  "storeFlyerLinkTitle": "Flugblatt von {store}",
+  "@storeFlyerLinkTitle": {"placeholders": {"store": {"type": "String"}}},
+  "storeFlyerLinkLabel": "Link zum Flugblatt",
+  "storeFlyerLinkHelp": "Leer lassen = Standard-Link (falls vorhanden)",
+  "offerSearch": "Aktionen suchen",
+  "offerSearchHint": "Wo gibt's {name} gerade günstig? (wogibtswas.at)",
+  "@offerSearchHint": {"placeholders": {"name": {"type": "String"}}},
   "@ratingStars": {"placeholders": {"count": {"type": "int"}}}
 }

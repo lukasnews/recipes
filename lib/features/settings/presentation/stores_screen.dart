@@ -5,6 +5,7 @@ import '../../../app/providers.dart';
 import '../../../core/firebase/fire.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
+import '../../shopping/domain/stores.dart';
 
 /// Einstellungen → "Geschäfte": the household's shops (order = order of the
 /// shopping list by shop); add, remove, drag.
@@ -17,10 +18,31 @@ class StoresScreen extends ConsumerWidget {
     fire(ref.read(householdRepositoryProvider).setStores(hid, stores));
   }
 
+  Future<void> _editLink(
+    BuildContext context,
+    WidgetRef ref,
+    String store,
+  ) async {
+    final l10n = context.l10n;
+    final hid = ref.read(householdIdProvider);
+    final url = await showTextInputDialog(
+      context,
+      title: l10n.storeFlyerLinkTitle(store),
+      label: l10n.storeFlyerLinkLabel,
+      hint: 'https://…',
+      helper: l10n.storeFlyerLinkHelp,
+      initial: flyerLink(store, ref.read(storeLinksProvider))?.toString() ?? '',
+      keyboardType: TextInputType.url,
+    );
+    if (url == null || hid == null) return;
+    fire(ref.read(householdRepositoryProvider).setStoreLink(hid, store, url));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final stores = ref.watch(storesProvider);
+    final links = ref.watch(storeLinksProvider);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.storesTitle)),
       floatingActionButton: FloatingActionButton.extended(
@@ -53,6 +75,10 @@ class StoresScreen extends ConsumerWidget {
                     key: ValueKey(s),
                     leading: const Icon(Icons.storefront_outlined),
                     title: Text(s),
+                    subtitle: Text(
+                      flyerLink(s, links)?.host ?? l10n.storeNoFlyer,
+                    ),
+                    onTap: () => _editLink(context, ref, s),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

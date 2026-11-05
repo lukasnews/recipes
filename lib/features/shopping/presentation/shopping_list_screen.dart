@@ -317,6 +317,15 @@ class _ShoppingList extends ConsumerWidget {
                   selected: current == s,
                   onSelected: (on) => onOnly(on ? s : null),
                 ),
+              if (current != null)
+                if (flyerLink(current, ref.watch(storeLinksProvider))
+                    case final link?)
+                  ActionChip(
+                    avatar: const Icon(Icons.menu_book_outlined, size: 18),
+                    label: Text(l10n.storeFlyer),
+                    onPressed: () =>
+                        fire(ref.read(urlOpenerProvider).open(link)),
+                  ),
             ],
           ),
         ),
@@ -327,7 +336,23 @@ class _ShoppingList extends ConsumerWidget {
             stores,
             ref.watch(aisleOrderProvider),
           )) ...[
-            header(store ?? l10n.storeAnywhere),
+            Row(
+              children: [
+                Expanded(child: header(store ?? l10n.storeAnywhere)),
+                if (store != null)
+                  if (flyerLink(store, ref.watch(storeLinksProvider))
+                      case final link?)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8, top: 12),
+                      child: TextButton.icon(
+                        onPressed: () =>
+                            fire(ref.read(urlOpenerProvider).open(link)),
+                        icon: const Icon(Icons.menu_book_outlined, size: 18),
+                        label: Text(l10n.storeFlyer),
+                      ),
+                    ),
+              ],
+            ),
             for (final item in list) _ItemTile(item: item, section: store),
           ]
         else

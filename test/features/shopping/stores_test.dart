@@ -70,4 +70,25 @@ void main() {
     expect(itemStores(milchOffer, ingredients['milch']), ['Billa']);
     expect(availableAt(milchOffer, ingredients['milch'], 'Hofer'), isFalse);
   });
+
+  test('flyer links: own first, then defaults; offer search slug', () {
+    expect(
+      flyerLink('Hofer', const {}).toString(),
+      'https://www.hofer.at/de/angebote.html',
+    );
+    expect(
+      flyerLink('Hofer', const {'Hofer': 'https://example.at/f'}).toString(),
+      'https://example.at/f',
+    );
+    expect(flyerLink('Bauernmarkt', const {}), isNull);
+    expect(flyerLink('X', const {'X': 'kein link'}), isNull);
+    expect(
+      offerSearchLink('Schlagobers').toString(),
+      'https://www.wogibtswas.at/ta/schlagobers',
+    );
+    expect(
+      offerSearchLink('Mehl glatt / Äpfel').toString(),
+      'https://www.wogibtswas.at/ta/mehl-glatt-apfel',
+    );
+  });
 }
