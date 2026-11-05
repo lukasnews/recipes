@@ -441,6 +441,7 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               initialValue: _category,
               decoration: InputDecoration(labelText: l10n.categoryLabel),
               items: [
@@ -458,40 +459,37 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
               },
             ),
             const SizedBox(height: 12),
-            Flex(
-              // Large system fonts: stack the fields so labels stay readable.
-              direction: largeText ? Axis.vertical : Axis.horizontal,
-              spacing: 12,
-              children: [
-                Flexible(
-                  fit: largeText ? FlexFit.loose : FlexFit.tight,
-                  child: TextFormField(
+            Builder(
+              builder: (context) {
+                final fields = <Widget>[
+                  TextFormField(
                     controller: _servings,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(labelText: l10n.servingsField),
                   ),
-                ),
-                Flexible(
-                  fit: largeText ? FlexFit.loose : FlexFit.tight,
-                  child: TextFormField(
+                  TextFormField(
                     controller: _prep,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: l10n.prepMinutesLabel,
                     ),
                   ),
-                ),
-                Flexible(
-                  fit: largeText ? FlexFit.loose : FlexFit.tight,
-                  child: TextFormField(
+                  TextFormField(
                     controller: _cook,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: l10n.cookMinutesLabel,
                     ),
                   ),
-                ),
-              ],
+                ];
+                // Large system fonts: stack the fields so labels stay readable.
+                return largeText
+                    ? Column(spacing: 12, children: fields)
+                    : Row(
+                        spacing: 12,
+                        children: [for (final f in fields) Expanded(child: f)],
+                      );
+              },
             ),
             const SizedBox(height: 12),
             TextFormField(

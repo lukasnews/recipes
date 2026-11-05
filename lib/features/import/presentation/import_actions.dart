@@ -26,9 +26,10 @@ Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
   final choice = await showModalBottomSheet<_AddChoice>(
     context: context,
     useSafeArea: true,
+    isScrollControlled: true,
     builder: (context) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: ListView(
+        shrinkWrap: true,
         children: [
           ListTile(
             leading: const Icon(Icons.edit_note),
