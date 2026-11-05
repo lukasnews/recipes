@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'l10n_ext.dart';
+
 class RatingStars extends StatelessWidget {
   const RatingStars({
     super.key,
@@ -26,6 +28,7 @@ class RatingStars extends StatelessWidget {
                   color: color,
                 )
               : IconButton(
+                  tooltip: context.l10n.ratingStars(i),
                   onPressed: () => onChanged!(i == rating ? 0 : i),
                   icon: Icon(
                     i <= rating ? Icons.star : Icons.star_border,

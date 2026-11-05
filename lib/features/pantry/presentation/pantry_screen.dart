@@ -187,7 +187,7 @@ class _PantryTile extends ConsumerWidget {
               onPressed: item.amount > 0
                   ? () => adjustStock(context, ref, ingredient, -step)
                   : null,
-              icon: const Icon(Icons.remove),
+              icon: Icon(Icons.remove, semanticLabel: context.l10n.decrease),
             ),
           ),
           const SizedBox(width: 8),
@@ -196,7 +196,7 @@ class _PantryTile extends ConsumerWidget {
                 adjustStockBy(context, ref, ingredient, takeOut: false),
             child: IconButton.filledTonal(
               onPressed: () => adjustStock(context, ref, ingredient, step),
-              icon: const Icon(Icons.add),
+              icon: Icon(Icons.add, semanticLabel: context.l10n.increase),
             ),
           ),
         ],

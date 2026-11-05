@@ -139,29 +139,34 @@ class SettingsScreen extends ConsumerWidget {
               leading: const Icon(Icons.group_add_outlined),
               title: Text(l10n.inviteCodeTitle),
               subtitle: Text(l10n.inviteCodeHelp),
-              trailing: TextButton.icon(
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: household.inviteCode));
-                  showSnack(context, l10n.copied);
-                },
-                icon: const Icon(Icons.copy),
-                label: Text(
-                  household.inviteCode,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    letterSpacing: 2,
-                  ),
-                ),
-              ),
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: TextButton.icon(
-                  onPressed: () => renewInviteCode(context, ref, household),
-                  icon: const Icon(Icons.autorenew),
-                  label: Text(l10n.renewInvite),
-                ),
+            Padding(
+              padding: const EdgeInsets.only(left: 56, right: 8),
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  TextButton.icon(
+                    onPressed: () {
+                      Clipboard.setData(
+                        ClipboardData(text: household.inviteCode),
+                      );
+                      showSnack(context, l10n.copied);
+                    },
+                    icon: const Icon(Icons.copy),
+                    label: Text(
+                      household.inviteCode,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () => renewInviteCode(context, ref, household),
+                    icon: const Icon(Icons.autorenew),
+                    label: Text(l10n.renewInvite),
+                  ),
+                ],
               ),
             ),
             ListTile(

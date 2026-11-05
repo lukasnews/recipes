@@ -348,7 +348,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 onPressed: servings > 1
                     ? () => setState(() => _servings = servings - 1)
                     : null,
-                icon: const Icon(Icons.remove),
+                icon: Icon(Icons.remove, semanticLabel: context.l10n.decrease),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -356,7 +356,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
               ),
               IconButton.filledTonal(
                 onPressed: () => setState(() => _servings = servings + 1),
-                icon: const Icon(Icons.add),
+                icon: Icon(Icons.add, semanticLabel: context.l10n.increase),
               ),
             ],
           ),

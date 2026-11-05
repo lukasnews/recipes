@@ -121,6 +121,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                 filled: true,
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
+                  tooltip: l10n.add,
                   onPressed: _add,
                   icon: const Icon(Icons.add),
                 ),

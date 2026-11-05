@@ -353,6 +353,7 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final largeText = MediaQuery.textScalerOf(context).scale(10) > 13;
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final byId = ref.watch(ingredientsByIdProvider);
@@ -457,17 +458,21 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
               },
             ),
             const SizedBox(height: 12),
-            Row(
+            Flex(
+              // Large system fonts: stack the fields so labels stay readable.
+              direction: largeText ? Axis.vertical : Axis.horizontal,
               spacing: 12,
               children: [
-                Expanded(
+                Flexible(
+                  fit: largeText ? FlexFit.loose : FlexFit.tight,
                   child: TextFormField(
                     controller: _servings,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(labelText: l10n.servingsField),
                   ),
                 ),
-                Expanded(
+                Flexible(
+                  fit: largeText ? FlexFit.loose : FlexFit.tight,
                   child: TextFormField(
                     controller: _prep,
                     keyboardType: TextInputType.number,
@@ -476,7 +481,8 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
                     ),
                   ),
                 ),
-                Expanded(
+                Flexible(
+                  fit: largeText ? FlexFit.loose : FlexFit.tight,
                   child: TextFormField(
                     controller: _cook,
                     keyboardType: TextInputType.number,
@@ -496,10 +502,11 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
               children: [
                 Text(l10n.ratingLabel),
-                const SizedBox(width: 8),
                 RatingStars(
                   rating: _rating,
                   onChanged: (v) => setState(() => _rating = v),

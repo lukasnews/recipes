@@ -907,5 +907,9 @@
   "collectionNew": "Neue Sammlung",
   "collectionNameLabel": "Name der Sammlung",
   "collectionNameHint": "z. B. Weihnachtsbäckerei",
-  "filterFavorites": "Favoriten"
+  "filterFavorites": "Favoriten",
+  "decrease": "Weniger",
+  "increase": "Mehr",
+  "ratingStars": "{count} von 5 Sternen",
+  "@ratingStars": {"placeholders": {"count": {"type": "int"}}}
 }

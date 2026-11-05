@@ -64,7 +64,10 @@ class FrozenMealsTab extends ConsumerWidget {
                                   .read(frozenMealRepositoryProvider)
                                   .changePortions(m, -1),
                             ),
-                            icon: const Icon(Icons.remove),
+                            icon: Icon(
+                              Icons.remove,
+                              semanticLabel: context.l10n.decrease,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           IconButton.filledTonal(
@@ -73,7 +76,10 @@ class FrozenMealsTab extends ConsumerWidget {
                                   .read(frozenMealRepositoryProvider)
                                   .changePortions(m, 1),
                             ),
-                            icon: const Icon(Icons.add),
+                            icon: Icon(
+                              Icons.add,
+                              semanticLabel: context.l10n.increase,
+                            ),
                           ),
                         ],
                       ),
