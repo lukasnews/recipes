@@ -960,5 +960,15 @@
   "sentDeleteMessage": "Der Link zu „{title}“ funktioniert danach nicht mehr. Wer das Rezept schon übernommen hat, behält es.",
   "@sentDeleteMessage": {"placeholders": {"title": {"type": "String"}}},
   "sentDeleteConfirm": "Nicht mehr teilen",
+  "partOfLabel": "Teil von",
+  "partOfHint": "Für Zutaten, die aus einer anderen kommen (Eiweiß aus Ei, Zitronensaft aus Zitrone): Vorrat, Kochen und Einkauf nehmen dann das Ganze.",
+  "partOfSet": "Teil einer anderen Zutat …",
+  "partOfWhole": "Teil von {name}",
+  "@partOfWhole": {"placeholders": {"name": {"type": "String"}}},
+  "partOfRemove": "Nicht mehr verknüpfen",
+  "partOfAmountTitle": "Wie viel {name}?",
+  "@partOfAmountTitle": {"placeholders": {"name": {"type": "String"}}},
+  "partOfAmountLabel": "für 1 {unit} {name}",
+  "@partOfAmountLabel": {"placeholders": {"unit": {"type": "String"}, "name": {"type": "String"}}},
   "@ratingStars": {"placeholders": {"count": {"type": "int"}}}
 }

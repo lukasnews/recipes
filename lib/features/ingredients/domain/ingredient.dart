@@ -20,6 +20,33 @@ enum Aisle {
       Aisle.values.firstWhere((a) => a.name == v, orElse: () => other);
 }
 
+/// This ingredient comes out of another one: 1 base unit of it uses [per]
+/// base units of ingredient [id] (Eiweiß: 1 Stk. = 1 Ei; Zitronensaft:
+/// 1 ml = 0.025 Zitronen).
+class PartOf {
+  const PartOf(this.id, this.per);
+
+  static PartOf? fromMap(Object? m) {
+    if (m is! Map) return null;
+    final id = m['id'];
+    final per = m['per'];
+    if (id is! String || per is! num || per <= 0) return null;
+    return PartOf(id, per.toDouble());
+  }
+
+  final String id;
+  final double per;
+
+  Map<String, dynamic> toMap() => {'id': id, 'per': per};
+
+  @override
+  bool operator ==(Object other) =>
+      other is PartOf && other.id == id && other.per == per;
+
+  @override
+  int get hashCode => Object.hash(id, per);
+}
+
 class Ingredient {
   const Ingredient({
     required this.id,
@@ -33,6 +60,7 @@ class Ingredient {
     this.density,
     this.pieceGrams,
     this.packSizes = const [],
+    this.partOf,
   });
 
   factory Ingredient.fromMap(String id, Map<String, dynamic> m) => Ingredient(
@@ -54,6 +82,7 @@ class Ingredient {
       for (final v in (m['packSizes'] as List<dynamic>?) ?? const [])
         if (v is num && v > 0) v.toDouble(),
     ],
+    partOf: PartOf.fromMap(m['partOf']),
   );
 
   final String id;
@@ -80,6 +109,9 @@ class Ingredient {
   /// way into the pantry or from a barcode; editable).
   final List<double> packSizes;
 
+  /// Eiweiß is part of Ei: stock, cooking and shopping fall back to Ei.
+  final PartOf? partOf;
+
   Map<String, dynamic> toMap() => {
     'name': name,
     'synonyms': synonyms,
@@ -91,6 +123,7 @@ class Ingredient {
     'density': ?density,
     'pieceGrams': ?pieceGrams,
     if (packSizes.isNotEmpty) 'packSizes': packSizes,
+    'partOf': ?partOf?.toMap(),
   };
 
   MatchCandidate get candidate =>
@@ -111,6 +144,7 @@ class Ingredient {
     double? Function()? density,
     double? Function()? pieceGrams,
     List<double>? packSizes,
+    PartOf? Function()? partOf,
   }) => Ingredient(
     id: id,
     name: name ?? this.name,
@@ -123,6 +157,7 @@ class Ingredient {
     density: density == null ? this.density : density(),
     pieceGrams: pieceGrams == null ? this.pieceGrams : pieceGrams(),
     packSizes: packSizes ?? this.packSizes,
+    partOf: partOf == null ? this.partOf : partOf(),
   );
 
   /// Shows [preferred] (one of the synonyms) as the name; the old name becomes

@@ -167,9 +167,21 @@ void main() {
 
   test('alreadyOnList: by recipe id or all missing open on the list', () {
     final cov = computeCoverage(pancakes, ingredients, const {});
-    expect(alreadyOnList(pancakes.id, cov.missing, const []), isFalse);
+    expect(
+      alreadyOnList(
+        pancakes.id,
+        cov.missing.map((n) => n.ingredient.id),
+        const [],
+      ),
+      isFalse,
+    );
     const fromRecipe = ShoppingItem(id: 's', text: 'Milch', fromRecipeId: 'r1');
-    expect(alreadyOnList(pancakes.id, cov.missing, [fromRecipe]), isTrue);
+    expect(
+      alreadyOnList(pancakes.id, cov.missing.map((n) => n.ingredient.id), [
+        fromRecipe,
+      ]),
+      isTrue,
+    );
     final all = [
       for (final n in cov.missing)
         ShoppingItem(
@@ -178,9 +190,12 @@ void main() {
           ingredientId: n.ingredient.id,
         ),
     ];
-    expect(alreadyOnList(pancakes.id, cov.missing, all), isTrue);
     expect(
-      alreadyOnList(pancakes.id, cov.missing, [
+      alreadyOnList(pancakes.id, cov.missing.map((n) => n.ingredient.id), all),
+      isTrue,
+    );
+    expect(
+      alreadyOnList(pancakes.id, cov.missing.map((n) => n.ingredient.id), [
         for (final i in all)
           ShoppingItem(
             id: i.id,

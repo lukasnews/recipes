@@ -166,6 +166,6 @@ void main() {
     expect(cream['name'], 'Sahne');
     expect(cream['synonyms'], ['Schlagobers', 'Schlag']);
     expect(cream['conversions'], {'Becher': 200, 'g': 1});
-    expect((await h.get()).data()!['seedVersion'], 4);
+    expect((await h.get()).data()!['seedVersion'], 5);
   });
 }

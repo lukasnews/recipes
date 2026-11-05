@@ -114,8 +114,19 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     final l10n = context.l10n;
     final repo = ref.read(shoppingRepositoryProvider);
     final current = ref.read(shoppingProvider).value ?? const [];
-    final missing = coverage.missing;
-    if (alreadyOnList(coverage.recipe.id, missing, current)) {
+    // Parts are bought as their whole (Eiweiß -> Eier, Zitronensaft ->
+    // Zitronen).
+    final missing = missingToBuy(
+      coverage.recipe,
+      ref.read(ingredientsByIdProvider),
+      ref.read(pantryProvider).value ?? const {},
+      servings: _servings ?? coverage.recipe.servings,
+    );
+    if (alreadyOnList(
+      coverage.recipe.id,
+      missing.map((m) => m.ingredient.id),
+      current,
+    )) {
       final again = await confirmDialog(
         context,
         title: l10n.buyMissingAgainTitle,
@@ -126,7 +137,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     }
     for (final need in missing) {
       final ing = need.ingredient;
-      final knowAmount = need.neededBase > 0 && !need.hasUnconvertible;
+      final knowAmount = need.missingBase != null;
       fire(
         repo.add(
           text: ing.name,

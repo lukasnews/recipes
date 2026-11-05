@@ -819,6 +819,30 @@
   "pieceGrams": 100.0
  },
  {
+  "id": "zitronenschale",
+  "name": "Zitronenschale",
+  "synonyms": [
+   "abgeriebene Zitronenschale",
+   "Zitronenabrieb",
+   "Zitronenzeste",
+   "Zitronenzesten",
+   "Schale einer Zitrone",
+   "Bio-Zitronenschale"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "TL": 0.5,
+   "EL": 1.5
+  },
+  "alwaysAvailable": false,
+  "allergens": [],
+  "partOf": {
+   "id": "zitrone",
+   "per": 1.0
+  }
+ },
+ {
   "id": "limette",
   "name": "Limette",
   "synonyms": [
@@ -830,6 +854,51 @@
   "alwaysAvailable": false,
   "allergens": [],
   "pieceGrams": 60.0
+ },
+ {
+  "id": "limettenschale",
+  "name": "Limettenschale",
+  "synonyms": [
+   "abgeriebene Limettenschale",
+   "Limettenabrieb",
+   "Limettenzeste",
+   "Limettenzesten",
+   "Schale einer Limette"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "TL": 1.0,
+   "EL": 3.0
+  },
+  "alwaysAvailable": false,
+  "allergens": [],
+  "partOf": {
+   "id": "limette",
+   "per": 1.0
+  }
+ },
+ {
+  "id": "limettensaft",
+  "name": "Limettensaft",
+  "synonyms": [
+   "Saft einer Limette",
+   "Limettensaft frisch"
+  ],
+  "aisle": "produce",
+  "baseUnit": "ml",
+  "conversions": {
+   "EL": 15.0,
+   "TL": 5.0,
+   "Spritzer": 2.0
+  },
+  "alwaysAvailable": false,
+  "allergens": [],
+  "density": 1.03,
+  "partOf": {
+   "id": "limette",
+   "per": 0.04
+  }
  },
  {
   "id": "orange",
@@ -845,6 +914,29 @@
   "alwaysAvailable": false,
   "allergens": [],
   "pieceGrams": 200.0
+ },
+ {
+  "id": "orangenschale",
+  "name": "Orangenschale",
+  "synonyms": [
+   "abgeriebene Orangenschale",
+   "Orangenabrieb",
+   "Orangenzeste",
+   "Orangenzesten",
+   "Schale einer Orange"
+  ],
+  "aisle": "produce",
+  "baseUnit": "pcs",
+  "conversions": {
+   "TL": 0.33,
+   "EL": 1.0
+  },
+  "alwaysAvailable": false,
+  "allergens": [],
+  "partOf": {
+   "id": "orange",
+   "per": 1.0
+  }
  },
  {
   "id": "mandarine",
@@ -1236,6 +1328,50 @@
    "eggs"
   ],
   "pieceGrams": 60.0
+ },
+ {
+  "id": "eidotter",
+  "name": "Eidotter",
+  "synonyms": [
+   "Dotter",
+   "Eigelb",
+   "Eigelbe",
+   "Eidottern"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false,
+  "allergens": [
+   "eggs"
+  ],
+  "pieceGrams": 20.0,
+  "partOf": {
+   "id": "ei",
+   "per": 1.0
+  }
+ },
+ {
+  "id": "eiweiss",
+  "name": "Eiweiß",
+  "synonyms": [
+   "Eiklar",
+   "Eiweiss",
+   "Eischnee",
+   "Klar"
+  ],
+  "aisle": "dairy",
+  "baseUnit": "pcs",
+  "conversions": {},
+  "alwaysAvailable": false,
+  "allergens": [
+   "eggs"
+  ],
+  "pieceGrams": 30.0,
+  "partOf": {
+   "id": "ei",
+   "per": 1.0
+  }
  },
  {
   "id": "milch",
@@ -4540,12 +4676,19 @@
  {
   "id": "vanillemark",
   "name": "Vanillemark",
-  "synonyms": [],
+  "synonyms": [
+   "Mark einer Vanilleschote",
+   "Vanilleschotenmark"
+  ],
   "aisle": "spices",
   "baseUnit": "pcs",
   "conversions": {},
   "alwaysAvailable": false,
-  "allergens": []
+  "allergens": [],
+  "partOf": {
+   "id": "vanilleschote",
+   "per": 1.0
+  }
  },
  {
   "id": "ingwer-gemahlen",
@@ -5004,7 +5147,11 @@
   },
   "alwaysAvailable": false,
   "allergens": [],
-  "density": 1.03
+  "density": 1.03,
+  "partOf": {
+   "id": "zitrone",
+   "per": 0.025
+  }
  },
  {
   "id": "mineralwasser",

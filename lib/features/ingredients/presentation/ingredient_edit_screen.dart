@@ -34,6 +34,7 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
   final _density = TextEditingController();
   final _pieceGrams = TextEditingController();
   var _packSizes = <double>[];
+  PartOf? _partOf;
   Ingredient? _original;
 
   @override
@@ -63,6 +64,7 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
         ? ''
         : formatAmount(i.pieceGrams!, fractions: false);
     _packSizes = [...i.packSizes];
+    _partOf = i.partOf;
     for (final e in i.conversions.entries) {
       _conversions.add((
         e.key,
@@ -120,6 +122,32 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
     });
   }
 
+  /// "Teil von": pick the whole (Eiweiß -> Ei), then how much of it one
+  /// base unit of this ingredient uses.
+  Future<void> _editPartOf({bool pickWhole = true}) async {
+    final l10n = context.l10n;
+    final original = _original!;
+    var wholeId = _partOf?.id;
+    if (pickWhole || wholeId == null) {
+      final choice = await pickIngredient(context, excludeIds: [original.id]);
+      wholeId = choice?.ingredient?.id;
+      if (wholeId == null || !mounted) return;
+    }
+    final whole = ref.read(ingredientsByIdProvider)[wholeId];
+    if (whole == null) return;
+    final text = await showTextInputDialog(
+      context,
+      title: l10n.partOfAmountTitle(whole.name),
+      label: l10n.partOfAmountLabel(_baseLabel, original.name),
+      initial: formatAmount(_partOf?.per ?? 1, fractions: false),
+      suffix: whole.baseUnit == BaseUnit.pcs ? 'Stk.' : whole.baseUnit.name,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+    );
+    final per = text == null ? null : _positive(text);
+    if (per == null || !mounted) return;
+    setState(() => _partOf = PartOf(whole.id, per));
+  }
+
   void _save() {
     final original = _original;
     if (original == null) return;
@@ -141,6 +169,8 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
       pieceGrams: () => _positive(_pieceGrams.text),
       // Sizes are stored in the base unit; a new base makes them meaningless.
       packSizes: _base == original.baseUnit ? _packSizes : const [],
+      // Also per base unit.
+      partOf: () => _base == original.baseUnit ? _partOf : null,
     );
     fire(ref.read(ingredientRepositoryProvider).save(updated));
     context.pop();
@@ -350,6 +380,40 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
                 ),
               ],
             ),
+          ],
+          if (_base == _original!.baseUnit) ...[
+            const SizedBox(height: 16),
+            Text(l10n.partOfLabel, style: theme.textTheme.titleSmall),
+            const SizedBox(height: 4),
+            Text(l10n.partOfHint, style: theme.textTheme.bodySmall),
+            if (_partOf case final p?)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.call_split),
+                title: Text(
+                  l10n.partOfWhole(
+                    ref.watch(ingredientsByIdProvider)[p.id]?.name ?? p.id,
+                  ),
+                ),
+                subtitle: Text(
+                  '1 $_baseLabel = ${formatBaseAmount(p.per, ref.watch(ingredientsByIdProvider)[p.id]?.baseUnit ?? BaseUnit.pcs)}',
+                ),
+                onTap: () => _editPartOf(pickWhole: false),
+                trailing: IconButton(
+                  tooltip: l10n.partOfRemove,
+                  icon: const Icon(Icons.close),
+                  onPressed: () => setState(() => _partOf = null),
+                ),
+              )
+            else
+              Align(
+                alignment: Alignment.centerLeft,
+                child: ActionChip(
+                  avatar: const Icon(Icons.call_split, size: 18),
+                  label: Text(l10n.partOfSet),
+                  onPressed: _editPartOf,
+                ),
+              ),
           ],
           const SizedBox(height: 16),
           Text(l10n.conversionsLabel, style: theme.textTheme.titleSmall),

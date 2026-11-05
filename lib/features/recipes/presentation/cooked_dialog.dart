@@ -44,7 +44,12 @@ Future<void> showCookedDialog(
     }
   }
   if (!context.mounted) return;
-  final computed = plannedDeductions(recipe, ingredients, servings: servings);
+  final computed = plannedDeductions(
+    recipe,
+    ingredients,
+    servings: servings,
+    pantry: pantry,
+  );
   final planned = [
     ...computed,
     for (final id in stillUnknown)

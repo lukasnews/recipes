@@ -57,13 +57,13 @@ class RecipeCoverage {
       needs.where((n) => expiring.contains(n.ingredient.id)).length;
 }
 
-/// Aggregates the needs of a recipe scaled to [servings].
-RecipeCoverage computeCoverage(
+/// Needs of a recipe as written: ingredient id -> base amount (0 when no
+/// line had an amount), plus ids with an amount that can't be converted.
+({Map<String, double> needed, Set<String> unconvertible}) _directNeeds(
   Recipe recipe,
   Map<String, Ingredient> ingredients,
-  Map<String, PantryItem> pantry, {
   int? servings,
-}) {
+) {
   final target = servings ?? recipe.servings;
   final needed = <String, double>{};
   final unconvertible = <String>{};
@@ -84,15 +84,114 @@ RecipeCoverage computeCoverage(
       needed[ing.id] = needed[ing.id]! + base;
     }
   }
+  return (needed: needed, unconvertible: unconvertible);
+}
+
+/// The whole a part comes from (Eiweiß -> Ei), if it exists.
+Ingredient? wholeOf(Ingredient ing, Map<String, Ingredient> ingredients) {
+  final p = ing.partOf;
+  if (p == null || p.id == ing.id) return null;
+  return ingredients[p.id];
+}
+
+/// What actually leaves the pantry: a part (Eiweiß, Zitronensaft) is taken
+/// from its own stock first, the rest from its whole. Parts of the same
+/// whole share it (4 Eiweiß + 4 Dotter = 4 Eier, not 8), and a whole
+/// counted in pieces is rounded up (30 ml Zitronensaft = 1 Zitrone).
+Map<String, double> resolveParts(
+  Map<String, double> needed,
+  Map<String, Ingredient> ingredients,
+  Map<String, PantryItem> pantry,
+) {
+  final result = <String, double>{};
+  final fromParts = <String, double>{};
+  for (final e in needed.entries) {
+    final ing = ingredients[e.key];
+    final whole = ing == null ? null : wholeOf(ing, ingredients);
+    if (ing == null || whole == null) {
+      result[e.key] = (result[e.key] ?? 0) + e.value;
+      continue;
+    }
+    final own = pantry[ing.id]?.amount ?? 0;
+    final take = e.value < own ? e.value : own;
+    if (take > 0) result[ing.id] = (result[ing.id] ?? 0) + take;
+    final rest = e.value - take;
+    if (rest <= 1e-9) continue;
+    var forWhole = rest * ing.partOf!.per;
+    if (whole.baseUnit == BaseUnit.pcs) {
+      forWhole = (forWhole - 1e-9).ceilToDouble();
+    }
+    final prev = fromParts[whole.id] ?? 0;
+    if (forWhole > prev) fromParts[whole.id] = forWhole;
+  }
+  for (final e in fromParts.entries) {
+    result[e.key] = (result[e.key] ?? 0) + e.value;
+  }
+  return result;
+}
+
+/// Aggregates the needs of a recipe scaled to [servings]. A part (Eiweiß)
+/// counts as available when its own stock or the whole's stock left over
+/// by the recipe covers it.
+RecipeCoverage computeCoverage(
+  Recipe recipe,
+  Map<String, Ingredient> ingredients,
+  Map<String, PantryItem> pantry, {
+  int? servings,
+}) {
+  final (:needed, :unconvertible) = _directNeeds(recipe, ingredients, servings);
+  double have(Ingredient ing) {
+    final own = pantry[ing.id]?.amount ?? 0;
+    final whole = wholeOf(ing, ingredients);
+    if (whole == null) return own;
+    final spare = (pantry[whole.id]?.amount ?? 0) - (needed[whole.id] ?? 0);
+    return spare > 0 ? own + spare / ing.partOf!.per : own;
+  }
+
   return RecipeCoverage(recipe, [
     for (final e in needed.entries)
       IngredientNeed(
         ingredient: ingredients[e.key]!,
         neededBase: e.value,
-        haveBase: pantry[e.key]?.amount ?? 0,
+        haveBase: have(ingredients[e.key]!),
         hasUnconvertible: unconvertible.contains(e.key),
       ),
   ]);
+}
+
+/// What to buy for [recipe] beyond the pantry, parts bought as their whole
+/// (missing Eiweiß -> Eier, Zitronensaft -> Zitronen). [missingBase] null
+/// = amount unknown and nothing in stock.
+List<({Ingredient ingredient, double? missingBase})> missingToBuy(
+  Recipe recipe,
+  Map<String, Ingredient> ingredients,
+  Map<String, PantryItem> pantry, {
+  int? servings,
+}) {
+  final (:needed, :unconvertible) = _directNeeds(recipe, ingredients, servings);
+  final known = {
+    for (final e in needed.entries)
+      if (e.value > 0) e.key: e.value,
+  };
+  final resolved = resolveParts(known, ingredients, pantry);
+  final result = <({Ingredient ingredient, double? missingBase})>[];
+  for (final e in resolved.entries) {
+    final ing = ingredients[e.key];
+    if (ing == null || ing.alwaysAvailable) continue;
+    final missing = e.value - (pantry[e.key]?.amount ?? 0);
+    if (missing > 1e-9) result.add((ingredient: ing, missingBase: missing));
+  }
+  // Unknown amounts: buy (the whole) only when nothing is in stock.
+  for (final e in needed.entries) {
+    if (e.value > 0 && !unconvertible.contains(e.key)) continue;
+    final ing = ingredients[e.key]!;
+    if (ing.alwaysAvailable || (pantry[ing.id]?.amount ?? 0) > 0) continue;
+    final buy = wholeOf(ing, ingredients) ?? ing;
+    if ((pantry[buy.id]?.amount ?? 0) > 0) continue;
+    if (result.any((r) => r.ingredient.id == buy.id)) continue;
+    result.add((ingredient: buy, missingBase: null));
+  }
+  return result;
 }
 
 /// "Was kann ich kochen?": covered share descending, then most soon-expiring
@@ -117,23 +216,26 @@ class Deduction {
   final double amountBase;
 }
 
-/// Planned deductions for cooking [recipe] with [servings].
+/// Planned deductions for cooking [recipe] with [servings]; parts beyond
+/// their own stock come out of their whole (see [resolveParts]).
 /// Skips always-available ingredients and amounts without conversion.
 List<Deduction> plannedDeductions(
   Recipe recipe,
   Map<String, Ingredient> ingredients, {
   int? servings,
+  Map<String, PantryItem> pantry = const {},
 }) {
-  final cov = computeCoverage(
+  final (:needed, unconvertible: _) = _directNeeds(
     recipe,
     ingredients,
-    const {},
-    servings: servings,
+    servings,
   );
+  final resolved = resolveParts(needed, ingredients, pantry);
   return [
-    for (final n in cov.needs)
-      if (!n.ingredient.alwaysAvailable && n.neededBase > 0)
-        Deduction(ingredient: n.ingredient, amountBase: n.neededBase),
+    for (final e in resolved.entries)
+      if (ingredients[e.key] case final ing?
+          when !ing.alwaysAvailable && e.value > 0)
+        Deduction(ingredient: ing, amountBase: e.value),
   ];
 }
 
@@ -166,12 +268,12 @@ double clampDeduction(double requested, double? stock) {
 /// list (merged items keep the first recipe id).
 bool alreadyOnList(
   String recipeId,
-  List<IngredientNeed> missing,
+  Iterable<String> missingIds,
   List<ShoppingItem> shopping,
 ) {
   final open = shopping.where((i) => !i.checked);
   if (open.any((i) => i.fromRecipeId == recipeId)) return true;
-  if (missing.isEmpty) return false;
+  if (missingIds.isEmpty) return false;
   final openIds = {for (final i in open) ?i.ingredientId};
-  return missing.every((n) => openIds.contains(n.ingredient.id));
+  return missingIds.every(openIds.contains);
 }

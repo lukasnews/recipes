@@ -24,10 +24,22 @@ List<ShoppingNeed> weekShoppingNeeds(
   final needed = <String, double>{};
   final unknown = <String>{};
   for (final r in planned) {
+    final direct = <String, double>{};
     for (final n in computeCoverage(r, ingredients, const {}).needs) {
       if (n.ingredient.alwaysAvailable) continue;
-      needed[n.ingredient.id] = (needed[n.ingredient.id] ?? 0) + n.neededBase;
-      if (n.neededBase <= 0 || n.hasUnconvertible) unknown.add(n.ingredient.id);
+      direct[n.ingredient.id] = n.neededBase;
+      final ownStock = pantry[n.ingredient.id]?.amount ?? 0;
+      if ((n.neededBase <= 0 || n.hasUnconvertible) && ownStock <= 0) {
+        // Unknown amount of a part: buy its whole.
+        unknown.add((wholeOf(n.ingredient, ingredients) ?? n.ingredient).id);
+      }
+    }
+    // Per recipe, so parts of one whole share it (4 Eiweiß + 4 Dotter).
+    for (final e in resolveParts(direct, ingredients, pantry).entries) {
+      needed[e.key] = (needed[e.key] ?? 0) + e.value;
+    }
+    for (final id in unknown) {
+      needed.putIfAbsent(id, () => 0);
     }
   }
   final result = <ShoppingNeed>[];

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../core/units/units.dart';
 import '../../ingredients/domain/ingredient.dart';
 import '../../recipes/domain/recipe.dart';
 import '../domain/household.dart';
@@ -162,7 +163,7 @@ class HouseholdRepository {
   Future<void> rename(String hid, String name) =>
       _db.collection('households').doc(hid).update({'name': name});
 
-  static const seedVersion = 4;
+  static const seedVersion = 5;
 
   /// One-time update of older households from the seed list: allergens
   /// (v2), missing synonyms and conversions (v3, e.g. "Schlag" and g → ml
@@ -179,6 +180,42 @@ class HouseholdRepository {
       for (final d in (await ingredients.get()).docs) d.id: d.data(),
     };
     final batch = _db.batch();
+    // v5: parts (Eiweiß, Dotter, Zitronenschale …) know their whole. A part
+    // the household created itself (e.g. "Eiweiß" from a recipe) is linked
+    // instead of adding a second one.
+    final byName = <String, String>{
+      for (final e in existing.entries)
+        for (final n in [
+          e.value['name'],
+          ...(e.value['synonyms'] as List<dynamic>? ?? const []),
+        ])
+          '$n'.toLowerCase(): e.key,
+    };
+    for (final ing in seed) {
+      final part = ing.partOf;
+      if (part == null || existing[ing.id] != null) continue;
+      if (existing[part.id] == null) continue;
+      final ownId = [
+        ing.name,
+        ...ing.synonyms,
+      ].map((n) => byName[n.toLowerCase()]).nonNulls.firstOrNull;
+      if (ownId == null) {
+        batch.set(ingredients.doc(ing.id), ing.toMap());
+        continue;
+      }
+      final own = existing[ownId]!;
+      final partOf = _partOfFor(own, ing);
+      if (own['partOf'] != null || partOf == null) continue;
+      batch.update(ingredients.doc(ownId), {
+        'partOf': partOf.toMap(),
+        if (own['pieceGrams'] == null && ing.pieceGrams != null)
+          'pieceGrams': ing.pieceGrams,
+        'synonyms': FieldValue.arrayUnion([
+          for (final n in [ing.name, ...ing.synonyms])
+            if (n.toLowerCase() != '${own['name']}'.toLowerCase()) n,
+        ]),
+      });
+    }
     for (final ing in seed) {
       final data = existing[ing.id];
       if (data == null) continue;
@@ -216,9 +253,30 @@ class HouseholdRepository {
       if (data['pieceGrams'] == null && ing.pieceGrams != null) {
         update['pieceGrams'] = ing.pieceGrams;
       }
+      final partOf = _partOfFor(data, ing);
+      if (data['partOf'] == null &&
+          partOf != null &&
+          existing[partOf.id] != null) {
+        update['partOf'] = partOf.toMap();
+      }
       if (update.isNotEmpty) batch.update(ingredients.doc(ing.id), update);
     }
     batch.update(ref, {'seedVersion': seedVersion});
     await batch.commit();
+  }
+
+  /// The seed's partOf for an existing ingredient [data]; the factor is per
+  /// base unit, so a part kept in grams (seed: pieces) is converted with the
+  /// piece weight, other mismatches are skipped.
+  static PartOf? _partOfFor(Map<String, dynamic> data, Ingredient seed) {
+    final p = seed.partOf;
+    if (p == null) return null;
+    final base = data['baseUnit'];
+    if (base == seed.baseUnit.name) return p;
+    final grams = seed.pieceGrams;
+    if (base == 'g' && seed.baseUnit == BaseUnit.pcs && grams != null) {
+      return PartOf(p.id, p.per / grams);
+    }
+    return null;
   }
 }
