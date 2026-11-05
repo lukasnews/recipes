@@ -916,6 +916,9 @@
   "packLabel": "1 Pkg.",
   "packSizeUse": "Diese Packungsgröße übernehmen",
   "packSizesLabel": "Übliche Packungen",
-  "packSizesHint": "Werden beim Übernehmen in den Vorrat gemerkt und auf der Einkaufsliste vorgeschlagen.",
+  "packSizesHint": "Werden beim Übernehmen in den Vorrat gemerkt und auf der Einkaufsliste vorgeschlagen. Antippen zum Ändern.",
+  "packSizeAdd": "Packung hinzufügen",
+  "packSizeEdit": "Packungsgröße ändern",
+  "packSizeLabel": "Inhalt einer Packung",
   "@ratingStars": {"placeholders": {"count": {"type": "int"}}}
 }

@@ -47,6 +47,10 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: Routes.recipes,
     refreshListenable: refresh,
     redirect: (context, state) {
+      // App links like baco://shopping (home screen widget) -> the tab.
+      if (state.uri.scheme == 'baco') {
+        return state.uri.host == 'shopping' ? Routes.shopping : Routes.recipes;
+      }
       final loc = state.matchedLocation;
       final gate = switch (refresh.value) {
         SessionState.loading => Routes.splash,

@@ -8,6 +8,7 @@ import '../../../core/units/units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../household/domain/allergen.dart';
+import '../../shopping/domain/pack_sizes.dart';
 import '../domain/ingredient.dart';
 import 'ingredient_picker.dart';
 import 'merge.dart';
@@ -94,6 +95,30 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
   }
 
   String get _baseLabel => _base == BaseUnit.pcs ? 'Stk.' : _base.name;
+
+  /// Adds a pack size ([old] == null) or changes [old]; input in the base
+  /// unit, an empty field removes it.
+  Future<void> _editPack(double? old) async {
+    final l10n = context.l10n;
+    final text = await showTextInputDialog(
+      context,
+      title: old == null ? l10n.packSizeAdd : l10n.packSizeEdit,
+      label: l10n.packSizeLabel,
+      initial: old == null ? '' : formatAmount(old, fractions: false),
+      suffix: _baseLabel,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+    );
+    if (text == null || !mounted) return;
+    final value = _positive(text);
+    setState(() {
+      final next = [..._packSizes];
+      if (old != null) next.remove(old);
+      if (value != null && !next.contains(value)) next.add(value);
+      _packSizes = next.length > maxPackSizes
+          ? next.sublist(next.length - maxPackSizes)
+          : next;
+    });
+  }
 
   void _save() {
     final original = _original;
@@ -298,7 +323,7 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
               ),
             ],
           ),
-          if (_packSizes.isNotEmpty) ...[
+          if (_base == _original!.baseUnit) ...[
             const SizedBox(height: 16),
             Text(l10n.packSizesLabel, style: theme.textTheme.titleSmall),
             const SizedBox(height: 4),
@@ -312,10 +337,17 @@ class _IngredientEditScreenState extends ConsumerState<IngredientEditScreen> {
                   InputChip(
                     avatar: const Icon(Icons.inventory_2_outlined, size: 18),
                     label: Text(formatBaseAmount(size, _original!.baseUnit)),
+                    tooltip: l10n.packSizeEdit,
+                    onPressed: () => _editPack(size),
                     onDeleted: () => setState(
                       () => _packSizes = [..._packSizes]..remove(size),
                     ),
                   ),
+                ActionChip(
+                  avatar: const Icon(Icons.add, size: 18),
+                  label: Text(l10n.packSizeAdd),
+                  onPressed: () => _editPack(null),
+                ),
               ],
             ),
           ],

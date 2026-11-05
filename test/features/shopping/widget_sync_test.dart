@@ -1,5 +1,7 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:recipes/features/auth/data/auth_repository.dart';
 import 'package:recipes/features/mealplan/data/meal_plan_repository.dart';
 import 'package:recipes/features/mealplan/domain/meal_plan_day.dart';
@@ -54,6 +56,24 @@ void main() {
     widget.clickController.add(Uri.parse('baco://shopping'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Schlagobers'), findsWidgets);
+    expect(find.textContaining('Was brauchst du?'), findsOneWidget);
+  });
+
+  testWidgets('a baco:// link from Android opens the tab, not an error', (
+    tester,
+  ) async {
+    final db = FakeFirebaseFirestore();
+    await seedHousehold(db);
+    await tester.pumpWidget(
+      testApp(
+        db: db,
+        auth: FakeAuthRepository(const AuthUser(uid: 'u1')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    GoRouter.of(tester.element(find.byType(NavigationBar)))
+        .go('baco://shopping/');
+    await tester.pumpAndSettle();
     expect(find.textContaining('Was brauchst du?'), findsOneWidget);
   });
 }
