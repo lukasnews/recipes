@@ -178,16 +178,26 @@ class _PantryTile extends ConsumerWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton.filledTonal(
-            onPressed: item.amount > 0
-                ? () => adjustStock(context, ref, ingredient, -step)
+          // Tap: one step. Hold: any amount ("5 Stk. entnehmen").
+          GestureDetector(
+            onLongPress: item.amount > 0
+                ? () => adjustStockBy(context, ref, ingredient, takeOut: true)
                 : null,
-            icon: const Icon(Icons.remove),
+            child: IconButton.filledTonal(
+              onPressed: item.amount > 0
+                  ? () => adjustStock(context, ref, ingredient, -step)
+                  : null,
+              icon: const Icon(Icons.remove),
+            ),
           ),
           const SizedBox(width: 8),
-          IconButton.filledTonal(
-            onPressed: () => adjustStock(context, ref, ingredient, step),
-            icon: const Icon(Icons.add),
+          GestureDetector(
+            onLongPress: () =>
+                adjustStockBy(context, ref, ingredient, takeOut: false),
+            child: IconButton.filledTonal(
+              onPressed: () => adjustStock(context, ref, ingredient, step),
+              icon: const Icon(Icons.add),
+            ),
           ),
         ],
       ),

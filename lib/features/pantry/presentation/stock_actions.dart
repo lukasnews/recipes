@@ -89,3 +89,116 @@ Future<double?> askConversion(
   );
   return value;
 }
+
+/// Long press on − / +: take out or add any amount in any unit (5 Stk.,
+/// 300 g). Units the ingredient can't convert ask once.
+Future<void> adjustStockBy(
+  BuildContext context,
+  WidgetRef ref,
+  Ingredient ingredient, {
+  required bool takeOut,
+}) async {
+  final result = await showDialog<(double, String)>(
+    context: context,
+    builder: (_) => _AmountDialog(ingredient: ingredient, takeOut: takeOut),
+  );
+  if (result == null || !context.mounted) return;
+  final (amount, unit) = result;
+  var base = ingredient.toBase(
+    amount,
+    unit == 'Stk.' && ingredient.baseUnit == BaseUnit.pcs ? null : unit,
+  );
+  if (base == null) {
+    final factor = await askConversion(context, ref, ingredient, unit);
+    if (factor == null || !context.mounted) return;
+    base = amount * factor;
+  }
+  adjustStock(context, ref, ingredient, takeOut ? -base : base);
+}
+
+class _AmountDialog extends StatefulWidget {
+  const _AmountDialog({required this.ingredient, required this.takeOut});
+
+  final Ingredient ingredient;
+  final bool takeOut;
+
+  @override
+  State<_AmountDialog> createState() => _AmountDialogState();
+}
+
+class _AmountDialogState extends State<_AmountDialog> {
+  final _amount = TextEditingController();
+  late final List<String> _units = {
+    ...widget.ingredient.unitChoices,
+    'g',
+    'kg',
+    'ml',
+    'l',
+    'Stk.',
+  }.toList();
+  late String _unit = _units.first;
+
+  @override
+  void dispose() {
+    _amount.dispose();
+    super.dispose();
+  }
+
+  void _done() {
+    final v = parseUserNumber(_amount.text);
+    if (v == null || v <= 0) return;
+    Navigator.pop(context, (v, _unit));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final name = widget.ingredient.name;
+    return AlertDialog(
+      title: Text(
+        widget.takeOut
+            ? l10n.stockTakeOutTitle(name)
+            : l10n.stockAddTitle(name),
+      ),
+      content: Row(
+        spacing: 12,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _amount,
+              autofocus: true,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(labelText: l10n.amountLabel),
+              onSubmitted: (_) => _done(),
+            ),
+          ),
+          SizedBox(
+            width: 96,
+            child: DropdownButtonFormField<String>(
+              initialValue: _unit,
+              isExpanded: true,
+              decoration: InputDecoration(labelText: l10n.unitLabel),
+              items: [
+                for (final u in _units)
+                  DropdownMenuItem(value: u, child: Text(u)),
+              ],
+              onChanged: (v) => setState(() => _unit = v ?? _unit),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: _done,
+          child: Text(widget.takeOut ? l10n.stockTakeOut : l10n.stockAdd),
+        ),
+      ],
+    );
+  }
+}

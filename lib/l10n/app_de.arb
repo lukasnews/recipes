@@ -856,5 +856,23 @@
   "weightsLabel": "Gewicht",
   "weightsHint": "Damit rechnet BaCo selbst zwischen Gramm, Milliliter und Stück um (z. B. Wasser 1 g/ml, Öl 0,92 g/ml, Banane 120 g pro Stück).",
   "densityLabel": "Dichte",
-  "pieceGramsLabel": "Gewicht pro Stück"
+  "pieceGramsLabel": "Gewicht pro Stück",
+  "stockTakeOutTitle": "{name} entnehmen",
+  "stockAddTitle": "{name} hinzufügen",
+  "stockTakeOut": "Entnehmen",
+  "stockAdd": "Hinzufügen",
+  "@stockTakeOutTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@stockAddTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }
