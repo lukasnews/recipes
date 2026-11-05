@@ -24,11 +24,16 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
-            <!-- Widget taps (baco://shopping) are handled by home_widget in
-                 WidgetSync; Flutter must not pass them to the router. -->
-            <meta-data
-              android:name="flutter_deeplinking_enabled"
-              android:value="false" />
+            <!-- baco:// links reach the router (Flutter deep linking is on by
+                 default); router.dart maps baco://shopping, baco://mealplan
+                 and baco://recipe?c=CODE to their screens. -->
+            <!-- "In BaCo öffnen" on the web page of a sent recipe -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="baco" android:host="recipe" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

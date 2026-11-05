@@ -55,7 +55,7 @@ test_rules/                  # Firestore rules tests (Node, emulator): cd test_r
 
 ## Datenmodell (Firestore)
 
-Alle Haushaltsdaten liegen unter `households/{householdId}`. Außerhalb gibt es nur `users` und `invites`.
+Alle Haushaltsdaten liegen unter `households/{householdId}`. Außerhalb gibt es nur `users`, `invites` und `sharedRecipes`.
 
 ```
 users/{uid}
@@ -67,6 +67,11 @@ users/{uid}
 
 invites/{code}         # 6 chars, no 0/O/1/I/L; get only, never list
   householdId
+
+sharedRecipes/{code}   # recipe sent to another household; 8 chars, no 0/O/1/I/L
+  title, senderName, message, createdBy (uid), createdAt, expiresAt? (null = never)
+  servings?, prepMinutes?, cookMinutes?, ingredients: [line], steps: [text]
+  photoPath?           # Storage shared/{uid}/{code}.jpg (public read)
 
 households/{hid}
   name, memberIds: [uid], inviteCode, createdAt
@@ -144,10 +149,11 @@ households/{hid}/cookLog/{logId}
 - **Konto löschen** (Einstellungen, ganz unten): Bestätigung → neu anmelden (Google bzw. Passwort) → Haushalte, in denen man allein ist, komplett löschen (Unter-Sammlungen in Batches, Fotos, Einladung, dann Haushalt; Regel erlaubt Löschen nur dem letzten Mitglied) bzw. aus gemeinsamen austreten (erst eigenen `members`-Eintrag, dann `memberIds`) → `users/{uid}` → Auth-Konto. Braucht Netz.
 - **Beispielrezepte:** Neue Haushalte bekommen Kaiserschmarrn, Rindsgulasch, Erdäpfelsalat und Vanillekipferl (`sampleRecipes`, nur sichere Zutaten-Treffer verknüpft) im selben Batch wie die Zutaten. Leere Rezeptliste zeigt „Beispielrezepte hinzufügen“.
 - **Nährwerte:** Rezept-Detail → „Nährwerte schätzen (KI)“ → `RecipeExtractor.estimateNutrition` (Titel, Portionen, Zutatenzeilen) → `recipes.nutrition` pro Portion, angezeigt als „ca. … (geschätzt)“. Jedes Speichern des Rezepts löscht die Schätzung (Zutaten könnten sich geändert haben); Bewertung ändert nur `rating` (`setRating`).
-- **Widget „BaCo Einkauf“** (Android-Startbildschirm): heutiges Gericht + offene Einkaufsliste (nach Abteilung, max. 10 Zeilen, aktueller Zutatenname). `WidgetSync` in der Shell schreibt die fertig übersetzten Texte per `home_widget`, sobald sich Liste/Plan ändern (nur während die App läuft); `ShoppingWidgetProvider.kt` zeichnet sie. Tippen öffnet `baco://shopping` → Einkauf-Reiter (`flutter_deeplinking_enabled` ist aus, der Router leitet `baco://`-Links trotzdem auf den Reiter um).
+- **Widget „BaCo Einkauf“** (Android-Startbildschirm): heutiges Gericht + offene Einkaufsliste (nach Abteilung, max. 10 Zeilen, aktueller Zutatenname). `WidgetSync` in der Shell schreibt die fertig übersetzten Texte per `home_widget`, sobald sich Liste/Plan ändern (nur während die App läuft); `ShoppingWidgetProvider.kt` zeichnet sie. Tippen öffnet `baco://shopping` → Einkauf-Reiter (der Router leitet `baco://`-Links auf den Reiter um).
 - **Widget „BaCo Wochenplan“:** heute + die nächsten 6 Tage (Rezepte und Tiefkühl-Gerichte). Die App schreibt `plan_<yyyy-MM-dd>` für 14 Tage (`planWidgetDays`, leer = nichts geplant); `MealPlanWidgetProvider.kt` sucht sich „heute“ selbst (stündliche Aktualisierung, damit es nach Mitternacht weiterrückt). Tippen öffnet `baco://mealplan` → Wochenplan.
 - **Im Widget abhaken:** Einkaufs-Widget ist eine Liste (`ShoppingListService`, Zeilen aus `shopping_rows` = JSON id+Text, von `WidgetSync` geschrieben, dazu `household_id`). Tipp auf eine Zeile → `BacoCheckReceiver` blendet sie sofort aus (`checked_pending`) und startet per home_widget den Dart-Rückruf `widgetInteraction` (auch bei geschlossener App): `checked: true` in Firestore (offline in der lokalen Warteschlange), Zeile aus `shopping_rows` entfernen.
 - **Widgets allgemein** (`BacoWidgets` in `WidgetTexts.kt`, gemeinsames Layout `shopping_widget.xml`): Inhalt passt sich der Höhe an (`linesFor`: klein = nur Titel/heute, größer = mehr Tage bzw. Einträge, `onAppWidgetOptionsChanged`). Lange drücken → Einstellungen (`WidgetConfigActivity`, Samsung-artig: Vollbild über dem Hintergrundbild, `reconfigurable|configuration_optional`): Hintergrund an/aus, Deckkraft (Standard 60 %), Farben Wie Telefon/Hell/Dunkel/BaCo-Grün (`BacoWidgets.Look`, pro Widget in `baco_widget_settings`); „Wie Telefon“ nutzt `values-night`-Farben. Hintergrund ist ein `ImageView` (`setImageAlpha`). Vorschau in der Widget-Auswahl über `previewLayout` (`widget_preview_*.xml`, Beispieltexte).
+- **Rezept an anderen Haushalt senden** (`features/sharing`): Rezept-Detail ⋮ → „An anderen Haushalt senden“ → Nachricht + Gültigkeit (Unbegrenzt/7/30 Tage/1 Jahr, Standard unbegrenzt) → Kopie `sharedRecipes/{code}` (`SharedRecipe.fromRecipe`, Zutatenzeilen als Text, Absendername) + erstes Foto nach `shared/{uid}/{code}.jpg` (im Hintergrund, braucht Netz) → Teilen-Menü mit Link `lukasnews.github.io/recipes/r/?c=CODE` und Code. Die Webseite `docs/r/index.html` liest die Kopie per Firestore-REST ohne Login und bietet „In BaCo öffnen“ (`intent://recipe?c=…;scheme=baco`). Empfangen: Link → `baco://recipe?c=` → Router → `/shared/:code` (`ReceivedRecipeScreen`: Vorschau, „In meine Rezepte übernehmen“ → Prüf-Bildschirm mit Notiz „Von …“ und Foto), „+“ → „Rezept-Code eingeben“ oder geteilter Link im Link-Import (`sharedRecipeCode`). Einstellungen → Daten → „Gesendete Rezepte“: Link nochmal teilen, nicht mehr teilen (löscht Kopie + Foto). Flutter-Deep-Linking ist an; der Router bildet `baco://shopping|mealplan|recipe` ab.
 - **Einstellungen – Konto & Haushalt:** Name ändern (Auth-`displayName`, `users.displayName`, eigener `members`-Eintrag; andere Haushalte via `MemberSync` beim Wechsel). „Neuen Code erzeugen“ (`renewInviteCode`: Batch aus neuem `invites`-Dokument, Löschen des alten, `inviteCode` am Haushalt; alter Code ungültig). „Haushalt verlassen“ (`AccountDeletionService.leaveHousehold`: als letztes Mitglied wird der Haushalt samt Daten gelöscht, sonst nur austreten; `householdIds`/`activeHouseholdId` am User bereinigt; braucht Netz). „Info → Datenschutzerklärung“ öffnet die GitHub-Pages-Seite (`Links.privacy`).
 - **Favoriten & Sammlungen:** Herz im Rezept-Detail (pro Person, `users.favoriteRecipeIds`); Sammlungen über ⋮ → „Sammlungen“ (`CollectionsSheet`, neue anlegen, gemeinsam im Haushalt, `recipes.collections`). Filter „Favoriten“ und je Sammlung ein Chip hinter dem Filter-Knopf; Favoriten tragen ein Herz in der Liste.
 - **Suche** läuft lokal über die gecachten Rezepte (Firestore hat keine Volltextsuche). Haushalte sind klein, das reicht.
@@ -173,7 +179,7 @@ households/{hid}/cookLog/{logId}
 
 ## Sicherheit
 
-- Firestore- und Storage-Regeln in `firestore.rules` / `storage.rules` im Repo pflegen. Lesen/Schreiben unter `households/{hid}` nur, wenn `request.auth.uid in memberIds`. Unterpfade mit `match /{collection}/{document=**}` matchen (ein nacktes `{document=**}` matcht in v2 auch das Haushalt-Dokument selbst). Jede Regeländerung braucht einen Test in `test_rules/`.
+- Firestore- und Storage-Regeln in `firestore.rules` / `storage.rules` im Repo pflegen. Einzige öffentlich lesbare Daten: `sharedRecipes/{code}` (nur `get` per Code, solange nicht abgelaufen; `list` nur eigene) und `shared/{uid}/…` in Storage. Lesen/Schreiben unter `households/{hid}` nur, wenn `request.auth.uid in memberIds`. Unterpfade mit `match /{collection}/{document=**}` matchen (ein nacktes `{document=**}` matcht in v2 auch das Haushalt-Dokument selbst). Jede Regeländerung braucht einen Test in `test_rules/`.
 - Regeln deployed der CI-Job `deploy-rules` (nach grünen Regel-Tests), wenn ein Push `firestore.rules`/`storage.rules` ändert oder bei manuellem Lauf mit Häkchen. Braucht das Secret `FIREBASE_SERVICE_ACCOUNT` (Rollen Firebase Rules Admin + Firebase Viewer); ohne Secret wird übersprungen.
 - App Check für Firebase AI Logic aktivieren.
 - Keine Secrets committen (Keystore, Service-Account-JSON). `firebase_options.dart` und `google-services.json` dürfen ins Repo, der Schutz läuft über Regeln und App Check.
@@ -283,6 +289,7 @@ Im Codespace gibt es keinen Android-Emulator. Plattformspezifisches (Kamera, ML 
 - [x] Kochverlauf (zuletzt gekocht, Sortierung „Lange nicht gekocht“)
 - [x] Mehrere Haushalte wechseln
 - [x] Rezept teilen (Text mit Zutaten in gewählter Einheit, `recipeShareText`)
+- [x] Rezept an anderen Haushalt senden (Link/Code, Webseite ohne App, `sharedRecipes`)
 - [x] Backup/Export und Import (JSON)
 - [x] Konto- und Datenlöschung in der App (`AccountDeletionService`, erst neu anmelden, dann Daten, dann Auth-Konto)
 - [x] Datenschutzerklärung und Lösch-Seite in `docs/` (GitHub Pages); Anleitung `docs/PLAY_STORE.md`

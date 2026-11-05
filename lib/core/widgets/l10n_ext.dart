@@ -4,6 +4,7 @@ import '../../features/household/domain/allergen.dart';
 import '../../features/ingredients/domain/ingredient.dart';
 import '../../features/pantry/domain/pantry_item.dart';
 import '../../features/recipes/domain/recipe.dart';
+import '../../features/sharing/domain/shared_recipe.dart';
 import '../../l10n/app_localizations.dart';
 import '../units/units.dart';
 
@@ -12,6 +13,13 @@ extension L10nContext on BuildContext {
 }
 
 extension LabelL10n on AppLocalizations {
+  String shareValidity(ShareValidity v) => switch (v) {
+    ShareValidity.never => shareValidityNever,
+    ShareValidity.week => shareValidityWeek,
+    ShareValidity.month => shareValidityMonth,
+    ShareValidity.year => shareValidityYear,
+  };
+
   String aisle(Aisle a) => switch (a) {
     Aisle.produce => aisleProduce,
     Aisle.bread => aisleBread,

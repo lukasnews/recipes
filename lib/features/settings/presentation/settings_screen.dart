@@ -238,6 +238,13 @@ class SettingsScreen extends ConsumerWidget {
           if (household != null) ...[
             section(l10n.settingsData),
             ListTile(
+              leading: const Icon(Icons.send_outlined),
+              title: Text(l10n.sentTitle),
+              subtitle: Text(l10n.sentSubtitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push(Routes.sentRecipes),
+            ),
+            ListTile(
               leading: const Icon(Icons.save_alt),
               title: Text(l10n.backupExport),
               subtitle: Text(l10n.backupExportSubtitle),

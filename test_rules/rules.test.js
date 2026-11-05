@@ -8,9 +8,14 @@ import {
 import {
   arrayRemove,
   arrayUnion,
+  collection,
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
+  query,
+  Timestamp,
+  where,
   setDoc,
   updateDoc,
   writeBatch,
@@ -209,5 +214,53 @@ describe('invite code', () => {
     batch.update(doc(db, 'households/h1'), { inviteCode: 'BAD234' });
     batch.set(doc(db, 'invites/BAD234'), { householdId: 'h1' });
     await assertFails(batch.commit());
+  });
+});
+
+describe('shared recipes', () => {
+  beforeEach(reset);
+
+  const recipe = (uid, extra = {}) => ({
+    title: 'Kaiserschmarrn',
+    createdBy: uid,
+    senderName: 'Alice',
+    ...extra,
+  });
+
+  test('sender creates, anyone with the code reads, only sender deletes', async () => {
+    await assertSucceeds(setDoc(doc(as('alice'), 'sharedRecipes/K7MQX4PA'), recipe('alice')));
+    await assertSucceeds(getDoc(doc(as('bob'), 'sharedRecipes/K7MQX4PA')));
+    await assertSucceeds(
+      getDoc(doc(env.unauthenticatedContext().firestore(), 'sharedRecipes/K7MQX4PA')),
+    );
+    await assertFails(updateDoc(doc(as('bob'), 'sharedRecipes/K7MQX4PA'), { title: 'X' }));
+    await assertFails(deleteDoc(doc(as('bob'), 'sharedRecipes/K7MQX4PA')));
+    await assertSucceeds(updateDoc(doc(as('alice'), 'sharedRecipes/K7MQX4PA'), { photoPath: 'p' }));
+    await assertSucceeds(deleteDoc(doc(as('alice'), 'sharedRecipes/K7MQX4PA')));
+  });
+
+  test('no creating in someone else\'s name, no odd codes, no logged-out writes', async () => {
+    await assertFails(setDoc(doc(as('mallory'), 'sharedRecipes/K7MQX4PA'), recipe('alice')));
+    await assertFails(setDoc(doc(as('alice'), 'sharedRecipes/SHORT'), recipe('alice')));
+    await assertFails(
+      setDoc(doc(env.unauthenticatedContext().firestore(), 'sharedRecipes/K7MQX4PA'), recipe('x')),
+    );
+  });
+
+  test('only the sender lists their shared recipes', async () => {
+    await assertSucceeds(setDoc(doc(as('alice'), 'sharedRecipes/K7MQX4PA'), recipe('alice')));
+    await assertSucceeds(
+      getDocs(query(collection(as('alice'), 'sharedRecipes'), where('createdBy', '==', 'alice'))),
+    );
+    await assertFails(getDocs(collection(as('bob'), 'sharedRecipes')));
+  });
+
+  test('expired copies are hidden from others, not from the sender', async () => {
+    const past = Timestamp.fromMillis(Date.now() - 60000);
+    await assertSucceeds(
+      setDoc(doc(as('alice'), 'sharedRecipes/OLD23456'), recipe('alice', { expiresAt: past })),
+    );
+    await assertFails(getDoc(doc(as('bob'), 'sharedRecipes/OLD23456')));
+    await assertSucceeds(getDoc(doc(as('alice'), 'sharedRecipes/OLD23456')));
   });
 });

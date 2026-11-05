@@ -44,6 +44,8 @@ import '../features/recipes/domain/recipe.dart';
 import '../features/recipes/domain/sample_recipes.dart';
 import '../features/settings/data/account_deletion.dart';
 import '../features/settings/data/backup_service.dart';
+import '../features/sharing/data/shared_recipe_repository.dart';
+import '../features/sharing/domain/shared_recipe.dart';
 import '../features/shopping/data/home_screen_widget.dart';
 import '../features/shopping/data/shopping_repository.dart';
 import '../features/shopping/domain/aisle_order.dart';
@@ -364,6 +366,17 @@ final frozenMealsProvider = StreamProvider<List<FrozenMeal>>(
 
 /// How amounts are shown (per person, stored on users/{uid}).
 /// This person's favourite recipe ids.
+final sharedRecipeRepositoryProvider = Provider<SharedRecipeRepository>(
+  (ref) => SharedRecipeRepository(ref.watch(firestoreProvider)),
+);
+
+/// Recipes this person sent to other households.
+final sentRecipesProvider = StreamProvider<List<SharedRecipe>>((ref) {
+  final uid = ref.watch(authUserProvider.select((u) => u.value?.uid));
+  if (uid == null) return Stream.value(const []);
+  return ref.watch(sharedRecipeRepositoryProvider).watchSentBy(uid);
+});
+
 final favoritesProvider = Provider<Set<String>>(
   (ref) =>
       ref.watch(appUserProvider.select((u) => u.value?.favoriteRecipeIds)) ??

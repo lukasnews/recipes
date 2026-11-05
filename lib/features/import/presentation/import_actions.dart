@@ -14,11 +14,13 @@ import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../household/domain/allergen.dart';
 import '../../pantry/domain/pantry_item.dart';
+import '../../sharing/domain/shared_recipe.dart';
+import '../../sharing/presentation/share_actions.dart';
 import '../data/photo_picker.dart';
 import '../domain/recipe_draft.dart';
 import '../domain/web_recipe.dart';
 
-enum _AddChoice { manual, camera, gallery, link, ideas }
+enum _AddChoice { manual, camera, gallery, link, code, ideas }
 
 /// Bottom sheet behind the "+" button: empty recipe, photo or screenshot.
 Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
@@ -55,6 +57,12 @@ Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
             onTap: () => Navigator.pop(context, _AddChoice.link),
           ),
           ListTile(
+            leading: const Icon(Icons.qr_code_2),
+            title: Text(l10n.receiveCodeTitle),
+            subtitle: Text(l10n.receiveCodeSubtitle),
+            onTap: () => Navigator.pop(context, _AddChoice.code),
+          ),
+          ListTile(
             leading: const Icon(Icons.auto_awesome_outlined),
             title: Text(l10n.ideasFromPantry),
             subtitle: Text(l10n.ideasFromPantrySubtitle),
@@ -74,6 +82,8 @@ Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
       await importFromPhotos(context, ref, PhotoSource.gallery);
     case _AddChoice.link:
       await askAndImportLink(context, ref);
+    case _AddChoice.code:
+      await askForShareCode(context);
     case _AddChoice.ideas:
       await suggestRecipesFromPantry(context, ref);
   }
@@ -257,11 +267,22 @@ Future<void> askAndImportLink(BuildContext context, WidgetRef ref) async {
   await importFromLink(context, ref, url);
 }
 
-Future<void> importFromLink(BuildContext context, WidgetRef ref, Uri url) =>
-    _runImport(context, () async {
-      final importer = await ref.read(linkImporterProvider.future);
-      return importer.import(url);
-    });
+Future<void> importFromLink(
+  BuildContext context,
+  WidgetRef ref,
+  Uri url,
+) async {
+  // A recipe sent from another BaCo household: open it directly.
+  final code = sharedRecipeCode(url);
+  if (code != null) {
+    await context.push(Routes.sharedRecipe(code));
+    return;
+  }
+  await _runImport(context, () async {
+    final importer = await ref.read(linkImporterProvider.future);
+    return importer.import(url);
+  });
+}
 
 /// Shared flow: progress dialog, optional choice when several recipes were
 /// found, then the review screen for each one.

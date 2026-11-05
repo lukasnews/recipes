@@ -21,4 +21,9 @@ abstract final class Links {
   static final deleteAccount = Uri.parse(
     'https://lukasnews.github.io/recipes/konto-loeschen.html',
   );
+
+  /// Web page of a recipe sent to another household (works without the
+  /// app; offers "In BaCo öffnen").
+  static Uri sharedRecipe(String code) =>
+      Uri.parse('https://lukasnews.github.io/recipes/r/?c=$code');
 }

@@ -249,6 +249,13 @@ class FakePhotoRepository implements PhotoRepository {
   Future<void> deleteFiles(Iterable<String> paths) async {}
   @override
   Future<String> downloadUrl(String path) async => 'https://example.invalid/x';
+
+  final sharedUploads = <String>[];
+  @override
+  Future<String> uploadShared(String uid, String code, String file) async {
+    sharedUploads.add(file);
+    return 'shared/$uid/$code.jpg';
+  }
 }
 
 RecipeImportService fakeImportService({

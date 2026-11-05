@@ -16,6 +16,10 @@ abstract class PhotoRepository {
 
   /// Deletes stored files only (e.g. after the recipe itself was deleted).
   Future<void> deleteFiles(Iterable<String> paths);
+
+  /// Photo of a recipe sent to another household: shared/{uid}/{code}.jpg,
+  /// readable by anyone with the link. Returns the path.
+  Future<String> uploadShared(String uid, String code, String file);
 }
 
 class FirebasePhotoRepository implements PhotoRepository {
@@ -67,4 +71,13 @@ class FirebasePhotoRepository implements PhotoRepository {
   @override
   Future<String> downloadUrl(String path) =>
       _storage.ref(path).getDownloadURL();
+
+  @override
+  Future<String> uploadShared(String uid, String code, String file) async {
+    final path = 'shared/$uid/$code.jpg';
+    await _storage
+        .ref(path)
+        .putFile(File(file), SettableMetadata(contentType: 'image/jpeg'));
+    return path;
+  }
 }

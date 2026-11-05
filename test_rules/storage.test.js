@@ -75,3 +75,16 @@ describe('storage', () => {
     );
   });
 });
+
+describe('shared recipe photos', () => {
+  beforeEach(reset);
+
+  test('sender uploads, anyone reads, only sender deletes', async () => {
+    const path = 'shared/alice/K7MQX4PA.jpg';
+    await assertSucceeds(uploadBytes(ref(storageAs('alice'), path), jpeg, { contentType: 'image/jpeg' }));
+    await assertSucceeds(getBytes(ref(env.unauthenticatedContext().storage(), path)));
+    await assertFails(uploadBytes(ref(storageAs('bob'), path), jpeg, { contentType: 'image/jpeg' }));
+    await assertFails(deleteObject(ref(storageAs('bob'), path)));
+    await assertSucceeds(deleteObject(ref(storageAs('alice'), path)));
+  });
+});

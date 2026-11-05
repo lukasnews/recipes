@@ -10,6 +10,16 @@ service firebase.storage {
           /databases/(default)/documents/households/$(hid)).data.memberIds;
     }
 
+    // Photo of a recipe sent to another household: readable by anyone
+    // with the link (like the recipe copy), written only by its sender.
+    match /shared/{uid}/{file} {
+      allow read: if true;
+      allow delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
     match /households/{hid}/{allPaths=**} {
       allow read, delete: if isMember(hid);
       // Only images, max 5 MB (the app uploads ~1600 px JPEGs).

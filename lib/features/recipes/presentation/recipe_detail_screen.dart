@@ -16,6 +16,7 @@ import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/rating_stars.dart';
 import '../../../core/widgets/storage_image.dart';
 import '../../mealplan/domain/meal_plan_day.dart';
+import '../../sharing/presentation/share_actions.dart';
 import '../domain/allergen_check.dart';
 import '../domain/cook_history.dart';
 import '../domain/nutrition.dart';
@@ -210,6 +211,13 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 child: ListTile(
                   leading: const Icon(Icons.share_outlined),
                   title: Text(l10n.shareRecipe),
+                ),
+              ),
+              PopupMenuItem(
+                onTap: () => sendRecipeToHousehold(context, ref, recipe),
+                child: ListTile(
+                  leading: const Icon(Icons.send_outlined),
+                  title: Text(l10n.sendRecipeMenu),
                 ),
               ),
               PopupMenuItem(

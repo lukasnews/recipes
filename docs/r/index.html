@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>BaCo – Rezept</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+  .photo { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 16px; display: none; margin-bottom: 16px; }
+  .from { color: var(--accent); font-weight: 600; margin: 0; }
+  blockquote { margin: 16px 0; padding: 12px 16px; border-left: 4px solid var(--accent); font-style: italic; background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: 0 12px 12px 0; }
+  .button { display: inline-block; background: var(--accent); color: var(--bg); padding: 12px 20px; border-radius: 24px; text-decoration: none; font-weight: 600; margin: 8px 8px 0 0; }
+  .code { font-family: ui-monospace, monospace; font-size: 1.1rem; letter-spacing: 2px; }
+  ol li { margin-bottom: 8px; }
+  #error { display: none; }
+</style>
+</head>
+<body>
+<main>
+<div id="recipe" hidden>
+  <img id="photo" class="photo" alt="">
+  <h1 id="title"></h1>
+  <p class="from" id="from"></p>
+  <blockquote id="message" hidden></blockquote>
+  <p class="muted" id="meta"></p>
+  <p>
+    <a class="button" id="open" href="#">In BaCo öffnen</a>
+  </p>
+  <p class="muted">Kein BaCo? Kein Problem – hier ist das ganze Rezept. Mit BaCo: „+“ → „Rezept-Code eingeben“ → <span class="code" id="code"></span></p>
+  <h2>Zutaten</h2>
+  <ul id="ingredients"></ul>
+  <h2 id="stepsTitle">Zubereitung</h2>
+  <ol id="steps"></ol>
+</div>
+<div id="loading"><p class="muted">Rezept wird geladen …</p></div>
+<div id="error">
+  <h1>Rezept nicht gefunden</h1>
+  <p>Zu diesem Link gibt es kein Rezept (mehr). Vielleicht ist er abgelaufen oder wurde vom Absender gelöscht.</p>
+</div>
+<p class="muted" style="margin-top:48px">Geteilt mit <a href="../">BaCo – Bake &amp; Cook</a> · <a href="../datenschutz.html">Datenschutz</a></p>
+</main>
+<script>
+// Reads the shared copy (Firestore sharedRecipes/{code}) without login:
+// the rules allow a get by code, never a list.
+(function () {
+  const project = 'recipes-f1584';
+  const bucket = 'recipes-f1584.firebasestorage.app';
+  const params = new URLSearchParams(location.search);
+  const code = (params.get('c') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const $ = (id) => document.getElementById(id);
+
+  function fail() {
+    $('loading').style.display = 'none';
+    $('error').style.display = 'block';
+  }
+
+  // Firestore REST values -> plain JS.
+  function plain(v) {
+    if (v == null) return null;
+    if ('stringValue' in v) return v.stringValue;
+    if ('integerValue' in v) return Number(v.integerValue);
+    if ('doubleValue' in v) return v.doubleValue;
+    if ('booleanValue' in v) return v.booleanValue;
+    if ('timestampValue' in v) return new Date(v.timestampValue);
+    if ('nullValue' in v) return null;
+    if ('arrayValue' in v) return (v.arrayValue.values || []).map(plain);
+    if ('mapValue' in v) {
+      const out = {};
+      for (const [k, x] of Object.entries(v.mapValue.fields || {})) out[k] = plain(x);
+      return out;
+    }
+    return null;
+  }
+
+  if (code.length !== 8) return fail();
+
+  fetch('https://firestore.googleapis.com/v1/projects/' + project +
+        '/databases/(default)/documents/sharedRecipes/' + code)
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((doc) => {
+      const d = {};
+      for (const [k, v] of Object.entries(doc.fields || {})) d[k] = plain(v);
+      document.title = 'BaCo – ' + (d.title || 'Rezept');
+      $('title').textContent = d.title || 'Rezept';
+      $('from').textContent = d.senderName ? 'Von ' + d.senderName : '';
+      if (d.message) {
+        $('message').textContent = '„' + d.message + '“';
+        $('message').hidden = false;
+      }
+      const meta = [];
+      if (d.servings) meta.push(d.servings + (d.servings === 1 ? ' Portion' : ' Portionen'));
+      if (d.prepMinutes) meta.push('Vorbereitung ' + d.prepMinutes + ' Min.');
+      if (d.cookMinutes) meta.push('Kochen ' + d.cookMinutes + ' Min.');
+      $('meta').textContent = meta.join(' · ');
+      for (const line of d.ingredients || []) {
+        const li = document.createElement('li');
+        li.textContent = line;
+        $('ingredients').appendChild(li);
+      }
+      const steps = d.steps || [];
+      if (!steps.length) $('stepsTitle').hidden = true;
+      for (const step of steps) {
+        const li = document.createElement('li');
+        li.textContent = step;
+        $('steps').appendChild(li);
+      }
+      if (d.photoPath) {
+        $('photo').src = 'https://firebasestorage.googleapis.com/v0/b/' + bucket +
+          '/o/' + encodeURIComponent(d.photoPath) + '?alt=media';
+        $('photo').onload = () => { $('photo').style.display = 'block'; };
+      }
+      $('code').textContent = code.slice(0, 4) + '-' + code.slice(4);
+      const store = 'https://play.google.com/store/apps/details?id=com.javuno.recipes';
+      $('open').href = /android/i.test(navigator.userAgent)
+        ? 'intent://recipe?c=' + code + '#Intent;scheme=baco;package=com.javuno.recipes;S.browser_fallback_url=' +
+          encodeURIComponent(store) + ';end'
+        : 'baco://recipe?c=' + code;
+      $('loading').style.display = 'none';
+      $('recipe').hidden = false;
+    })
+    .catch(fail);
+})();
+</script>
+</body>
+</html>

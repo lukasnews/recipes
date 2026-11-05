@@ -37,6 +37,30 @@ service cloud.firestore {
       allow delete: if isMember(resource.data.householdId);
     }
 
+    // Recipes sent to other households: a copy under a random 8-char code.
+    // Anyone with the code (app or web page) may read it until it expires;
+    // never listed except by its sender, who alone may change or delete it.
+    match /sharedRecipes/{code} {
+      function live() {
+        return !('expiresAt' in resource.data)
+          || resource.data.expiresAt == null
+          || resource.data.expiresAt > request.time;
+      }
+      function isSender() {
+        return signedIn() && resource.data.createdBy == request.auth.uid;
+      }
+      allow get: if live() || isSender();
+      allow list: if isSender();
+      allow create: if signedIn()
+        && code.size() == 8
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 200;
+      allow update: if isSender()
+        && request.resource.data.createdBy == resource.data.createdBy;
+      allow delete: if isSender();
+    }
+
     match /households/{hid} {
       allow get: if signedIn() && request.auth.uid in resource.data.memberIds;
 
