@@ -26,6 +26,7 @@ import '../domain/recipe.dart';
 import '../domain/recipe_pdf.dart';
 import '../domain/recipe_share.dart';
 import '../domain/recipe_stock.dart';
+import '../domain/recipe_variants.dart';
 import 'collections_sheet.dart';
 import 'cooked_dialog.dart';
 import 'pan_fields.dart';
@@ -54,12 +55,32 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
       confirmLabel: l10n.delete,
     );
     if (!ok || !mounted) return;
-    fire(ref.read(recipeRepositoryProvider).delete(recipe.id));
+    // Variants stay: the first one becomes the new original.
+    final all = ref.read(recipesProvider).value ?? const <Recipe>[];
+    fire(
+      ref
+          .read(recipeRepositoryProvider)
+          .deleteWithVariants(recipe.id, promoteOnDelete(recipe, all)),
+    );
     if (recipe.photoPaths.isNotEmpty) {
       fire(ref.read(photoRepositoryProvider).deleteFiles(recipe.photoPaths));
     }
     context.pop();
     showSnack(context, l10n.recipeDeleted);
+  }
+
+  Future<void> _newVariant(Recipe recipe) async {
+    final l10n = context.l10n;
+    final name = (await showTextInputDialog(
+      context,
+      title: l10n.variantNew,
+      label: l10n.variantNameLabel,
+      hint: l10n.variantNameHint,
+      helper: l10n.variantNewHelper,
+      confirmLabel: l10n.variantCreate,
+    ))?.trim();
+    if (name == null || name.isEmpty || !mounted) return;
+    fire(context.push(Routes.newVariant(recipe.id, name)));
   }
 
   void _toggleFavorite(Recipe recipe, bool on) {
@@ -237,7 +258,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     final theme = Theme.of(context);
     final recipes = ref.watch(recipesProvider).value;
     final stored = recipes?.where((r) => r.id == widget.recipeId).firstOrNull;
-    if (stored == null) {
+    if (stored == null || recipes == null) {
       return Scaffold(
         appBar: AppBar(),
         body: recipes == null
@@ -251,6 +272,11 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
         ? stored.pan!.factorFor(_myPan!)
         : 1.0;
     final recipe = stored.scaledBy(panFactor);
+    final family = variantFamily(stored, recipes);
+    // A variant without own photos shows those of the original.
+    final photos = stored.photoPaths.isEmpty
+        ? family.first.photoPaths
+        : stored.photoPaths;
     final ingredients = ref.watch(ingredientsByIdProvider);
     final pantry = ref.watch(pantryProvider).value ?? const {};
     final servings = _servings ?? recipe.servings;
@@ -335,6 +361,13 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 ),
               ),
               PopupMenuItem(
+                onTap: () => fire(_newVariant(stored)),
+                child: ListTile(
+                  leading: const Icon(Icons.call_split),
+                  title: Text(l10n.variantNew),
+                ),
+              ),
+              PopupMenuItem(
                 onTap: () => _editCollections(recipe),
                 child: ListTile(
                   leading: const Icon(Icons.collections_bookmark_outlined),
@@ -355,14 +388,18 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          if (recipe.photoPaths.isNotEmpty || pendingPhotos.isNotEmpty) ...[
+          if (family.length > 1) ...[
+            _VariantSwitch(family: family, currentId: stored.id),
+            const SizedBox(height: 8),
+          ],
+          if (photos.isNotEmpty || pendingPhotos.isNotEmpty) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: SizedBox(
                 height: 220,
                 child: PageView(
                   children: [
-                    for (final p in recipe.photoPaths) StorageImage(path: p),
+                    for (final p in photos) StorageImage(path: p),
                     // Not uploaded yet (offline): shown from the phone.
                     for (final p in pendingPhotos)
                       Stack(
@@ -852,6 +889,40 @@ class _TagsDialogState extends State<_TagsDialog> {
           child: Text(l10n.save),
         ),
       ],
+    );
+  }
+}
+
+/// "Original · vegan · für 2": switches between the variants of a recipe.
+class _VariantSwitch extends StatelessWidget {
+  const _VariantSwitch({required this.family, required this.currentId});
+
+  final List<Recipe> family;
+  final String currentId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        spacing: 8,
+        children: [
+          Icon(
+            Icons.call_split,
+            semanticLabel: l10n.variantsTitle,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          for (final (i, r) in family.indexed)
+            ChoiceChip(
+              label: Text(i == 0 ? l10n.variantOriginal : r.variantLabel),
+              selected: r.id == currentId,
+              onSelected: (_) {
+                if (r.id != currentId) context.replace(Routes.recipe(r.id));
+              },
+            ),
+        ],
+      ),
     );
   }
 }

@@ -113,6 +113,7 @@ households/{hid}/recipes/{recipeId}
   steps: [{text, timerSeconds?}]
   nutrition?: {kcal, protein, fat, carbs, estimatedAt}   # AI estimate per serving; save() deletes it
   pan?: {d} | {w, l}   # baking tin in cm (round diameter / rectangle), for converting
+  variantOf?, variantName?   # variant of another recipe (always the original's id), chip label "vegan"
   createdBy, createdAt, updatedAt
 
 households/{hid}/pantry/{ingredientId}       # doc id = ingredient id
@@ -157,6 +158,7 @@ households/{hid}/cookLog/{logId}
 - **Kochmodus – Zutaten pro Schritt:** `ingredientsInStep` findet Zutaten im Schritttext (Name, Synonyme, Zeilenname; Endungen e/en/n/s/er/es/ern, kurze Begriffe wie „Ei“ nur exakt oder „Eier“) → Karte „Dafür brauchst du“ mit skalierten Mengen unter dem Schritt.
 - **Drucken / PDF:** Rezept-Detail ⋮ → „Drucken / als PDF speichern“ (Android-Druckdialog) bzw. „Als PDF teilen“ → `buildRecipePdf` (A4, erstes Foto, Titel, Portionen/Zeiten, Zutaten wie angezeigt – Portionen, Backform, Mengenanzeige –, nummerierte Schritte, Notizen, Quelle).
 - **Tags per KI** (nur auf Knopfdruck): Rezept-Detail ⋮ → „Tags vorschlagen (KI)“ → `RecipeExtractor.suggestTags` (Titel, Zutaten, Schritte; bevorzugt vorhandene Haushalts-Tags `tagsProvider`, sonst `tagVocabulary`) → Dialog mit Chips zum Abwählen → `setTags` (nur Tags, Nährwert-Schätzung bleibt). Rezeptliste: die 12 häufigsten Tags als Filter-Chips hinter dem Filter-Knopf.
+- **Rezept-Varianten** (`recipe_variants.dart`): Rezept-Detail ⋮ → „Variante anlegen“ → Name („vegan“) → Editor als Kopie (Titel „Kaiserschmarrn (vegan)“, Feld „Name der Variante“; ohne Fotos, Bewertung, Sammlungen) → eigenes vollständiges Rezept mit `variantOf` = Original (nie eine Variante; Varianten einer Variante hängen am Original). Vorrat, Einkaufen, Kochen, Wochenplan behandeln Varianten wie normale Rezepte. Detail: Chips „Original · vegan · …“ (`variantFamily`, `context.replace`); Variante ohne Fotos zeigt die des Originals. Liste: eine Kachel pro Familie mit „n Varianten“ (`collapseVariants`; passt nur die Variante zum Filter, erscheint sie selbst), Suche findet auch den Variantennamen. Original löschen: erste Variante (nach Name) wird neues Original, die anderen hängen um (`promoteOnDelete` + `deleteWithVariants`, ein Batch). Variante ohne vorhandenes Original gilt als eigenständig.
 - **Kochverlauf:** aus `cookLog` (ohne `undone`) → `cookStats` (Anzahl, zuletzt). Rezept-Detail „Zuletzt vor … gekocht · n×“, Liste mit Chip „Lange nicht gekocht“ (`longNotCooked`).
 - **Ablaufdatum:** `pantry.expiresOn` optional in beiden Vorrat-Formularen. ≤ 3 Tage = „bald ablaufend“, davor „abgelaufen“; solche Einträge stehen oben im Abschnitt „Bald ablaufend“. „Was kann ich kochen?“ reiht bei gleicher Abdeckung Rezepte vor, die bald Ablaufendes verbrauchen.
 - **Mehrere Haushalte:** Einstellungen → „Haushalt wechseln“ (ab 2 Haushalten) setzt `activeHouseholdId`; „Weiteren Haushalt hinzufügen“ öffnet den Setup-Bildschirm (`/settings/household/add`). Anlegen/Beitreten macht den neuen Haushalt aktiv. Alle Repositories hängen an `householdIdProvider` und wechseln mit.

@@ -40,6 +40,20 @@ class RecipeRepository {
 
   Future<void> delete(String id) => _col.doc(id).delete();
 
+  /// Deletes [id] and moves its variants to a new original in one batch
+  /// ([promote]: id -> new variantOf, null = original now).
+  Future<void> deleteWithVariants(String id, Map<String, String?> promote) {
+    if (promote.isEmpty) return delete(id);
+    final batch = _db.batch()..delete(_col.doc(id));
+    promote.forEach((variantId, root) {
+      batch.update(_col.doc(variantId), {
+        'variantOf': root ?? FieldValue.delete(),
+        if (root == null) 'variantName': FieldValue.delete(),
+      });
+    });
+    return batch.commit();
+  }
+
   /// Only the tags (e.g. accepted AI suggestions); keeps the estimate.
   Future<void> setTags(String id, List<String> tags) =>
       _col.doc(id).update({'tags': tags});

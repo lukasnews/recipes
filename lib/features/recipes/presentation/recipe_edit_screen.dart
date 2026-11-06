@@ -22,6 +22,7 @@ import '../../ingredients/domain/ingredient.dart';
 import '../../ingredients/domain/ingredient_factory.dart';
 import '../../ingredients/presentation/ingredient_picker.dart';
 import '../domain/recipe.dart';
+import '../domain/recipe_variants.dart';
 import 'pan_fields.dart';
 
 /// How one ingredient line will be linked when saving.
@@ -38,9 +39,19 @@ class _LinePreview {
 }
 
 class RecipeEditScreen extends ConsumerStatefulWidget {
-  const RecipeEditScreen({super.key, this.recipeId, this.draft});
+  const RecipeEditScreen({
+    super.key,
+    this.recipeId,
+    this.draft,
+    this.variantOfId,
+    this.variantName,
+  });
 
   final String? recipeId;
+
+  /// New variant: starts as a copy of this recipe (without photos).
+  final String? variantOfId;
+  final String? variantName;
 
   /// Imported draft to review (photo / screenshot import).
   final RecipeDraft? draft;
@@ -60,6 +71,10 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
   final _ingredients = TextEditingController();
   final _steps = TextEditingController();
   final _notes = TextEditingController();
+  final _variantName = TextEditingController();
+
+  /// Original this recipe is a variant of (null = no variant).
+  String? _variantOf;
   String _category = RecipeCategories.cooking;
   int _rating = 0;
   Recipe? _original;
@@ -87,6 +102,7 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
       _ingredients,
       _steps,
       _notes,
+      _variantName,
     ]) {
       c.dispose();
     }
@@ -113,6 +129,31 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
     }
     _keptPhotos.addAll(r.photoPaths);
     _original = r;
+    _variantOf = r.variantOf;
+    _variantName.text = r.variantName ?? '';
+    _fill(r, byId);
+    _rating = r.rating;
+  }
+
+  /// Copy of [source] as a new variant of its original; photos, rating and
+  /// collections stay with the original.
+  void _loadVariant(
+    Recipe source,
+    List<Recipe> all,
+    Map<String, Ingredient> byId,
+  ) {
+    _loaded = true;
+    final recipesById = {for (final r in all) r.id: r};
+    final root = recipesById[variantRootId(source, recipesById)]!;
+    _fill(source, byId);
+    _variantOf = root.id;
+    _variantName.text = widget.variantName?.trim() ?? '';
+    _title.text = _variantName.text.isEmpty
+        ? root.title
+        : '${root.title} (${_variantName.text})';
+  }
+
+  void _fill(Recipe r, Map<String, Ingredient> byId) {
     _title.text = r.title;
     _servings.text = '${r.servings}';
     _prep.text = r.prepMinutes?.toString() ?? '';
@@ -124,7 +165,6 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
     _steps.text = r.steps.map((s) => s.text).join('\n');
     _notes.text = r.notes;
     _category = r.category;
-    _rating = r.rating;
     for (final line in r.ingredients) {
       final ing = byId[line.ingredientId];
       _overrides[line.rawText] = ing == null
@@ -243,6 +283,8 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
           .map(RecipeStep.new)
           .toList(),
       createdBy: _original?.createdBy ?? uid,
+      variantOf: _variantOf,
+      variantName: _variantOf == null ? null : _variantName.text.trim(),
     );
     fire(recipeRepo.save(recipe, isNew: isNew));
     _syncPhotos(recipe.id);
@@ -366,10 +408,17 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
     final matcher = ref.watch(ingredientMatcherProvider);
     final recipes = ref.watch(recipesProvider).value;
     if (!_loaded) {
-      if (widget.recipeId != null && recipes == null) {
+      if ((widget.recipeId ?? widget.variantOfId) != null && recipes == null) {
         return const Scaffold(body: Center(child: CircularProgressIndicator()));
       }
-      _load(recipes?.where((r) => r.id == widget.recipeId).firstOrNull, byId);
+      final source = widget.variantOfId == null
+          ? null
+          : recipes!.where((r) => r.id == widget.variantOfId).firstOrNull;
+      if (source != null) {
+        _loadVariant(source, recipes!, byId);
+      } else {
+        _load(recipes?.where((r) => r.id == widget.recipeId).firstOrNull, byId);
+      }
     }
     final categories = {
       ...RecipeCategories.builtIn,
@@ -383,6 +432,8 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
         title: Text(
           _original != null
               ? l10n.editRecipeTitle
+              : _variantOf != null
+              ? l10n.newVariantTitle
               : (widget.draft?.count ?? 1) > 1
               ? l10n.importPosition(widget.draft!.position, widget.draft!.count)
               : l10n.newRecipe,
@@ -445,6 +496,19 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
               validator: (v) =>
                   (v == null || v.trim().isEmpty) ? l10n.fieldRequired : null,
             ),
+            if (_variantOf != null) ...[
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _variantName,
+                decoration: InputDecoration(
+                  labelText: l10n.variantNameLabel,
+                  helperText: l10n.variantNameHelper,
+                  prefixIcon: const Icon(Icons.call_split),
+                ),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? l10n.fieldRequired : null,
+              ),
+            ],
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               isExpanded: true,

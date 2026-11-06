@@ -7,6 +7,10 @@ abstract final class Routes {
   static const newRecipe = '/recipes/new';
   static String recipe(String id) => '/recipes/$id';
   static String editRecipe(String id) => '/recipes/$id/edit';
+  static String newVariant(String fromId, String name) => Uri(
+    path: newRecipe,
+    queryParameters: {'variantOf': fromId, 'name': name},
+  ).toString();
   static String cookRecipe(String id) => '/recipes/$id/cook';
   static const mealPlan = '/mealplan';
   static const shopping = '/shopping';

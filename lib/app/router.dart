@@ -111,6 +111,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                       draft: state.extra is RecipeDraft
                           ? state.extra! as RecipeDraft
                           : null,
+                      variantOfId: state.uri.queryParameters['variantOf'],
+                      variantName: state.uri.queryParameters['name'],
                     ),
                   ),
                   GoRoute(

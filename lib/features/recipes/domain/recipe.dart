@@ -100,6 +100,8 @@ class Recipe {
     this.nutrition,
     this.collections = const [],
     this.pan,
+    this.variantOf,
+    this.variantName,
   });
 
   factory Recipe.fromMap(String id, Map<String, dynamic> m) {
@@ -126,6 +128,8 @@ class Recipe {
       updatedAt: m.date('updatedAt'),
       collections: m.strings('collections'),
       pan: BakingPan.fromMap(m['pan']),
+      variantOf: m.strOrNull('variantOf'),
+      variantName: m.strOrNull('variantName'),
       nutrition: Nutrition.fromMap(
         (m['nutrition'] as Map<dynamic, dynamic>?)?.cast<String, dynamic>(),
       ),
@@ -136,6 +140,16 @@ class Recipe {
   /// changed only via RecipeRepository.setCollections, so saving the
   /// edited recipe keeps them (merge).
   final List<String> collections;
+
+  /// Id of the original recipe this is a variant of ("vegan", "für 2").
+  /// Always the original, never another variant.
+  final String? variantOf;
+
+  /// Short name of the variant for the switch chips ("vegan").
+  final String? variantName;
+
+  /// Chip label: the variant name, or empty for an original.
+  String get variantLabel => variantName ?? '';
 
   /// Tin the amounts are for (cakes), to convert to another tin.
   final BakingPan? pan;
@@ -190,6 +204,8 @@ class Recipe {
     'createdBy': ?createdBy,
     // Explicit null so removing the tin in the editor clears it (merge).
     'pan': pan?.toMap(),
+    'variantOf': ?variantOf,
+    'variantName': ?variantName,
   };
 
   /// All amounts × [factor] (another baking tin), servings unchanged.
@@ -232,5 +248,7 @@ class Recipe {
     nutrition: nutrition,
     collections: collections,
     pan: pan == null ? this.pan : pan(),
+    variantOf: variantOf,
+    variantName: variantName,
   );
 }

@@ -18,6 +18,7 @@ import '../domain/allergen_check.dart';
 import '../domain/cook_history.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_stock.dart';
+import '../domain/recipe_variants.dart';
 import '../domain/sample_recipes.dart';
 
 /// Local full text search over title, tags and ingredient lines.
@@ -27,6 +28,7 @@ bool recipeMatches(Recipe r, String query) {
   final haystack = foldText(
     [
       r.title,
+      ?r.variantName,
       ...r.tags,
       r.notes,
       for (final i in r.ingredients) i.rawText,
@@ -123,6 +125,10 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
               for (final id in longNotCooked(byId.keys, stats)) byId[id]!,
             ];
           }
+
+          // One tile per recipe family, unless only a variant matches.
+          coverages = collapseVariants(coverages, (c) => c.recipe);
+          final variants = variantCounts(recipes);
 
           final showSafeFilter = members.any((m) => m.allergens.isNotEmpty);
           final activeFilters = [
@@ -282,6 +288,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                           expiringUsed: coverages[i].usesExpiring(expiring),
                           favorite: favorites.contains(coverages[i].recipe.id),
                           warn: !isSafe(coverages[i].recipe),
+                          variants: variants[coverages[i].recipe.id] ?? 0,
                         ),
                       ),
               ),
@@ -300,9 +307,13 @@ class _RecipeTile extends StatelessWidget {
     this.warn = false,
     this.expiringUsed = 0,
     this.favorite = false,
+    this.variants = 0,
   });
 
   final bool favorite;
+
+  /// Number of variants of this original.
+  final int variants;
 
   /// Number of soon-expiring pantry items this recipe would use up.
   final int expiringUsed;
@@ -321,6 +332,7 @@ class _RecipeTile extends StatelessWidget {
     final subtitle = [
       l10n.category(r.category),
       if (minutes != null) l10n.minutesShort(minutes),
+      if (variants > 0) l10n.variantCount(variants),
       if (showCoverage && coverage.total > 0)
         l10n.coverageLabel(coverage.coveredCount, coverage.total),
       if (showCoverage && expiringUsed > 0) l10n.usesExpiring(expiringUsed),
