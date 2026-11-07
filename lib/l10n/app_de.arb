@@ -1283,5 +1283,35 @@
         "type": "int"
       }
     }
-  }
+  },
+  "scanListTooltip": "Einkaufszettel fotografieren",
+  "scanListCamera": "Zettel fotografieren",
+  "scanListCameraHint": "Auch handschriftlich",
+  "scanListGallery": "Aus Foto oder Screenshot",
+  "scanListGalleryHint": "z. B. eine Liste aus WhatsApp",
+  "scanListReading": "Einkaufszettel wird gelesen …",
+  "scanListEmpty": "Auf dem Bild wurde nichts erkannt.",
+  "scanListTitle": "Erkannte Einträge",
+  "scanListOffline": "Ohne KI gelesen (kein Internet?) – Handschrift klappt so schlechter. Bitte prüfen.",
+  "scanListMerge": "Schon auf der Liste – Menge wird dazugezählt",
+  "scanListEdit": "Eintrag ändern",
+  "scanListItem": "Eintrag (leer = weglassen)",
+  "scanListAdd": "{count, plural, =1{1 Eintrag hinzufügen} other{{count} Einträge hinzufügen}}",
+  "@scanListAdd": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanListAdded": "{count, plural, =1{1 Eintrag auf die Einkaufsliste gesetzt} other{{count} Einträge auf die Einkaufsliste gesetzt}}",
+  "@scanListAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAll": "Alle",
+  "selectNone": "Keine"
 }

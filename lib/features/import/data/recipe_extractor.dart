@@ -30,6 +30,10 @@ abstract class RecipeExtractor {
   /// A few short tags ("vegetarisch", "schnell") for a recipe given as
   /// text, preferring [known] tags the household already uses.
   Future<List<String>> suggestTags(String recipeText, List<String> known);
+
+  /// Items of a photographed shopping list (paper note, handwriting,
+  /// screenshot), one line each with the amount first ("500 g Mehl").
+  Future<List<String>> extractShoppingList(List<Uint8List> jpegImages);
 }
 
 /// Tags the AI chooses from (plus the household's own).
@@ -242,6 +246,39 @@ $recipeText'''),
           for (final t in list.whereType<String>())
             if (t.trim().isNotEmpty) t.trim().replaceFirst(RegExp('^#'), ''),
         ].take(6).toList();
+      });
+
+  @override
+  Future<List<String>> extractShoppingList(List<Uint8List> jpegImages) =>
+      _run((ai, name) async {
+        final model = ai.generativeModel(
+          model: name,
+          generationConfig: GenerationConfig(
+            responseMimeType: 'application/json',
+            responseSchema: Schema.array(items: Schema.string()),
+            temperature: 0,
+          ),
+        );
+        final response = await model
+            .generateContent([
+              Content.multi([
+                const TextPart('''
+Lies diese Einkaufsliste (Zettel, Handschrift oder Screenshot). Gib NUR ein JSON-Array von Strings zurück, ein Artikel pro Eintrag.
+Regeln:
+- Menge und Einheit vorne, wie notiert: "500 g Mehl", "2 Zitronen", "1 l Milch", "Spülmittel".
+- Österreichische Begriffe beibehalten (Topfen, Schlagobers, Paradeiser, Erdäpfel).
+- Durchgestrichene oder abgehakte Artikel weglassen, ebenso Überschriften, Datum, Preise und Summen.
+- Nichts erfinden; unleserliche Wörter so gut wie möglich lesen.'''),
+                for (final img in jpegImages) InlineDataPart('image/jpeg', img),
+              ]),
+            ])
+            .timeout(const Duration(seconds: 90));
+        final list = jsonDecode(response.text ?? '[]');
+        if (list is! List) throw const FormatException('No shopping list');
+        return [
+          for (final t in list.whereType<String>())
+            if (t.trim().isNotEmpty) t.trim(),
+        ];
       });
 
   /// Backends in order: Gemini Developer API first, then the Agent Platform

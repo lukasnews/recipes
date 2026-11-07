@@ -241,6 +241,14 @@ class FakeExtractor implements RecipeExtractor {
     if (fail) throw Exception('offline');
     return tags;
   }
+
+  List<String> shoppingLines = const ['500 g Mehl', '2 Zitronen', 'Spülmittel'];
+  @override
+  Future<List<String>> extractShoppingList(List<Uint8List> jpegImages) async {
+    lastImageCount = jpegImages.length;
+    if (fail) throw failWith();
+    return shoppingLines;
+  }
 }
 
 class FakeOcr implements TextRecognizerService {

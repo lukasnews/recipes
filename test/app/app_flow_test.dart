@@ -56,7 +56,8 @@ void main() {
 
     final nav = find.byType(NavigationBar);
     for (final (tab, text) in [
-      ('Wochenplan', 'Heute'),
+      // Not 'Heute': on weekends today is below the fold of the test view.
+      ('Wochenplan', 'Woche ab'),
       ('Einkauf', 'Die Einkaufsliste ist leer'),
       ('Vorrat', 'Der Vorrat ist leer'),
       ('Rezepte', 'Alle'),

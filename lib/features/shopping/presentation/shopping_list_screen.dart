@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/firebase/fire.dart';
 import '../../../core/units/display_units.dart';
-import '../../../core/units/ingredient_line_parser.dart';
 import '../../../core/units/units.dart';
 import '../../../core/widgets/async_view.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -16,6 +15,8 @@ import '../domain/shopping_item.dart';
 import '../domain/stores.dart';
 import 'pantry_transfer_sheet.dart';
 import 'share_list_sheet.dart';
+import 'shopping_add.dart';
+import 'shopping_scan_sheet.dart';
 import 'store_sheet.dart';
 
 /// "1500 g" -> "1,5 kg", "2 Stk." -> "2", "½ TL" stays.
@@ -111,24 +112,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
   void _add() {
     final text = _input.text.trim();
     if (text.isEmpty) return;
-    final parsed = parseIngredientLine(text);
-    final match = ref.read(ingredientMatcherProvider).match(parsed.name);
-    // Only link on a certain match; free text like "Spülmittel" stays as is.
-    final ing = match.isMatch && !match.isUncertain
-        ? ref.read(ingredientsByIdProvider)[match.id]
-        : null;
-    fire(
-      ref
-          .read(shoppingRepositoryProvider)
-          .add(
-            text: ing?.name ?? parsed.name,
-            current: ref.read(shoppingProvider).value ?? const [],
-            ingredientId: ing?.id,
-            amount: parsed.amount,
-            unit: parsed.unit ?? (parsed.amount != null ? 'Stk.' : null),
-            aisle: ing?.aisle ?? Aisle.other,
-          ),
-    );
+    addShoppingLine(ref, text);
     _input.clear();
     _focus.requestFocus();
   }
@@ -179,6 +163,11 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                 hintText: l10n.shoppingAddHint,
                 filled: true,
                 border: const OutlineInputBorder(),
+                prefixIcon: IconButton(
+                  tooltip: l10n.scanListTooltip,
+                  onPressed: () => scanShoppingList(context, ref),
+                  icon: const Icon(Icons.document_scanner_outlined),
+                ),
                 suffixIcon: IconButton(
                   tooltip: l10n.add,
                   onPressed: _add,

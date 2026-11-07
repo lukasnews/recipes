@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import '../../../core/firebase/fire.dart';
+import '../../shopping/domain/shopping_scan.dart';
 import '../domain/recipe_draft.dart';
 import 'recipe_extractor.dart';
 import 'text_recognizer.dart';
@@ -63,6 +64,26 @@ class RecipeImportService {
           aiError: describeAiError(e),
         ),
       ];
+    }
+  }
+}
+
+extension ShoppingListImport on RecipeImportService {
+  /// Photographed shopping list: AI first, on-device OCR as fallback
+  /// (offline or AI error).
+  Future<ShoppingScan> readShoppingList(List<String> imagePaths) async {
+    try {
+      final images = [for (final p in imagePaths) await readBytes(p)];
+      final lines = await extractor.extractShoppingList(images);
+      return ShoppingScan(dedupeLines(lines));
+    } catch (e, s) {
+      reportError(e, s);
+      final texts = [for (final p in imagePaths) await ocr.recognize(p)];
+      return ShoppingScan(
+        shoppingLinesFromText(texts.join('\n')),
+        offline: true,
+        aiError: describeAiError(e),
+      );
     }
   }
 }
