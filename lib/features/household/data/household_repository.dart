@@ -175,6 +175,39 @@ class HouseholdRepository {
             : url.trim(),
       });
 
+  /// Order of the recipe categories (all of them, incl. own empty ones).
+  Future<void> setCategoryOrder(String hid, List<String> order) =>
+      _db.collection('households').doc(hid).update({'categoryOrder': order});
+
+  Future<void> setHiddenCategories(String hid, Set<String> hidden) => _db
+      .collection('households')
+      .doc(hid)
+      .update({'hiddenCategories': hidden.toList()..sort()});
+
+  /// Moves [recipeIds] to category [to] and saves [order], in batches
+  /// (rename: to = new name; delete: to = cooking).
+  Future<void> moveCategory(
+    String hid, {
+    required Iterable<String> recipeIds,
+    required String to,
+    required List<String> order,
+  }) async {
+    final household = _db.collection('households').doc(hid);
+    final ids = recipeIds.toList();
+    var batch = _db.batch();
+    var n = 0;
+    for (final id in ids) {
+      batch.update(household.collection('recipes').doc(id), {'category': to});
+      if (++n == 450) {
+        await batch.commit();
+        batch = _db.batch();
+        n = 0;
+      }
+    }
+    batch.update(household, {'categoryOrder': order});
+    await batch.commit();
+  }
+
   Future<void> rename(String hid, String name) =>
       _db.collection('households').doc(hid).update({'name': name});
 

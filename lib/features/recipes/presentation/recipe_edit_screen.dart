@@ -424,9 +424,9 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
         _load(recipes?.where((r) => r.id == widget.recipeId).firstOrNull, byId);
       }
     }
+    // Household order without hidden ones; the recipe's own always fits.
     final categories = {
-      ...RecipeCategories.builtIn,
-      for (final r in recipes ?? const <Recipe>[]) r.category,
+      ...ref.watch(visibleCategoriesProvider),
       _category,
     }.toList();
     final previews = [for (final l in _lines) _preview(l, matcher, byId)];

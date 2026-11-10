@@ -83,6 +83,8 @@ households/{hid}
   joinCode?            # set by a joiner; rules check joinCode == inviteCode
   stores?: [string]    # shops in order; default Hofer, Billa, Spar, Lidl, Penny, dm
   storeLinks?: {shop: url}   # own flyer links (else defaultFlyerLinks)
+  categoryOrder?: [string]   # recipe categories in order, incl. own ones without recipes
+  hiddenCategories?: [string] # built-in categories not shown (never cooking)
 
 households/{hid}/members/{uid}   # each person writes only their own
   displayName, allergens: [gluten|crustaceans|eggs|fish|peanuts|soy|milk|nuts|celery|mustard|sesame|sulphites|lupin|molluscs]
@@ -231,8 +233,8 @@ households/{hid}/cookLog/{logId}
 ## UI
 
 - Bottom-Navigation: **Rezepte · Wochenplan · Einkauf · Vorrat**. Einstellungen über Profilbild oben rechts.
-- **Einstellungen** (kurze Startseite, Details auf Unterseiten in `settings_pages.dart`): Profil-Karte → Konto (`/settings/account`: Name, Abmelden, Konto löschen) · Haushalt (`/settings/household`: Name, Einladungscode, wechseln, hinzufügen, verlassen) · Allergien · Zutaten verwalten · Einkaufen (`/settings/shopping`: Geschäfte & Flugblätter, Reihenfolge) · Mengen anzeigen (Auswahl-Dialog) · Daten & Teilen (`/settings/data`: sichern, wiederherstellen, gesendete Rezepte) · Datenschutzerklärung.
-- Kategorien (Kochen, Kuchen, Kekse, Getränke, eigene) sind Filter-Chips; bei „Getränke“ erscheint darunter Alle/Heiß/Kalt (`drinkTemp`, im Editor als Umschalter, Anzeige „Getränke · Heiß“ über `recipeCategory`). Kekse und Getränke sind keine Mahlzeiten (`RecipeCategories.notMeals`: nicht in der Wochenplan-Auswahl und in „Woche vorschlagen“). Kategorien im Rezepte-Reiter, keine eigenen Reiter. Weitere Filter (Mit Vorrat kochbar, Lange nicht gekocht, Für alle verträglich) liegen hinter dem Filter-Knopf rechts (Zähler zeigt aktive).
+- **Einstellungen** (kurze Startseite, Details auf Unterseiten in `settings_pages.dart`): Profil-Karte → Konto (`/settings/account`: Name, Abmelden, Konto löschen) · Haushalt (`/settings/household`: Name, Einladungscode, wechseln, hinzufügen, verlassen) · Allergien · Zutaten verwalten · Kategorien · Einkaufen (`/settings/shopping`: Geschäfte & Flugblätter, Reihenfolge) · Mengen anzeigen (Auswahl-Dialog) · Daten & Teilen (`/settings/data`: sichern, wiederherstellen, gesendete Rezepte) · Datenschutzerklärung.
+- Kategorien (Kochen, Kuchen, Kekse, Getränke, eigene) sind Filter-Chips; bei „Getränke“ erscheint darunter Alle/Heiß/Kalt (`drinkTemp`, im Editor als Umschalter, Anzeige „Getränke · Heiß“ über `recipeCategory`). Kekse und Getränke sind keine Mahlzeiten (`RecipeCategories.notMeals`: nicht in der Wochenplan-Auswahl und in „Woche vorschlagen“). Reihenfolge und eigene Kategorien: Einstellungen → „Kategorien“ (`CategoriesScreen`, `/settings/categories`): neue anlegen (auch ohne Rezept, Name darf keinem vorhandenen Namen/Label gleichen), eigene antippen = umbenennen, löschen (Rezepte kommen zu „Kochen“; beides per `moveCategory`-Batch samt `categoryOrder`), eingebaute ein-/ausblenden (Kochen nie), ziehen = Reihenfolge. `allCategories` (Haushaltsreihenfolge, dann eingebaute, dann übrige A–Z) → `visibleCategoriesProvider` für Chips und Editor. Kategorien im Rezepte-Reiter, keine eigenen Reiter. Weitere Filter (Mit Vorrat kochbar, Lange nicht gekocht, Für alle verträglich) liegen hinter dem Filter-Knopf rechts (Zähler zeigt aktive).
 - Einzeilige Eingabe-Dialoge über `showTextInputDialog` (Controller lebt im Dialog-State; nie direkt nach `showDialog` disposen – der Dialog animiert noch).
 - Alle Texte über `flutter_localizations` / ARB-Dateien (`lib/l10n/app_de.arb`), keine hart codierten Strings in Widgets.
 - Material 3, Hell- und Dunkelmodus, große Touch-Ziele (Kochen mit nassen Händen). Theme in `lib/app/theme.dart`, Routen in `lib/app/routes.dart` / `router.dart` (StatefulShellRoute, Einstellungen als Vollbild-Route über der Shell).

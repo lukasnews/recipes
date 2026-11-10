@@ -1467,5 +1467,52 @@
   "categoryDrinks": "Getränke",
   "drinkHot": "Heiß",
   "drinkCold": "Kalt",
-  "drinkAll": "Alle"
+  "drinkAll": "Alle",
+  "categoriesTitle": "Kategorien",
+  "categoriesSubtitle": "Eigene anlegen, umbenennen, Reihenfolge",
+  "categoriesHint": "Ziehen ändert die Reihenfolge der Chips in den Rezepten. Eigene antippen zum Umbenennen; eingebaute lassen sich ausblenden.",
+  "categoryNew": "Neue Kategorie",
+  "categoryRename": "Kategorie umbenennen",
+  "categoryExists": "„{name}“ gibt es schon.",
+  "@categoryExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryDeleteEmpty": "Kategorie „{name}“ löschen?",
+  "@categoryDeleteEmpty": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryDeleteMove": "Kategorie „{name}“ löschen? {count, plural, =1{1 Rezept kommt} other{{count} Rezepte kommen}} zu „{target}“.",
+  "@categoryDeleteMove": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryHidden": "ausgeblendet",
+  "categoryBuiltIn": "eingebaut",
+  "categoryHide": "Ausblenden",
+  "categoryShow": "Einblenden",
+  "recipeCount": "{count, plural, =0{keine Rezepte} =1{1 Rezept} other{{count} Rezepte}}",
+  "@recipeCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

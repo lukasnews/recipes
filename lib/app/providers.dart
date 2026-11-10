@@ -42,6 +42,7 @@ import '../features/recipes/data/photo_repository.dart';
 import '../features/recipes/data/photo_upload_queue.dart';
 import '../features/recipes/data/recipe_printer.dart';
 import '../features/recipes/data/recipe_repository.dart';
+import '../features/recipes/domain/categories.dart';
 import '../features/recipes/domain/cook_history.dart';
 import '../features/recipes/domain/recipe.dart';
 import '../features/recipes/domain/sample_recipes.dart';
@@ -445,6 +446,28 @@ final storesProvider = Provider<List<String>>(
 );
 
 /// Own flyer links per shop.
+/// All recipe categories in the household's order (see allCategories).
+final categoriesProvider = Provider<List<String>>(
+  (ref) => allCategories(
+    order: ref.watch(householdProvider.select((h) => h.value?.categoryOrder)),
+    recipes: ref.watch(recipesProvider).value ?? const [],
+  ),
+);
+
+final hiddenCategoriesProvider = Provider<Set<String>>(
+  (ref) =>
+      ref.watch(householdProvider.select((h) => h.value?.hiddenCategories)) ??
+      const {},
+);
+
+/// Chips and editor choices: without hidden built-ins.
+final visibleCategoriesProvider = Provider<List<String>>(
+  (ref) => visibleCategories(
+    ref.watch(categoriesProvider),
+    ref.watch(hiddenCategoriesProvider),
+  ),
+);
+
 final storeLinksProvider = Provider<Map<String, String>>(
   (ref) =>
       ref.watch(householdProvider.select((h) => h.value?.storeLinks)) ??

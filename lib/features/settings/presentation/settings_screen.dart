@@ -109,6 +109,12 @@ class SettingsScreen extends ConsumerWidget {
               () => context.push(Routes.ingredients),
             ),
             entry(
+              Icons.category_outlined,
+              l10n.categoriesTitle,
+              l10n.categoriesSubtitle,
+              () => context.push(Routes.categories),
+            ),
+            entry(
               Icons.shopping_cart_outlined,
               l10n.settingsShopping,
               l10n.settingsShoppingSubtitle,

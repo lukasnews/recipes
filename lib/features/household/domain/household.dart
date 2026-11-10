@@ -8,6 +8,8 @@ class Household {
     required this.inviteCode,
     this.stores = defaultStores,
     this.storeLinks = const {},
+    this.categoryOrder,
+    this.hiddenCategories = const {},
   });
 
   factory Household.fromMap(String id, Map<String, dynamic> m) => Household(
@@ -21,6 +23,10 @@ class Household {
           in ((m['storeLinks'] as Map<dynamic, dynamic>?) ?? const {}).entries)
         if (e.value is String) '${e.key}': e.value as String,
     },
+    categoryOrder: m['categoryOrder'] is List
+        ? m.strings('categoryOrder')
+        : null,
+    hiddenCategories: m.strings('hiddenCategories').toSet(),
   );
 
   /// Suggested until the household changes the list.
@@ -38,6 +44,13 @@ class Household {
 
   /// Own flyer links per shop (else the defaults for the big chains).
   final Map<String, String> storeLinks;
+
+  /// Recipe categories in the household's order, incl. own ones without
+  /// recipes yet; null = default order.
+  final List<String>? categoryOrder;
+
+  /// Built-in categories the household doesn't use ("Kekse").
+  final Set<String> hiddenCategories;
 
   final String id;
   final String name;

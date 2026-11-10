@@ -99,10 +99,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
       body: AsyncView(
         value: recipesValue,
         data: (recipes) {
-          final custom = {
-            for (final r in recipes)
-              if (!RecipeCategories.builtIn.contains(r.category)) r.category,
-          }.toList()..sort();
+          final categories = ref.watch(visibleCategoriesProvider);
           final favorites = ref.watch(favoritesProvider);
           final collections = ref.watch(collectionsProvider);
           if (_collection != null && !collections.contains(_collection)) {
@@ -184,10 +181,7 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                               _drinkTemp = null;
                             }),
                           ),
-                          for (final c in [
-                            ...RecipeCategories.builtIn,
-                            ...custom,
-                          ])
+                          for (final c in categories)
                             ChoiceChip(
                               label: Text(l10n.category(c)),
                               selected: _category == c,

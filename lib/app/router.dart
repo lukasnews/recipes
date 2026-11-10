@@ -18,6 +18,7 @@ import '../features/recipes/presentation/recipe_detail_screen.dart';
 import '../features/recipes/presentation/recipe_edit_screen.dart';
 import '../features/recipes/presentation/recipe_list_screen.dart';
 import '../features/settings/presentation/aisle_order_screen.dart';
+import '../features/settings/presentation/categories_screen.dart';
 import '../features/settings/presentation/settings_pages.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/settings/presentation/stores_screen.dart';
@@ -235,6 +236,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'stores',
             builder: (context, state) => const StoresScreen(),
+          ),
+          GoRoute(
+            path: 'categories',
+            builder: (context, state) => const CategoriesScreen(),
           ),
           GoRoute(
             path: 'sent',
