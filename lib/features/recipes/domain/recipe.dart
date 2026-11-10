@@ -7,7 +7,17 @@ abstract final class RecipeCategories {
   static const cooking = 'cooking';
   static const cake = 'cake';
   static const cookies = 'cookies';
-  static const builtIn = [cooking, cake, cookies];
+  static const drinks = 'drinks';
+  static const builtIn = [cooking, cake, cookies, drinks];
+
+  /// Not a meal: left out of the meal plan picker and suggestions.
+  static const notMeals = {cookies, drinks};
+}
+
+/// Hot or cold drink (only for [RecipeCategories.drinks]).
+abstract final class DrinkTemp {
+  static const hot = 'hot';
+  static const cold = 'cold';
 }
 
 class RecipeIngredient {
@@ -78,6 +88,13 @@ class RecipeStep {
   Map<String, dynamic> toMap() => {'text': text, 'timerSeconds': ?timerSeconds};
 }
 
+/// A custom "Getränke" category from before drinks were built in counts as
+/// the built-in one.
+String _category(String c) =>
+    const {'getränke', 'getraenke'}.contains(c.trim().toLowerCase())
+    ? RecipeCategories.drinks
+    : c;
+
 class Recipe {
   const Recipe({
     required this.id,
@@ -102,6 +119,7 @@ class Recipe {
     this.pan,
     this.variantOf,
     this.variantName,
+    this.drinkTemp,
   });
 
   factory Recipe.fromMap(String id, Map<String, dynamic> m) {
@@ -111,7 +129,7 @@ class Recipe {
     return Recipe(
       id: id,
       title: m.str('title'),
-      category: m.str('category', RecipeCategories.cooking),
+      category: _category(m.str('category', RecipeCategories.cooking)),
       tags: m.strings('tags'),
       servings: m.integer('servings') ?? 4,
       prepMinutes: m.integer('prepMinutes'),
@@ -130,6 +148,7 @@ class Recipe {
       pan: BakingPan.fromMap(m['pan']),
       variantOf: m.strOrNull('variantOf'),
       variantName: m.strOrNull('variantName'),
+      drinkTemp: m.strOrNull('drinkTemp'),
       nutrition: Nutrition.fromMap(
         (m['nutrition'] as Map<dynamic, dynamic>?)?.cast<String, dynamic>(),
       ),
@@ -144,6 +163,9 @@ class Recipe {
   /// Id of the original recipe this is a variant of ("vegan", "für 2").
   /// Always the original, never another variant.
   final String? variantOf;
+
+  /// [DrinkTemp.hot] / [DrinkTemp.cold] for drinks, else null.
+  final String? drinkTemp;
 
   /// Short name of the variant for the switch chips ("vegan").
   final String? variantName;
@@ -206,6 +228,8 @@ class Recipe {
     'pan': pan?.toMap(),
     'variantOf': ?variantOf,
     'variantName': ?variantName,
+    // Explicit null so another category or "egal" clears it (merge).
+    'drinkTemp': category == RecipeCategories.drinks ? drinkTemp : null,
   };
 
   /// All amounts × [factor] (another baking tin), servings unchanged.
@@ -250,5 +274,6 @@ class Recipe {
     pan: pan == null ? this.pan : pan(),
     variantOf: variantOf,
     variantName: variantName,
+    drinkTemp: drinkTemp,
   );
 }

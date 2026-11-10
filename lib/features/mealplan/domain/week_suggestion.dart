@@ -37,7 +37,7 @@ List<DaySuggestion> suggestWeek({
   final expiring = expiringIds(pantry, now);
   final scored = <(Recipe, double, int)>[];
   for (final r in recipes) {
-    if (r.category == RecipeCategories.cookies ||
+    if (RecipeCategories.notMeals.contains(r.category) ||
         r.category == RecipeCategories.cake ||
         plannedIds.contains(r.id)) {
       continue;

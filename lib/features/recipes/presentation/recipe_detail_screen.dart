@@ -512,7 +512,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
             runSpacing: 8,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Chip(label: Text(l10n.category(recipe.category))),
+              Chip(label: Text(l10n.recipeCategory(recipe))),
               if (recipe.prepMinutes != null)
                 Chip(
                   avatar: const Icon(Icons.timer_outlined),

@@ -77,6 +77,7 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
   /// Original this recipe is a variant of (null = no variant).
   String? _variantOf;
   String _category = RecipeCategories.cooking;
+  String? _drinkTemp;
   int _rating = 0;
   Recipe? _original;
   bool _loaded = false;
@@ -166,6 +167,7 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
     _steps.text = r.steps.map((s) => s.text).join('\n');
     _notes.text = r.notes;
     _category = r.category;
+    _drinkTemp = r.drinkTemp;
     for (final line in r.ingredients) {
       final ing = byId[line.ingredientId];
       _overrides[line.rawText] = ing == null
@@ -260,6 +262,7 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
       id: _original?.id ?? recipeRepo.newId(),
       title: _title.text.trim(),
       category: _category,
+      drinkTemp: _drinkTemp,
       tags: _tags.text
           .split(',')
           .map((t) => t.trim())
@@ -529,6 +532,27 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
                 }
               },
             ),
+            if (_category == RecipeCategories.drinks) ...[
+              const SizedBox(height: 12),
+              SegmentedButton<String>(
+                emptySelectionAllowed: true,
+                segments: [
+                  ButtonSegment(
+                    value: DrinkTemp.hot,
+                    icon: const Icon(Icons.local_cafe),
+                    label: Text(l10n.drinkHot),
+                  ),
+                  ButtonSegment(
+                    value: DrinkTemp.cold,
+                    icon: const Icon(Icons.local_drink),
+                    label: Text(l10n.drinkCold),
+                  ),
+                ],
+                selected: {?_drinkTemp},
+                onSelectionChanged: (s) =>
+                    setState(() => _drinkTemp = s.firstOrNull),
+              ),
+            ],
             const SizedBox(height: 12),
             Builder(
               builder: (context) {

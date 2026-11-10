@@ -102,7 +102,8 @@ households/{hid}/ingredients/{ingredientId}
   partOf?: {id, per}                 # part of another ingredient: 1 baseUnit uses `per` baseUnits of id (Eiweiß→Ei 1, Zitronensaft→Zitrone 0.025)
 
 households/{hid}/recipes/{recipeId}
-  title, category      # cooking|cake|cookies|<custom>
+  title, category      # cooking|cake|cookies|drinks|<custom> (old custom "Getränke" reads as drinks)
+  drinkTemp?           # hot|cold, only for drinks (explicit null otherwise)
   tags: [string], servings: int, prepMinutes, cookMinutes
   collections?: [string]   # shared collections ("Sonntagsessen"); set via setCollections, not in toMap
   photoPaths: [string] # Cloud Storage paths
@@ -231,7 +232,7 @@ households/{hid}/cookLog/{logId}
 
 - Bottom-Navigation: **Rezepte · Wochenplan · Einkauf · Vorrat**. Einstellungen über Profilbild oben rechts.
 - **Einstellungen** (kurze Startseite, Details auf Unterseiten in `settings_pages.dart`): Profil-Karte → Konto (`/settings/account`: Name, Abmelden, Konto löschen) · Haushalt (`/settings/household`: Name, Einladungscode, wechseln, hinzufügen, verlassen) · Allergien · Zutaten verwalten · Einkaufen (`/settings/shopping`: Geschäfte & Flugblätter, Reihenfolge) · Mengen anzeigen (Auswahl-Dialog) · Daten & Teilen (`/settings/data`: sichern, wiederherstellen, gesendete Rezepte) · Datenschutzerklärung.
-- Kategorien (Kochen, Kuchen, Kekse, eigene) sind Filter-Chips im Rezepte-Reiter, keine eigenen Reiter. Weitere Filter (Mit Vorrat kochbar, Lange nicht gekocht, Für alle verträglich) liegen hinter dem Filter-Knopf rechts (Zähler zeigt aktive).
+- Kategorien (Kochen, Kuchen, Kekse, Getränke, eigene) sind Filter-Chips; bei „Getränke“ erscheint darunter Alle/Heiß/Kalt (`drinkTemp`, im Editor als Umschalter, Anzeige „Getränke · Heiß“ über `recipeCategory`). Kekse und Getränke sind keine Mahlzeiten (`RecipeCategories.notMeals`: nicht in der Wochenplan-Auswahl und in „Woche vorschlagen“). Kategorien im Rezepte-Reiter, keine eigenen Reiter. Weitere Filter (Mit Vorrat kochbar, Lange nicht gekocht, Für alle verträglich) liegen hinter dem Filter-Knopf rechts (Zähler zeigt aktive).
 - Einzeilige Eingabe-Dialoge über `showTextInputDialog` (Controller lebt im Dialog-State; nie direkt nach `showDialog` disposen – der Dialog animiert noch).
 - Alle Texte über `flutter_localizations` / ARB-Dateien (`lib/l10n/app_de.arb`), keine hart codierten Strings in Widgets.
 - Material 3, Hell- und Dunkelmodus, große Touch-Ziele (Kochen mit nassen Händen). Theme in `lib/app/theme.dart`, Routen in `lib/app/routes.dart` / `router.dart` (StatefulShellRoute, Einstellungen als Vollbild-Route über der Shell).

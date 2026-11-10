@@ -1463,5 +1463,9 @@
   "importText": "Text einfügen",
   "importTextSubtitle": "z. B. aus ChatGPT, einer Nachricht oder Notiz",
   "importTextHint": "Rezept hier einfügen – Zutaten und Zubereitung",
-  "importTextConfirm": "Rezept lesen"
+  "importTextConfirm": "Rezept lesen",
+  "categoryDrinks": "Getränke",
+  "drinkHot": "Heiß",
+  "drinkCold": "Kalt",
+  "drinkAll": "Alle"
 }

@@ -398,7 +398,7 @@ class _RecipePickerState extends State<_RecipePicker> {
                 for (final r in list)
                   ListTile(
                     title: Text(r.title),
-                    subtitle: Text(l10n.category(r.category)),
+                    subtitle: Text(l10n.recipeCategory(r)),
                     onTap: () => Navigator.pop(context, r),
                   ),
               ],

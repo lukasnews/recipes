@@ -46,6 +46,9 @@ class RecipeListScreen extends ConsumerStatefulWidget {
 
 class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
   String? _category;
+
+  /// Within "Getränke": hot / cold (null = all).
+  String? _drinkTemp;
   bool _cookable = false;
   bool _safeForAll = false;
   bool _longNotCooked = false;
@@ -109,6 +112,12 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
           if (_tag != null && !tags.contains(_tag)) _tag = null;
           final filtered = recipes
               .where((r) => _category == null || r.category == _category)
+              .where(
+                (r) =>
+                    _category != RecipeCategories.drinks ||
+                    _drinkTemp == null ||
+                    r.drinkTemp == _drinkTemp,
+              )
               .where((r) => recipeMatches(r, _query))
               .where((r) => !_safeForAll || isSafe(r))
               .where((r) => !_favoritesOnly || favorites.contains(r.id))
@@ -170,7 +179,10 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                           ChoiceChip(
                             label: Text(l10n.categoryAll),
                             selected: _category == null,
-                            onSelected: (_) => setState(() => _category = null),
+                            onSelected: (_) => setState(() {
+                              _category = null;
+                              _drinkTemp = null;
+                            }),
                           ),
                           for (final c in [
                             ...RecipeCategories.builtIn,
@@ -179,7 +191,10 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                             ChoiceChip(
                               label: Text(l10n.category(c)),
                               selected: _category == c,
-                              onSelected: (_) => setState(() => _category = c),
+                              onSelected: (_) => setState(() {
+                                _category = c;
+                                _drinkTemp = null;
+                              }),
                             ),
                         ],
                       ),
@@ -202,6 +217,30 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
                   ),
                 ],
               ),
+              if (_category == RecipeCategories.drinks)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      for (final (t, label) in [
+                        (null, l10n.drinkAll),
+                        (DrinkTemp.hot, l10n.drinkHot),
+                        (DrinkTemp.cold, l10n.drinkCold),
+                      ])
+                        ChoiceChip(
+                          avatar: switch (t) {
+                            DrinkTemp.hot => const Icon(Icons.local_cafe),
+                            DrinkTemp.cold => const Icon(Icons.local_drink),
+                            _ => null,
+                          },
+                          label: Text(label),
+                          selected: _drinkTemp == t,
+                          onSelected: (_) => setState(() => _drinkTemp = t),
+                        ),
+                    ],
+                  ),
+                ),
               AnimatedSize(
                 duration: const Duration(milliseconds: 200),
                 alignment: Alignment.topCenter,
@@ -337,7 +376,7 @@ class _RecipeTile extends StatelessWidget {
     final r = coverage.recipe;
     final minutes = r.totalMinutes;
     final subtitle = [
-      l10n.category(r.category),
+      l10n.recipeCategory(r),
       if (minutes != null) l10n.minutesShort(minutes),
       if (variants > 0) l10n.variantCount(variants),
       if (showCoverage && coverage.total > 0)

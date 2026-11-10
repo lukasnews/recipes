@@ -49,7 +49,16 @@ extension LabelL10n on AppLocalizations {
     RecipeCategories.cooking => categoryCooking,
     RecipeCategories.cake => categoryCake,
     RecipeCategories.cookies => categoryCookies,
+    RecipeCategories.drinks => categoryDrinks,
     _ => c,
+  };
+
+  /// "Getränke · heiß" for drinks with a temperature, else the category.
+  String recipeCategory(Recipe r) => switch (r.drinkTemp) {
+    _ when r.category != RecipeCategories.drinks => category(r.category),
+    DrinkTemp.hot => '${category(r.category)} · $drinkHot',
+    DrinkTemp.cold => '${category(r.category)} · $drinkCold',
+    _ => category(r.category),
   };
 
   String allergen(Allergen a) => switch (a) {

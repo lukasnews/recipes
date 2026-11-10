@@ -31,7 +31,7 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
     // Cookies aren't a meal.
     final recipes = [
       for (final r in ref.read(recipesProvider).value ?? const <Recipe>[])
-        if (r.category != RecipeCategories.cookies) r,
+        if (!RecipeCategories.notMeals.contains(r.category)) r,
     ];
     final frozen = ref.read(frozenMealsProvider).value ?? const <FrozenMeal>[];
     final picked = await showModalBottomSheet<Object>(
@@ -422,7 +422,7 @@ class _RecipePickerState extends State<_RecipePicker> {
                         for (final r in list)
                           ListTile(
                             title: Text(r.title),
-                            subtitle: Text(l10n.category(r.category)),
+                            subtitle: Text(l10n.recipeCategory(r)),
                             onTap: () => Navigator.pop(context, r),
                           ),
                       ],
