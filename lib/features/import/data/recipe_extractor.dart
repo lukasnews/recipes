@@ -5,6 +5,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import '../../recipes/domain/nutrition.dart';
+import '../../recipes/domain/substitute.dart';
 import '../domain/recipe_draft.dart';
 
 /// Reads a recipe from one or more images.
@@ -34,6 +35,15 @@ abstract class RecipeExtractor {
   /// Items of a photographed shopping list (paper note, handwriting,
   /// screenshot), one line each with the amount first ("500 g Mehl").
   Future<List<String>> extractShoppingList(List<Uint8List> jpegImages);
+
+  /// Replacements for a missing ingredient ([recipeText] from
+  /// substitutePrompt), preferring [pantry] items and leaving out [avoid]
+  /// allergens.
+  Future<List<Substitute>> suggestSubstitutes(
+    String recipeText, {
+    List<String> pantry = const [],
+    List<String> avoid = const [],
+  });
 }
 
 /// Tags the AI chooses from (plus the household's own).
@@ -280,6 +290,50 @@ Regeln:
             if (t.trim().isNotEmpty) t.trim(),
         ];
       });
+
+  @override
+  Future<List<Substitute>> suggestSubstitutes(
+    String recipeText, {
+    List<String> pantry = const [],
+    List<String> avoid = const [],
+  }) => _run((ai, name) async {
+    final model = ai.generativeModel(
+      model: name,
+      generationConfig: GenerationConfig(
+        responseMimeType: 'application/json',
+        responseSchema: Schema.array(
+          items: Schema.object(
+            properties: {
+              'replacement': Schema.string(),
+              'note': Schema.string(),
+              'fromPantry': Schema.boolean(),
+            },
+            optionalProperties: ['note', 'fromPantry'],
+          ),
+        ),
+        temperature: 0.3,
+      ),
+    );
+    final response = await model
+        .generateContent([
+          Content.text('''
+Schlage 2 bis 4 Ersatzmöglichkeiten für die fehlende Zutat in diesem Rezept vor (österreichische Begriffe).
+- "replacement": Ersatz MIT Menge für genau die fehlende Menge, z. B. "150 ml Milch + 1 EL Zitronensaft".
+- "note": kurz, was sich ändert (Geschmack, Konsistenz), höchstens ein Satz.
+- "fromPantry": true, wenn alles dafür im Vorrat ist. Solche Vorschläge zuerst.
+- Nur realistische Küchen-Ersatzmöglichkeiten; wenn es keinen sinnvollen Ersatz gibt, sag das in einem Eintrag ("Weglassen" mit Hinweis).
+${avoid.isEmpty ? '' : 'Vermeide diese Allergene: ${avoid.join(', ')}\n'}Im Vorrat: ${pantry.isEmpty ? '(nichts angegeben)' : pantry.join(', ')}
+
+$recipeText'''),
+        ])
+        .timeout(const Duration(seconds: 60));
+    final list = jsonDecode(response.text ?? '[]');
+    if (list is! List) throw const FormatException('No substitutes');
+    return [
+      for (final m in list.whereType<Map<dynamic, dynamic>>())
+        Substitute.fromMap(m.cast<String, dynamic>()),
+    ].where((s) => s.replacement.isNotEmpty).take(4).toList();
+  });
 
   /// Backends in order: Gemini Developer API first, then the Agent Platform
   /// (Vertex) Gemini API. If the first one isn't set up in the Firebase

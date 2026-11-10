@@ -1313,5 +1313,60 @@
     }
   },
   "selectAll": "Alle",
-  "selectNone": "Keine"
+  "selectNone": "Keine",
+  "scaleToAmount": "Nach vorhandener Menge umrechnen",
+  "scaleToAmountHint": "z. B. „Ich hab nur 300 g“",
+  "scaleToAmountPick": "Welche Zutat?",
+  "scaleToAmountTitle": "Wie viel {name} hast du?",
+  "@scaleToAmountTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "scaleToAmountLabel": "Vorhandene Menge",
+  "scaleToAmountNeeded": "Im Rezept: {amount}",
+  "@scaleToAmountNeeded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "scaleToAmountConfirm": "Umrechnen",
+  "scaledFor": "Umgerechnet auf {what}",
+  "@scaledFor": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "scaledServings": "ergibt ca. {servings} Portionen",
+  "@scaledServings": {
+    "placeholders": {
+      "servings": {
+        "type": "String"
+      }
+    }
+  },
+  "reset": "Zurücksetzen",
+  "invalidNumber": "Bitte eine Zahl größer als 0 eingeben.",
+  "ingredientLongPressHint": "Zutat lange drücken: umrechnen oder Ersatz finden",
+  "substituteSuggest": "Ersatz vorschlagen (KI)",
+  "substituteSuggestHint": "Was kann ich stattdessen nehmen?",
+  "substituteTitle": "Statt {line}",
+  "@substituteTitle": {
+    "placeholders": {
+      "line": {
+        "type": "String"
+      }
+    }
+  },
+  "substituteThinking": "Die KI sucht Ersatz …",
+  "substituteFailed": "Gerade keine Vorschläge möglich (Internet?).",
+  "substituteNone": "Kein sinnvoller Ersatz gefunden.",
+  "substituteFromPantry": "Im Vorrat",
+  "substituteDisclaimer": "Vorschläge der KI – bei Allergien bitte selbst prüfen."
 }

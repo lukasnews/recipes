@@ -19,6 +19,7 @@ import '../../../core/widgets/storage_image.dart';
 import '../../mealplan/domain/meal_plan_day.dart';
 import '../../sharing/presentation/share_actions.dart';
 import '../domain/allergen_check.dart';
+import '../domain/amount_scaling.dart';
 import '../domain/baking_pan.dart';
 import '../domain/cook_history.dart';
 import '../domain/nutrition.dart';
@@ -29,6 +30,7 @@ import '../domain/recipe_stock.dart';
 import '../domain/recipe_variants.dart';
 import 'collections_sheet.dart';
 import 'cooked_dialog.dart';
+import 'ingredient_actions.dart';
 import 'pan_fields.dart';
 
 class RecipeDetailScreen extends ConsumerStatefulWidget {
@@ -45,6 +47,82 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
 
   /// Own baking tin: amounts converted by area (null = as in the recipe).
   BakingPan? _myPan;
+
+  /// Converted to an available amount ("300 g Topfen"): factor on top of
+  /// the tin, at the recipe's own servings.
+  double _amountFactor = 1;
+  String? _scaledFor;
+
+  /// [line] is from the shown recipe (already converted).
+  Future<void> _scaleTo(RecipeIngredient line) async {
+    final needed = line.amount;
+    if (needed == null || needed <= 0) return;
+    final have = await askAvailableAmount(context, ref, line);
+    if (have == null || !mounted) return;
+    final f = factorForAvailable(needed, have);
+    if (f == null) return;
+    final ing = ref.read(ingredientsByIdProvider)[line.ingredientId];
+    setState(() {
+      _amountFactor *= f;
+      _servings = null;
+      _scaledFor = [
+        formatAmount(have),
+        ?line.unit,
+        ing?.name ?? line.name ?? line.rawText,
+      ].join(' ');
+    });
+  }
+
+  /// ⋮ → "Nach vorhandener Menge umrechnen": pick the line first.
+  Future<void> _pickLineToScale(Recipe recipe) async {
+    final l10n = context.l10n;
+    final ingredients = ref.read(ingredientsByIdProvider);
+    final lines = [
+      for (final l in recipe.ingredients)
+        if ((l.amount ?? 0) > 0) l,
+    ];
+    if (lines.isEmpty) return;
+    final line = await showDialog<RecipeIngredient>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(l10n.scaleToAmountPick),
+        children: [
+          for (final l in lines)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, l),
+              child: Text(
+                [
+                  formatAmount(l.amount!),
+                  ?l.unit,
+                  ingredients[l.ingredientId]?.name ?? l.name ?? l.rawText,
+                ].join(' '),
+              ),
+            ),
+        ],
+      ),
+    );
+    if (line != null && mounted) await _scaleTo(line);
+  }
+
+  Future<void> _ingredientActions(
+    Recipe recipe,
+    RecipeIngredient line,
+    String label,
+  ) async {
+    final action = await showIngredientActions(
+      context,
+      label: label,
+      canScale: (line.amount ?? 0) > 0,
+    );
+    if (!mounted) return;
+    switch (action) {
+      case IngredientAction.scale:
+        await _scaleTo(line);
+      case IngredientAction.substitute:
+        await showSubstitutes(context, ref, recipe: recipe, missingLine: label);
+      case null:
+    }
+  }
 
   Future<void> _delete(Recipe recipe) async {
     final l10n = context.l10n;
@@ -271,7 +349,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     final panFactor = (stored.pan != null && _myPan != null)
         ? stored.pan!.factorFor(_myPan!)
         : 1.0;
-    final recipe = stored.scaledBy(panFactor);
+    final recipe = stored.scaledBy(panFactor * _amountFactor);
     final family = variantFamily(stored, recipes);
     // A variant without own photos shows those of the original.
     final photos = stored.photoPaths.isEmpty
@@ -358,6 +436,13 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 child: ListTile(
                   leading: const Icon(Icons.sell_outlined),
                   title: Text(l10n.tagsSuggest),
+                ),
+              ),
+              PopupMenuItem(
+                onTap: () => fire(_pickLineToScale(recipe)),
+                child: ListTile(
+                  leading: const Icon(Icons.straighten),
+                  title: Text(l10n.scaleToAmount),
                 ),
               ),
               PopupMenuItem(
@@ -526,8 +611,30 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
               factor: panFactor,
               onChanged: (p) => setState(() => _myPan = p),
             ),
+          if (_scaledFor != null)
+            Card(
+              margin: const EdgeInsets.only(top: 8),
+              color: theme.colorScheme.secondaryContainer,
+              child: ListTile(
+                leading: const Icon(Icons.straighten),
+                title: Text(l10n.scaledFor(_scaledFor!)),
+                subtitle: Text(
+                  l10n.scaledServings(
+                    formatAmount(stored.servings * _amountFactor),
+                  ),
+                ),
+                trailing: TextButton(
+                  onPressed: () => setState(() {
+                    _amountFactor = 1;
+                    _scaledFor = null;
+                  }),
+                  child: Text(l10n.reset),
+                ),
+              ),
+            ),
           const SizedBox(height: 8),
           Text(l10n.ingredientsTitle, style: theme.textTheme.titleLarge),
+          Text(l10n.ingredientLongPressHint, style: theme.textTheme.bodySmall),
           for (final line in recipe.ingredients)
             _IngredientRow(
               line: line,
@@ -536,6 +643,12 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                   : scaleAmount(line.amount!, recipe.servings, servings),
               need: needs[line.ingredientId],
               display: ref.watch(unitDisplayProvider),
+              onActions: (label) => _ingredientActions(
+                recipe,
+                // Converting works on the recipe's own servings.
+                line,
+                label,
+              ),
             ),
           const SizedBox(height: 12),
           Wrap(
@@ -552,7 +665,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                   onPressed: () async {
                     final cooked = await context.push<bool>(
                       Routes.cookRecipe(recipe.id),
-                      extra: (servings, panFactor),
+                      extra: (servings, panFactor * _amountFactor),
                     );
                     if (cooked == true && context.mounted) {
                       await showCookedDialog(context, ref, recipe, servings);
@@ -616,9 +729,13 @@ class _IngredientRow extends StatelessWidget {
     required this.scaledAmount,
     required this.need,
     required this.display,
+    this.onActions,
   });
 
   final UnitDisplay display;
+
+  /// Long press / swap icon: convert or substitute ([label] as shown).
+  final void Function(String label)? onActions;
 
   final RecipeIngredient line;
   final double? scaledAmount;
@@ -651,11 +768,23 @@ class _IngredientRow extends StatelessWidget {
       _ => (Icons.remove, scheme.outline, null),
     };
     final id = need?.ingredient.id;
+    final label = [if (qty.isNotEmpty) qty, name].join(' ');
+    final short =
+        need?.status == StockStatus.missing ||
+        need?.status == StockStatus.partial;
     return ListTile(
       contentPadding: EdgeInsets.zero,
       onTap: id == null ? null : () => context.push(Routes.ingredient(id)),
+      onLongPress: onActions == null ? null : () => onActions!(label),
+      trailing: short && onActions != null
+          ? IconButton(
+              tooltip: l10n.substituteSuggest,
+              onPressed: () => onActions!(label),
+              icon: const Icon(Icons.swap_horiz),
+            )
+          : null,
       leading: Icon(icon, color: color),
-      title: Text([if (qty.isNotEmpty) qty, name].join(' ')),
+      title: Text(label),
       subtitle: Text([?line.note, ?hint].join(' · ')),
     );
   }

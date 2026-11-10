@@ -28,6 +28,7 @@ import 'package:recipes/features/recipes/data/photo_upload_queue.dart';
 import 'package:recipes/features/recipes/data/recipe_printer.dart';
 import 'package:recipes/features/recipes/data/timer_alarms.dart';
 import 'package:recipes/features/recipes/domain/nutrition.dart';
+import 'package:recipes/features/recipes/domain/substitute.dart';
 import 'package:recipes/features/recipes/presentation/cook_timers.dart';
 import 'package:recipes/features/shopping/data/home_screen_widget.dart';
 
@@ -240,6 +241,28 @@ class FakeExtractor implements RecipeExtractor {
     lastKnownTags = known;
     if (fail) throw Exception('offline');
     return tags;
+  }
+
+  List<Substitute> substitutes = const [
+    Substitute(
+      replacement: '150 ml Milch + 1 EL Zitronensaft',
+      note: 'Etwas weniger säuerlich',
+      fromPantry: true,
+    ),
+    Substitute(replacement: '150 g Joghurt'),
+  ];
+  String? lastSubstituteText;
+  List<String>? lastSubstitutePantry;
+  @override
+  Future<List<Substitute>> suggestSubstitutes(
+    String recipeText, {
+    List<String> pantry = const [],
+    List<String> avoid = const [],
+  }) async {
+    lastSubstituteText = recipeText;
+    lastSubstitutePantry = pantry;
+    if (fail) throw Exception('offline');
+    return substitutes;
   }
 
   List<String> shoppingLines = const ['500 g Mehl', '2 Zitronen', 'Spülmittel'];
