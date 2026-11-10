@@ -16,6 +16,13 @@ class SharedLink extends SharedItem {
   final Uri url;
 }
 
+/// Text that is a recipe itself (e.g. copied from ChatGPT).
+class SharedText extends SharedItem {
+  const SharedText(this.text);
+
+  final String text;
+}
+
 /// A file (e.g. a backup) shared or opened with BaCo; local path.
 class SharedFile extends SharedItem {
   const SharedFile(this.path);
@@ -41,8 +48,13 @@ class ReceiveSharingIntentLinks implements SharedLinkSource {
         if (f.type != SharedMediaType.text && f.type != SharedMediaType.url) {
           continue;
         }
-        final url = findUrl('${f.path} ${f.message ?? ''}');
-        if (url != null) controller.add(SharedLink(url));
+        final text = [f.path, ?f.message].join('\n').trim();
+        final url = findUrl(text);
+        if (isRecipeText(text)) {
+          controller.add(SharedText(text));
+        } else if (url != null) {
+          controller.add(SharedLink(url));
+        }
       }
     }
 

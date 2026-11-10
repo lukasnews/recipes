@@ -1458,5 +1458,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tiktokNoRecipe": "In der Videobeschreibung steht kein Rezept – es ist wohl nur im Video zu sehen. Tipp: Screenshots machen und über „+“ → „Aus Foto oder Screenshot“ importieren.",
+  "importText": "Text einfügen",
+  "importTextSubtitle": "z. B. aus ChatGPT, einer Nachricht oder Notiz",
+  "importTextHint": "Rezept hier einfügen – Zutaten und Zubereitung",
+  "importTextConfirm": "Rezept lesen"
 }

@@ -164,6 +164,14 @@ String pageText(String html, {int maxChars = 30000}) {
 }
 
 /// First http(s) URL in a shared text ("Schau dir das an: https://…").
+/// Shared text that is a recipe itself (e.g. a ChatGPT answer) rather
+/// than a link with a few words around it.
+bool isRecipeText(String text) {
+  final rest = text.replaceAll(RegExp(r'https?://[^\s<>"]+'), '').trim();
+  final lines = rest.split('\n').where((l) => l.trim().isNotEmpty);
+  return rest.length >= 80 && lines.length >= 3;
+}
+
 Uri? findUrl(String text) {
   final m = RegExp(r'https?://[^\s<>"]+').firstMatch(text);
   if (m == null) return null;

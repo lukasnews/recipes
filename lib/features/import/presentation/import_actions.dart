@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/messenger.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
+import '../../../core/firebase/fire.dart';
 import '../../../core/units/units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
@@ -16,11 +17,13 @@ import '../../household/domain/allergen.dart';
 import '../../pantry/domain/pantry_item.dart';
 import '../../sharing/domain/shared_recipe.dart';
 import '../../sharing/presentation/share_actions.dart';
+import '../data/link_importer.dart';
 import '../data/photo_picker.dart';
+import '../data/recipe_import_service.dart';
 import '../domain/recipe_draft.dart';
 import '../domain/web_recipe.dart';
 
-enum _AddChoice { manual, camera, gallery, link, code, ideas }
+enum _AddChoice { manual, camera, gallery, link, text, code, ideas }
 
 /// Bottom sheet behind the "+" button: empty recipe, photo or screenshot.
 Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
@@ -57,6 +60,12 @@ Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
             onTap: () => Navigator.pop(context, _AddChoice.link),
           ),
           ListTile(
+            leading: const Icon(Icons.content_paste),
+            title: Text(l10n.importText),
+            subtitle: Text(l10n.importTextSubtitle),
+            onTap: () => Navigator.pop(context, _AddChoice.text),
+          ),
+          ListTile(
             leading: const Icon(Icons.qr_code_2),
             title: Text(l10n.receiveCodeTitle),
             subtitle: Text(l10n.receiveCodeSubtitle),
@@ -82,6 +91,8 @@ Future<void> showAddRecipeSheet(BuildContext context, WidgetRef ref) async {
       await importFromPhotos(context, ref, PhotoSource.gallery);
     case _AddChoice.link:
       await askAndImportLink(context, ref);
+    case _AddChoice.text:
+      await askAndImportText(context, ref);
     case _AddChoice.code:
       await askForShareCode(context);
     case _AddChoice.ideas:
@@ -284,6 +295,83 @@ Future<void> importFromLink(
   });
 }
 
+/// "Text einfügen": multi-line field, prefilled from the clipboard.
+Future<void> askAndImportText(BuildContext context, WidgetRef ref) async {
+  final clip = (await Clipboard.getData(Clipboard.kTextPlain))?.text ?? '';
+  if (!context.mounted) return;
+  final text = await showDialog<String>(
+    context: context,
+    builder: (context) => _PasteTextDialog(initial: clip),
+  );
+  if (text == null || text.trim().isEmpty || !context.mounted) return;
+  await importFromText(context, ref, text);
+}
+
+/// Recipe given as text (shared from ChatGPT, a chat, notes): the AI
+/// structures it; offline the simple text heuristics do.
+Future<void> importFromText(BuildContext context, WidgetRef ref, String text) =>
+    _runImport(context, () async {
+      try {
+        final extractor = await ref.read(recipeExtractorProvider.future);
+        final drafts = await extractor.extractFromText(text);
+        if (drafts.isNotEmpty) return drafts;
+      } catch (e, s) {
+        reportError(e, s);
+        return [
+          draftFromOcrText(text)
+              .copyWith(recognizedOffline: true, aiError: describeAiError(e)),
+        ];
+      }
+      return [draftFromOcrText(text)];
+    });
+
+class _PasteTextDialog extends StatefulWidget {
+  const _PasteTextDialog({required this.initial});
+
+  final String initial;
+
+  @override
+  State<_PasteTextDialog> createState() => _PasteTextDialogState();
+}
+
+class _PasteTextDialogState extends State<_PasteTextDialog> {
+  late final _controller = TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return AlertDialog(
+      title: Text(l10n.importText),
+      content: TextField(
+        controller: _controller,
+        autofocus: widget.initial.isEmpty,
+        minLines: 6,
+        maxLines: 12,
+        decoration: InputDecoration(
+          hintText: l10n.importTextHint,
+          border: const OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, _controller.text),
+          child: Text(l10n.importTextConfirm),
+        ),
+      ],
+    );
+  }
+}
+
 /// Shared flow: progress dialog, optional choice when several recipes were
 /// found, then the review screen for each one.
 Future<void> _runImport(
@@ -316,7 +404,11 @@ Future<void> _runImport(
     drafts = await load();
   } catch (e) {
     navigator.pop();
-    showGlobalSnack(l10n.importFailed('$e'));
+    showGlobalSnack(
+      e is NoRecipeInCaptionException
+          ? l10n.tiktokNoRecipe
+          : l10n.importFailed('$e'),
+    );
     return;
   }
   navigator.pop();

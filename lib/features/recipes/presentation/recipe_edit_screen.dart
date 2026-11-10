@@ -23,6 +23,7 @@ import '../../ingredients/domain/ingredient_factory.dart';
 import '../../ingredients/presentation/ingredient_picker.dart';
 import '../domain/recipe.dart';
 import '../domain/recipe_variants.dart';
+import '../domain/step_text.dart';
 import 'pan_fields.dart';
 
 /// How one ingredient line will be linked when saving.
@@ -252,6 +253,9 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
     }
 
     final isNew = _original == null;
+    // Pasted steps: numbering, wrapped lines, "Tipp:" sections.
+    final cleaned = cleanStepText(_steps.text);
+    final notes = _notes.text.trim();
     final recipe = Recipe(
       id: _original?.id ?? recipeRepo.newId(),
       title: _title.text.trim(),
@@ -268,7 +272,9 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
       // Uploads append their paths themselves once they are done.
       photoPaths: List.of(_keptPhotos),
       rating: _rating,
-      notes: _notes.text.trim(),
+      notes: cleaned.extraNotes.isEmpty || notes.contains(cleaned.extraNotes)
+          ? notes
+          : [if (notes.isNotEmpty) notes, cleaned.extraNotes].join('\n\n'),
       sourceType:
           _original?.sourceType ??
           (widget.draft == null
@@ -276,12 +282,7 @@ class _RecipeEditScreenState extends ConsumerState<RecipeEditScreen> {
               : (widget.draft!.sourceUrl != null ? 'url' : 'ocr')),
       sourceUrl: _original?.sourceUrl ?? widget.draft?.sourceUrl,
       ingredients: lines,
-      steps: _steps.text
-          .split('\n')
-          .map((s) => s.trim())
-          .where((s) => s.isNotEmpty)
-          .map(RecipeStep.new)
-          .toList(),
+      steps: cleaned.steps.map(RecipeStep.new).toList(),
       createdBy: _original?.createdBy ?? uid,
       variantOf: _variantOf,
       variantName: _variantOf == null ? null : _variantName.text.trim(),

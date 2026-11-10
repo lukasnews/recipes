@@ -30,6 +30,7 @@ class _ShareListenerState extends ConsumerState<ShareListener> {
       unawaited(switch (item) {
         SharedLink(:final url) => importFromLink(context, ref, url),
         SharedFile(:final path) => restoreBackupFile(context, ref, path),
+        SharedText(:final text) => importFromText(context, ref, text),
       });
     });
   }
