@@ -6,17 +6,16 @@ import 'package:intl/intl.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../core/firebase/fire.dart';
-import '../../../core/units/units.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/l10n_ext.dart';
 import '../../../core/widgets/profile_button.dart';
 import '../../pantry/domain/frozen_meal.dart';
 import '../../recipes/domain/recipe.dart';
-import '../../shopping/domain/shopping_item.dart';
 import '../data/meal_plan_repository.dart';
 import '../domain/meal_plan_day.dart';
 import '../domain/week_shopping.dart';
 import '../domain/week_suggestion.dart';
+import 'needs_dialog.dart';
 
 class MealPlanScreen extends ConsumerStatefulWidget {
   const MealPlanScreen({super.key});
@@ -186,85 +185,13 @@ class _MealPlanScreenState extends ConsumerState<MealPlanScreen> {
       );
       return;
     }
-    // Already open on the list: offered, but not ticked.
-    final onList = {
-      for (final i
-          in ref.read(shoppingProvider).value ?? const <ShoppingItem>[])
-        if (!i.checked) ?i.ingredientId,
-    };
-    final selected = {
-      for (final (i, n) in needs.indexed)
-        if (!onList.contains(n.ingredient.id)) i,
-    };
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text(l10n.weekShopTitle),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                Text(l10n.weekShopHint(planned.length)),
-                for (final (i, n) in needs.indexed)
-                  CheckboxListTile(
-                    contentPadding: EdgeInsets.zero,
-                    value: selected.contains(i),
-                    onChanged: (v) => setState(
-                      () => v == true ? selected.add(i) : selected.remove(i),
-                    ),
-                    title: Text(n.ingredient.name),
-                    subtitle: Text(
-                      [
-                        if (n.missingBase != null)
-                          formatBaseAmount(
-                            n.missingBase!,
-                            n.ingredient.baseUnit,
-                          ),
-                        if (onList.contains(n.ingredient.id))
-                          l10n.alreadyOnList,
-                      ].join(' · '),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: Text(l10n.add),
-            ),
-          ],
-        ),
-      ),
+    await shopNeeds(
+      context,
+      ref,
+      needs,
+      title: l10n.weekShopTitle,
+      hint: l10n.weekShopHint(planned.length),
     );
-    if (ok != true || !mounted) return;
-    final repo = ref.read(shoppingRepositoryProvider);
-    final current = ref.read(shoppingProvider).value ?? const [];
-    var count = 0;
-    for (final (i, n) in needs.indexed) {
-      if (!selected.contains(i)) continue;
-      final ing = n.ingredient;
-      fire(
-        repo.add(
-          text: ing.name,
-          current: current,
-          ingredientId: ing.id,
-          amount: n.missingBase,
-          unit: n.missingBase == null
-              ? null
-              : (ing.baseUnit == BaseUnit.pcs ? 'Stk.' : ing.baseUnit.name),
-          aisle: ing.aisle,
-        ),
-      );
-      count++;
-    }
-    showSnack(context, l10n.buyMissingDone(count));
   }
 
   @override

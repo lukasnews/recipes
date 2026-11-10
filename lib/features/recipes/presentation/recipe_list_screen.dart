@@ -78,7 +78,14 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.navRecipes),
-        actions: const [ProfileButton()],
+        actions: [
+          IconButton(
+            tooltip: l10n.menusTitle,
+            onPressed: () => context.push(Routes.menus),
+            icon: const Icon(Icons.restaurant_menu),
+          ),
+          const ProfileButton(),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'recipes-fab',

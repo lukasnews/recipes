@@ -1368,5 +1368,95 @@
   "substituteFailed": "Gerade keine Vorschläge möglich (Internet?).",
   "substituteNone": "Kein sinnvoller Ersatz gefunden.",
   "substituteFromPantry": "Im Vorrat",
-  "substituteDisclaimer": "Vorschläge der KI – bei Allergien bitte selbst prüfen."
+  "substituteDisclaimer": "Vorschläge der KI – bei Allergien bitte selbst prüfen.",
+  "menusTitle": "Menüs",
+  "menusEmpty": "Noch keine Menüs.\nFür Gäste mehrere Rezepte zusammenstellen: ein Einkauf und ein Zeitplan.",
+  "menuNew": "Neues Menü",
+  "menuCreate": "Anlegen",
+  "menuTitleLabel": "Name des Menüs",
+  "menuTitleHint": "z. B. Omas Geburtstag",
+  "menuRename": "Umbenennen",
+  "menuDeleteConfirm": "Menü „{title}“ löschen? Die Rezepte bleiben.",
+  "@menuDeleteConfirm": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "menuPersons": "{count, plural, =1{1 Person} other{{count} Personen}}",
+  "@menuPersons": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "menuGuests": "Personen",
+  "menuSetDate": "Datum festlegen",
+  "menuSetTime": "Uhrzeit festlegen",
+  "menuServeAt": "Essen um {time}",
+  "@menuServeAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "menuWhichCourse": "Welcher Gang?",
+  "courseStarter": "Vorspeise",
+  "courseMain": "Hauptspeise",
+  "courseSide": "Beilage",
+  "courseDessert": "Dessert",
+  "courseOther": "Sonstiges",
+  "menuAddCourse": "Gang hinzufügen",
+  "menuRemoveCourse": "Aus dem Menü nehmen",
+  "menuNoCourses": "Noch keine Gänge.",
+  "menuShop": "Alles einkaufen",
+  "menuShopTitle": "Einkauf fürs Menü",
+  "menuShopHint": "Mengen für {count} Personen, Vorrat ist schon abgezogen.",
+  "@menuShopHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "menuPlan": "In den Wochenplan",
+  "menuPlanned": "Im Wochenplan eingetragen",
+  "menuTimeline": "Zeitplan",
+  "menuTimelineNeedsTime": "Uhrzeit festlegen, dann rechnet BaCo aus, wann du womit anfangen musst.",
+  "menuTimelineHint": "Gerechnet aus den Zeiten der Rezepte: Hauptspeise 30 Min. nach der Vorspeise, Dessert 45 Min. danach.",
+  "menuUntimed": "Ohne Zeitangabe im Rezept: {titles}",
+  "@menuUntimed": {
+    "placeholders": {
+      "titles": {
+        "type": "String"
+      }
+    }
+  },
+  "stepPrepare": "{title} vorbereiten",
+  "@stepPrepare": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "stepCook": "{title} kochen / backen",
+  "@stepCook": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "stepServe": "{title} servieren",
+  "@stepServe": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

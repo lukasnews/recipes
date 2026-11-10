@@ -29,6 +29,8 @@ import '../features/import/data/text_recognizer.dart';
 import '../features/ingredients/data/ingredient_repository.dart';
 import '../features/ingredients/domain/ingredient.dart';
 import '../features/mealplan/data/meal_plan_repository.dart';
+import '../features/menus/data/menu_repository.dart';
+import '../features/menus/domain/menu.dart';
 import '../features/pantry/data/barcode_reader.dart';
 import '../features/pantry/data/barcode_repository.dart';
 import '../features/pantry/data/frozen_meal_repository.dart';
@@ -356,6 +358,16 @@ final memberRepositoryProvider = Provider<MemberRepository>(
 
 final membersProvider = StreamProvider<List<HouseholdMember>>(
   (ref) => ref.watch(memberRepositoryProvider).watchAll(),
+);
+
+// --- Menus ----------------------------------------------------------------
+
+final menuRepositoryProvider = Provider<MenuRepository>(
+  (ref) => MenuRepository(ref.watch(firestoreProvider), _requireHousehold(ref)),
+);
+
+final menusProvider = StreamProvider<List<Menu>>(
+  (ref) => ref.watch(menuRepositoryProvider).watchAll(),
 );
 
 // --- Frozen meals ---------------------------------------------------------

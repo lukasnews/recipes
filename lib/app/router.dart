@@ -9,6 +9,8 @@ import '../features/import/domain/recipe_draft.dart';
 import '../features/ingredients/presentation/ingredient_edit_screen.dart';
 import '../features/ingredients/presentation/ingredients_screen.dart';
 import '../features/mealplan/presentation/meal_plan_screen.dart';
+import '../features/menus/presentation/menu_detail_screen.dart';
+import '../features/menus/presentation/menus_screen.dart';
 import '../features/pantry/presentation/inventory_screen.dart';
 import '../features/pantry/presentation/pantry_screen.dart';
 import '../features/recipes/presentation/cook_mode_screen.dart';
@@ -114,6 +116,19 @@ final routerProvider = Provider<GoRouter>((ref) {
                       variantOfId: state.uri.queryParameters['variantOf'],
                       variantName: state.uri.queryParameters['name'],
                     ),
+                  ),
+                  // Before ':id', which would match "menus" too.
+                  GoRoute(
+                    path: 'menus',
+                    builder: (context, state) => const MenusScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':menuId',
+                        builder: (context, state) => MenuDetailScreen(
+                          menuId: state.pathParameters['menuId']!,
+                        ),
+                      ),
+                    ],
                   ),
                   GoRoute(
                     path: ':id',

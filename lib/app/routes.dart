@@ -12,6 +12,8 @@ abstract final class Routes {
     queryParameters: {'variantOf': fromId, 'name': name},
   ).toString();
   static String cookRecipe(String id) => '/recipes/$id/cook';
+  static const menus = '/recipes/menus';
+  static String menu(String id) => '/recipes/menus/$id';
   static const mealPlan = '/mealplan';
   static const shopping = '/shopping';
   static const pantry = '/pantry';

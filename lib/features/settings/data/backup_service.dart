@@ -38,6 +38,7 @@ class BackupService {
     'frozenMeals',
     'cookLog',
     'barcodes',
+    'menus',
   ];
 
   DocumentReference<Map<String, dynamic>> get _household =>
