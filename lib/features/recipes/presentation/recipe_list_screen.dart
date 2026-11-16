@@ -20,6 +20,7 @@ import '../domain/recipe.dart';
 import '../domain/recipe_stock.dart';
 import '../domain/recipe_variants.dart';
 import '../domain/sample_recipes.dart';
+import 'recipe_print.dart';
 
 /// Local full text search over title, tags and ingredient lines.
 bool recipeMatches(Recipe r, String query) {
@@ -58,6 +59,31 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
   String? _tag;
   String _query = '';
 
+  /// Long press starts choosing recipes (e.g. to print them together).
+  final _selected = <String>{};
+
+  void _toggle(String id) => setState(() {
+    if (!_selected.remove(id)) _selected.add(id);
+  });
+
+  Future<void> _printSelected({bool share = false}) async {
+    final l10n = context.l10n;
+    final chosen = [
+      for (final r in ref.read(recipesProvider).value ?? const <Recipe>[])
+        if (_selected.contains(r.id)) (r, null as int?),
+    ];
+    if (chosen.isEmpty) return;
+    await printRecipes(
+      ref,
+      l10n,
+      chosen,
+      title: chosen.length == 1
+          ? chosen.single.$1.title
+          : l10n.printTitleSeveral(chosen.length),
+      share: share,
+    );
+  }
+
   /// Example recipes for a household that has none (yet).
   Future<void> _addSamples() async {
     final raw = await ref.read(sampleRecipesRawProvider.future);
@@ -78,285 +104,334 @@ class _RecipeListScreenState extends ConsumerState<RecipeListScreen> {
     bool isSafe(Recipe r) =>
         affectedMembers(recipeAllergens(r, ingredients), members).isEmpty;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.navRecipes),
-        actions: [
-          IconButton(
-            tooltip: l10n.menusTitle,
-            onPressed: () => context.push(Routes.menus),
-            icon: const Icon(Icons.restaurant_menu),
-          ),
-          const ProfileButton(),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'recipes-fab',
-        tooltip: l10n.newRecipe,
-        onPressed: () => showAddRecipeSheet(context, ref),
-        child: const Icon(Icons.add),
-      ),
-      body: AsyncView(
-        value: recipesValue,
-        data: (recipes) {
-          final categories = ref.watch(visibleCategoriesProvider);
-          final favorites = ref.watch(favoritesProvider);
-          final collections = ref.watch(collectionsProvider);
-          if (_collection != null && !collections.contains(_collection)) {
-            _collection = null;
-          }
-          final tags = ref.watch(tagsProvider).take(12).toList();
-          if (_tag != null && !tags.contains(_tag)) _tag = null;
-          final filtered = recipes
-              .where((r) => _category == null || r.category == _category)
-              .where(
-                (r) =>
-                    _category != RecipeCategories.drinks ||
-                    _drinkTemp == null ||
-                    r.drinkTemp == _drinkTemp,
+    final selecting = _selected.isNotEmpty;
+    return PopScope(
+      canPop: !selecting,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) setState(_selected.clear);
+      },
+      child: Scaffold(
+        appBar: selecting
+            ? AppBar(
+                leading: IconButton(
+                  tooltip: l10n.selectionEnd,
+                  onPressed: () => setState(_selected.clear),
+                  icon: const Icon(Icons.close),
+                ),
+                title: Text(l10n.selectedCount(_selected.length)),
+                actions: [
+                  IconButton(
+                    tooltip: l10n.printRecipe,
+                    onPressed: () => fire(_printSelected()),
+                    icon: const Icon(Icons.print_outlined),
+                  ),
+                  IconButton(
+                    tooltip: l10n.sharePdf,
+                    onPressed: () => fire(_printSelected(share: true)),
+                    icon: const Icon(Icons.picture_as_pdf_outlined),
+                  ),
+                ],
               )
-              .where((r) => recipeMatches(r, _query))
-              .where((r) => !_safeForAll || isSafe(r))
-              .where((r) => !_favoritesOnly || favorites.contains(r.id))
-              .where(
-                (r) =>
-                    _collection == null || r.collections.contains(_collection),
-              )
-              .where((r) => _tag == null || r.tags.contains(_tag))
-              .toList();
-          var coverages = [
-            for (final r in filtered) computeCoverage(r, ingredients, pantry),
-          ];
-          final expiring = expiringIds(pantry, DateTime.now());
-          if (_cookable) {
-            coverages = rankByCoverage(coverages, expiring: expiring);
-          }
-          if (_longNotCooked) {
-            final stats = ref.watch(cookStatsProvider).value ?? const {};
-            final byId = {for (final c in coverages) c.recipe.id: c};
-            coverages = [
-              for (final id in longNotCooked(byId.keys, stats)) byId[id]!,
+            : AppBar(
+                title: Text(l10n.navRecipes),
+                actions: [
+                  IconButton(
+                    tooltip: l10n.menusTitle,
+                    onPressed: () => context.push(Routes.menus),
+                    icon: const Icon(Icons.restaurant_menu),
+                  ),
+                  const ProfileButton(),
+                ],
+              ),
+        floatingActionButton: selecting
+            ? null
+            : FloatingActionButton(
+                heroTag: 'recipes-fab',
+                tooltip: l10n.newRecipe,
+                onPressed: () => showAddRecipeSheet(context, ref),
+                child: const Icon(Icons.add),
+              ),
+        body: AsyncView(
+          value: recipesValue,
+          data: (recipes) {
+            final categories = ref.watch(visibleCategoriesProvider);
+            final favorites = ref.watch(favoritesProvider);
+            final collections = ref.watch(collectionsProvider);
+            if (_collection != null && !collections.contains(_collection)) {
+              _collection = null;
+            }
+            final tags = ref.watch(tagsProvider).take(12).toList();
+            if (_tag != null && !tags.contains(_tag)) _tag = null;
+            final filtered = recipes
+                .where((r) => _category == null || r.category == _category)
+                .where(
+                  (r) =>
+                      _category != RecipeCategories.drinks ||
+                      _drinkTemp == null ||
+                      r.drinkTemp == _drinkTemp,
+                )
+                .where((r) => recipeMatches(r, _query))
+                .where((r) => !_safeForAll || isSafe(r))
+                .where((r) => !_favoritesOnly || favorites.contains(r.id))
+                .where(
+                  (r) =>
+                      _collection == null ||
+                      r.collections.contains(_collection),
+                )
+                .where((r) => _tag == null || r.tags.contains(_tag))
+                .toList();
+            var coverages = [
+              for (final r in filtered) computeCoverage(r, ingredients, pantry),
             ];
-          }
+            final expiring = expiringIds(pantry, DateTime.now());
+            if (_cookable) {
+              coverages = rankByCoverage(coverages, expiring: expiring);
+            }
+            if (_longNotCooked) {
+              final stats = ref.watch(cookStatsProvider).value ?? const {};
+              final byId = {for (final c in coverages) c.recipe.id: c};
+              coverages = [
+                for (final id in longNotCooked(byId.keys, stats)) byId[id]!,
+              ];
+            }
 
-          // One tile per recipe family, unless only a variant matches.
-          coverages = collapseVariants(coverages, (c) => c.recipe);
-          final variants = variantCounts(recipes);
+            // One tile per recipe family, unless only a variant matches.
+            coverages = collapseVariants(coverages, (c) => c.recipe);
+            final variants = variantCounts(recipes);
 
-          final showSafeFilter = members.any((m) => m.allergens.isNotEmpty);
-          final activeFilters = [
-            _cookable,
-            _longNotCooked,
-            _safeForAll && showSafeFilter,
-            _favoritesOnly,
-            _collection != null,
-            _tag != null,
-          ].where((b) => b).length;
+            final showSafeFilter = members.any((m) => m.allergens.isNotEmpty);
+            final activeFilters = [
+              _cookable,
+              _longNotCooked,
+              _safeForAll && showSafeFilter,
+              _favoritesOnly,
+              _collection != null,
+              _tag != null,
+            ].where((b) => b).length;
 
-          Widget empty(Widget child) =>
-              SliverFillRemaining(hasScrollBody: false, child: child);
-          // Header scrolls with the list, so large fonts and many chips
-          // never squeeze the recipes off the screen.
-          return CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    const _ImportQueueBanner(),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
-                      child: SearchBar(
-                        hintText: l10n.searchRecipesHint,
-                        leading: const Icon(Icons.search),
-                        onChanged: (v) => setState(() => _query = v),
-                      ),
-                    ),
-                    // Wrapped, not scrolled: with large fonts or own categories
-                    // the chips past the edge were easy to miss.
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
-                            child: Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                ChoiceChip(
-                                  label: Text(l10n.categoryAll),
-                                  selected: _category == null,
-                                  onSelected: (_) => setState(() {
-                                    _category = null;
-                                    _drinkTemp = null;
-                                  }),
-                                ),
-                                for (final c in categories)
-                                  ChoiceChip(
-                                    label: Text(l10n.category(c)),
-                                    selected: _category == c,
-                                    onSelected: (_) => setState(() {
-                                      _category = c;
-                                      _drinkTemp = null;
-                                    }),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4, right: 8),
-                          child: Badge(
-                            isLabelVisible: activeFilters > 0 && !_showFilters,
-                            label: Text('$activeFilters'),
-                            child: IconButton(
-                              tooltip: l10n.moreFilters,
-                              isSelected: _showFilters,
-                              onPressed: () =>
-                                  setState(() => _showFilters = !_showFilters),
-                              icon: const Icon(Icons.tune),
-                              selectedIcon: const Icon(Icons.expand_less),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (_category == RecipeCategories.drinks)
+            Widget empty(Widget child) =>
+                SliverFillRemaining(hasScrollBody: false, child: child);
+            // Header scrolls with the list, so large fonts and many chips
+            // never squeeze the recipes off the screen.
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      const _ImportQueueBanner(),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final (t, label) in [
-                              (null, l10n.drinkAll),
-                              (DrinkTemp.hot, l10n.drinkHot),
-                              (DrinkTemp.cold, l10n.drinkCold),
-                            ])
-                              ChoiceChip(
-                                avatar: switch (t) {
-                                  DrinkTemp.hot => const Icon(Icons.local_cafe),
-                                  DrinkTemp.cold => const Icon(
-                                    Icons.local_drink,
-                                  ),
-                                  _ => null,
-                                },
-                                label: Text(label),
-                                selected: _drinkTemp == t,
-                                onSelected: (_) =>
-                                    setState(() => _drinkTemp = t),
-                              ),
-                          ],
+                        padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+                        child: SearchBar(
+                          hintText: l10n.searchRecipesHint,
+                          leading: const Icon(Icons.search),
+                          onChanged: (v) => setState(() => _query = v),
                         ),
                       ),
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 200),
-                      alignment: Alignment.topCenter,
-                      child: !_showFilters
-                          ? const SizedBox(width: double.infinity)
-                          : Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                      // Wrapped, not scrolled: with large fonts or own categories
+                      // the chips past the edge were easy to miss.
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
                               child: Wrap(
                                 spacing: 8,
                                 runSpacing: 8,
                                 children: [
-                                  FilterChip(
-                                    avatar: const Icon(Icons.favorite_border),
-                                    label: Text(l10n.filterFavorites),
-                                    selected: _favoritesOnly,
-                                    onSelected: (v) =>
-                                        setState(() => _favoritesOnly = v),
-                                  ),
-                                  for (final t in tags)
-                                    FilterChip(
-                                      label: Text('#$t'),
-                                      selected: _tag == t,
-                                      onSelected: (v) =>
-                                          setState(() => _tag = v ? t : null),
-                                    ),
-                                  for (final c in collections)
-                                    FilterChip(
-                                      avatar: const Icon(
-                                        Icons.collections_bookmark_outlined,
-                                      ),
-                                      label: Text(c),
-                                      selected: _collection == c,
-                                      onSelected: (v) => setState(
-                                        () => _collection = v ? c : null,
-                                      ),
-                                    ),
-                                  FilterChip(
-                                    avatar: const Icon(Icons.kitchen_outlined),
-                                    label: Text(l10n.sortCookable),
-                                    selected: _cookable,
-                                    onSelected: (v) => setState(() {
-                                      _cookable = v;
-                                      if (v) _longNotCooked = false;
+                                  ChoiceChip(
+                                    label: Text(l10n.categoryAll),
+                                    selected: _category == null,
+                                    onSelected: (_) => setState(() {
+                                      _category = null;
+                                      _drinkTemp = null;
                                     }),
                                   ),
-                                  FilterChip(
-                                    avatar: const Icon(Icons.history),
-                                    label: Text(l10n.sortLongNotCooked),
-                                    selected: _longNotCooked,
-                                    onSelected: (v) => setState(() {
-                                      _longNotCooked = v;
-                                      if (v) _cookable = false;
-                                    }),
-                                  ),
-                                  if (showSafeFilter)
-                                    FilterChip(
-                                      avatar: const Icon(
-                                        Icons.health_and_safety_outlined,
-                                      ),
-                                      label: Text(l10n.filterSafeForAll),
-                                      selected: _safeForAll,
-                                      onSelected: (v) =>
-                                          setState(() => _safeForAll = v),
+                                  for (final c in categories)
+                                    ChoiceChip(
+                                      label: Text(l10n.category(c)),
+                                      selected: _category == c,
+                                      onSelected: (_) => setState(() {
+                                        _category = c;
+                                        _drinkTemp = null;
+                                      }),
                                     ),
                                 ],
                               ),
                             ),
-                    ),
-                  ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4, right: 8),
+                            child: Badge(
+                              isLabelVisible:
+                                  activeFilters > 0 && !_showFilters,
+                              label: Text('$activeFilters'),
+                              child: IconButton(
+                                tooltip: l10n.moreFilters,
+                                isSelected: _showFilters,
+                                onPressed: () => setState(
+                                  () => _showFilters = !_showFilters,
+                                ),
+                                icon: const Icon(Icons.tune),
+                                selectedIcon: const Icon(Icons.expand_less),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_category == RecipeCategories.drinks)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (final (t, label) in [
+                                (null, l10n.drinkAll),
+                                (DrinkTemp.hot, l10n.drinkHot),
+                                (DrinkTemp.cold, l10n.drinkCold),
+                              ])
+                                ChoiceChip(
+                                  avatar: switch (t) {
+                                    DrinkTemp.hot => const Icon(
+                                      Icons.local_cafe,
+                                    ),
+                                    DrinkTemp.cold => const Icon(
+                                      Icons.local_drink,
+                                    ),
+                                    _ => null,
+                                  },
+                                  label: Text(label),
+                                  selected: _drinkTemp == t,
+                                  onSelected: (_) =>
+                                      setState(() => _drinkTemp = t),
+                                ),
+                            ],
+                          ),
+                        ),
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 200),
+                        alignment: Alignment.topCenter,
+                        child: !_showFilters
+                            ? const SizedBox(width: double.infinity)
+                            : Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  12,
+                                  0,
+                                  12,
+                                  8,
+                                ),
+                                child: Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: [
+                                    FilterChip(
+                                      avatar: const Icon(Icons.favorite_border),
+                                      label: Text(l10n.filterFavorites),
+                                      selected: _favoritesOnly,
+                                      onSelected: (v) =>
+                                          setState(() => _favoritesOnly = v),
+                                    ),
+                                    for (final t in tags)
+                                      FilterChip(
+                                        label: Text('#$t'),
+                                        selected: _tag == t,
+                                        onSelected: (v) =>
+                                            setState(() => _tag = v ? t : null),
+                                      ),
+                                    for (final c in collections)
+                                      FilterChip(
+                                        avatar: const Icon(
+                                          Icons.collections_bookmark_outlined,
+                                        ),
+                                        label: Text(c),
+                                        selected: _collection == c,
+                                        onSelected: (v) => setState(
+                                          () => _collection = v ? c : null,
+                                        ),
+                                      ),
+                                    FilterChip(
+                                      avatar: const Icon(
+                                        Icons.kitchen_outlined,
+                                      ),
+                                      label: Text(l10n.sortCookable),
+                                      selected: _cookable,
+                                      onSelected: (v) => setState(() {
+                                        _cookable = v;
+                                        if (v) _longNotCooked = false;
+                                      }),
+                                    ),
+                                    FilterChip(
+                                      avatar: const Icon(Icons.history),
+                                      label: Text(l10n.sortLongNotCooked),
+                                      selected: _longNotCooked,
+                                      onSelected: (v) => setState(() {
+                                        _longNotCooked = v;
+                                        if (v) _cookable = false;
+                                      }),
+                                    ),
+                                    if (showSafeFilter)
+                                      FilterChip(
+                                        avatar: const Icon(
+                                          Icons.health_and_safety_outlined,
+                                        ),
+                                        label: Text(l10n.filterSafeForAll),
+                                        selected: _safeForAll,
+                                        onSelected: (v) =>
+                                            setState(() => _safeForAll = v),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              recipes.isEmpty
-                  ? empty(
-                      EmptyState(
-                        icon: Icons.menu_book_outlined,
-                        message:
-                            '${l10n.recipesEmpty}\n${l10n.recipesEmptyHint}',
-                        action: OutlinedButton.icon(
-                          onPressed: _addSamples,
-                          icon: const Icon(Icons.auto_awesome_outlined),
-                          label: Text(l10n.addSampleRecipes),
+                recipes.isEmpty
+                    ? empty(
+                        EmptyState(
+                          icon: Icons.menu_book_outlined,
+                          message:
+                              '${l10n.recipesEmpty}\n${l10n.recipesEmptyHint}',
+                          action: OutlinedButton.icon(
+                            onPressed: _addSamples,
+                            icon: const Icon(Icons.auto_awesome_outlined),
+                            label: Text(l10n.addSampleRecipes),
+                          ),
+                        ),
+                      )
+                    : coverages.isEmpty
+                    ? empty(
+                        EmptyState(
+                          icon: Icons.search_off,
+                          message: l10n.noSearchResults,
+                        ),
+                      )
+                    : SliverPadding(
+                        padding: const EdgeInsets.only(bottom: 88),
+                        sliver: SliverList.builder(
+                          itemCount: coverages.length,
+                          itemBuilder: (context, i) => _RecipeTile(
+                            coverage: coverages[i],
+                            showCoverage: _cookable,
+                            expiringUsed: coverages[i].usesExpiring(expiring),
+                            favorite: favorites.contains(
+                              coverages[i].recipe.id,
+                            ),
+                            warn: !isSafe(coverages[i].recipe),
+                            variants: variants[coverages[i].recipe.id] ?? 0,
+                            selecting: selecting,
+                            selected: _selected.contains(
+                              coverages[i].recipe.id,
+                            ),
+                            onToggle: () => _toggle(coverages[i].recipe.id),
+                          ),
                         ),
                       ),
-                    )
-                  : coverages.isEmpty
-                  ? empty(
-                      EmptyState(
-                        icon: Icons.search_off,
-                        message: l10n.noSearchResults,
-                      ),
-                    )
-                  : SliverPadding(
-                      padding: const EdgeInsets.only(bottom: 88),
-                      sliver: SliverList.builder(
-                        itemCount: coverages.length,
-                        itemBuilder: (context, i) => _RecipeTile(
-                          coverage: coverages[i],
-                          showCoverage: _cookable,
-                          expiringUsed: coverages[i].usesExpiring(expiring),
-                          favorite: favorites.contains(coverages[i].recipe.id),
-                          warn: !isSafe(coverages[i].recipe),
-                          variants: variants[coverages[i].recipe.id] ?? 0,
-                        ),
-                      ),
-                    ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -370,9 +445,17 @@ class _RecipeTile extends StatelessWidget {
     this.expiringUsed = 0,
     this.favorite = false,
     this.variants = 0,
+    this.selecting = false,
+    this.selected = false,
+    this.onToggle,
   });
 
   final bool favorite;
+
+  /// Choosing several recipes: tap toggles instead of opening.
+  final bool selecting;
+  final bool selected;
+  final VoidCallback? onToggle;
 
   /// Number of variants of this original.
   final int variants;
@@ -401,9 +484,16 @@ class _RecipeTile extends StatelessWidget {
     ].join(' · ');
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      color: selected ? Theme.of(context).colorScheme.secondaryContainer : null,
       child: ListTile(
         minVerticalPadding: 12,
-        leading: r.photoPaths.isEmpty
+        selected: selected,
+        leading: selecting
+            ? Icon(
+                selected ? Icons.check_circle : Icons.radio_button_unchecked,
+                semanticLabel: selected ? l10n.selected : null,
+              )
+            : r.photoPaths.isEmpty
             ? null
             : ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -436,7 +526,8 @@ class _RecipeTile extends StatelessWidget {
             if (r.rating > 0) RatingStars(rating: r.rating, size: 16),
           ],
         ),
-        onTap: () => context.push(Routes.recipe(r.id)),
+        onTap: selecting ? onToggle : () => context.push(Routes.recipe(r.id)),
+        onLongPress: onToggle,
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +23,6 @@ import '../domain/baking_pan.dart';
 import '../domain/cook_history.dart';
 import '../domain/nutrition.dart';
 import '../domain/recipe.dart';
-import '../domain/recipe_pdf.dart';
 import '../domain/recipe_share.dart';
 import '../domain/recipe_stock.dart';
 import '../domain/recipe_variants.dart';
@@ -32,6 +30,7 @@ import 'collections_sheet.dart';
 import 'cooked_dialog.dart';
 import 'ingredient_actions.dart';
 import 'pan_fields.dart';
+import 'recipe_print.dart';
 
 class RecipeDetailScreen extends ConsumerStatefulWidget {
   const RecipeDetailScreen({super.key, required this.recipeId});
@@ -215,42 +214,14 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
 
   /// Printable PDF of the recipe as shown (servings, tin, unit display);
   /// [share] sends the file instead of opening the print dialog.
-  Future<void> _pdf(Recipe recipe, int servings, {bool share = false}) async {
-    final l10n = context.l10n;
-    Uint8List? photo;
-    if (recipe.photoPaths.isNotEmpty) {
-      try {
-        photo = await ref
-            .read(photoFileProvider(recipe.photoPaths.first).future)
-            .then((f) => f.readAsBytes());
-      } on Object {
-        // Offline and not cached: the PDF comes without the photo.
-      }
-    }
-    final pdf = await buildRecipePdf(
-      recipe,
-      labels: (
-        ingredients: l10n.ingredientsTitle,
-        steps: l10n.stepsTitle,
-        notes: l10n.notesTitle,
-        servings: l10n.servingsCount,
-        prep: l10n.pdfPrep,
-        cook: l10n.pdfCook,
-        footer: l10n.pdfFooter,
-      ),
-      ingredients: ref.read(ingredientsByIdProvider),
-      regularFont: await rootBundle.load('assets/fonts/Roboto-Regular.ttf'),
-      boldFont: await rootBundle.load('assets/fonts/Roboto-Bold.ttf'),
-      servings: servings,
-      display: ref.read(unitDisplayProvider),
-      photo: photo,
-    );
-    final printer = ref.read(recipePrinterProvider);
-    final name = recipe.title.replaceAll(RegExp(r'[\\/:*?"<>|]'), '');
-    await (share
-        ? printer.share(pdf, '$name.pdf')
-        : printer.print(pdf, recipe.title));
-  }
+  Future<void> _pdf(Recipe recipe, int servings, {bool share = false}) =>
+      printRecipes(
+        ref,
+        context.l10n,
+        [(recipe, servings)],
+        title: recipe.title,
+        share: share,
+      );
 
   void _share(Recipe recipe, int servings) {
     final l10n = context.l10n;

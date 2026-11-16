@@ -1514,5 +1514,24 @@
         "type": "int"
       }
     }
-  }
+  },
+  "selectedCount": "{count} ausgewählt",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectionEnd": "Auswahl beenden",
+  "selected": "ausgewählt",
+  "printTitleSeveral": "{count} Rezepte",
+  "@printTitleSeveral": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "printMenu": "Menü drucken"
 }

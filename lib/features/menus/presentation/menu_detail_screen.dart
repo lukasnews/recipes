@@ -14,6 +14,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../mealplan/domain/meal_plan_day.dart';
 import '../../mealplan/presentation/needs_dialog.dart';
 import '../../recipes/domain/recipe.dart';
+import '../../recipes/presentation/recipe_print.dart';
 import '../domain/menu.dart';
 import '../domain/menu_plan.dart';
 
@@ -184,6 +185,17 @@ class MenuDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(menu.title),
         actions: [
+          if (menu.courses.isNotEmpty)
+            IconButton(
+              tooltip: l10n.printMenu,
+              onPressed: () => fire(
+                printRecipes(ref, l10n, [
+                  for (final c in menu.ordered)
+                    if (recipes[c.recipeId] case final r?) (r, menu.servings),
+                ], title: menu.title),
+              ),
+              icon: const Icon(Icons.print_outlined),
+            ),
           IconButton(
             tooltip: l10n.menuRename,
             onPressed: () => _rename(context, ref, menu),

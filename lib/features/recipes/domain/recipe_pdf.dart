@@ -19,6 +19,10 @@ typedef PdfLabels = ({
   String footer,
 });
 
+/// One recipe in a PDF: amounts scaled to [servings] (null = as in the
+/// recipe), first photo on top if given.
+typedef PdfRecipe = ({Recipe recipe, int? servings, Uint8List? photo});
+
 /// A printable A4 page (or more) for [recipe] as shown: amounts scaled to
 /// [servings] (the recipe may already be converted to another tin) and in
 /// [display] units, first photo on top.
@@ -31,15 +35,58 @@ Future<Uint8List> buildRecipePdf(
   int? servings,
   UnitDisplay display = UnitDisplay.original,
   Uint8List? photo,
+}) => buildRecipesPdf(
+  [(recipe: recipe, servings: servings, photo: photo)],
+  title: recipe.title,
+  labels: labels,
+  ingredients: ingredients,
+  regularFont: regularFont,
+  boldFont: boldFont,
+  display: display,
+);
+
+/// Several recipes in one PDF (selection, menu), each starting on a new
+/// page.
+Future<Uint8List> buildRecipesPdf(
+  List<PdfRecipe> recipes, {
+  required String title,
+  required PdfLabels labels,
+  required Map<String, Ingredient> ingredients,
+  required ByteData regularFont,
+  required ByteData boldFont,
+  UnitDisplay display = UnitDisplay.original,
 }) async {
-  final target = servings ?? recipe.servings;
   final regular = pw.Font.ttf(regularFont);
   final bold = pw.Font.ttf(boldFont);
-  const green = PdfColor.fromInt(0xFF2E6B2E);
   final doc = pw.Document(
-    title: recipe.title,
+    title: title,
     theme: pw.ThemeData.withFont(base: regular, bold: bold),
   );
+  for (final r in recipes) {
+    _addRecipe(
+      doc,
+      r.recipe,
+      labels: labels,
+      ingredients: ingredients,
+      servings: r.servings,
+      display: display,
+      photo: r.photo,
+    );
+  }
+  return doc.save();
+}
+
+void _addRecipe(
+  pw.Document doc,
+  Recipe recipe, {
+  required PdfLabels labels,
+  required Map<String, Ingredient> ingredients,
+  int? servings,
+  UnitDisplay display = UnitDisplay.original,
+  Uint8List? photo,
+}) {
+  final target = servings ?? recipe.servings;
+  const green = PdfColor.fromInt(0xFF2E6B2E);
   final meta = [
     labels.servings(target),
     if (recipe.prepMinutes != null) labels.prep(recipe.prepMinutes!),
@@ -154,5 +201,4 @@ Future<Uint8List> buildRecipePdf(
       ],
     ),
   );
-  return doc.save();
 }
